@@ -1,0 +1,29 @@
+---
+application_user: aijihui
+application_group: aijihui
+front_end_path: /data/front-end
+front_end_project: web-app
+front_end_version: master
+front_end_server_names:
+  web-app: 'aijihui.net'
+  vendor-app: 'vendor.aijihui.net'
+  ka-app: 'ka.aijihui.net'
+  agent-app: 'agent.aijihui.net'
+  crm-app: 'crm.aijihui.net'
+front_end_api_proxies:
+  web-app: 'api'
+  vendor-app: 'vendor/ajax'
+  ka-app: 'ka'
+  agent-app: 'agent'
+  crm-app: 'crm'
+front_end_api_hosts:
+  vendor-app: '10.168.216.226'
+
+front_end_project_repo: "git@code.aihuishou.com:aijihui/{{ front_end_project }}.git"
+
+front_end_project_path: "{{ front_end_path }}/{{ front_end_project }}"
+front_end_project_root: "{{ front_end_project_path}}/dist"
+new_front_end_project_root: "{{ front_end_project_path}}/build"
+front_end_server_name: "{{ front_end_server_names[front_end_project] }}"
+front_end_api_proxy: "{{ front_end_api_proxies[front_end_project] }}"
+front_end_api_host: "{{ front_end_api_hosts[front_end_project] | default('localhost') }}"

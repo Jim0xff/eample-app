@@ -1,0 +1,19 @@
+---
+- name: setup php-fpm pool config file
+  template:
+    src: php-fpm/pool.d/www.conf.j2
+    dest: /etc/php/{{ php_version }}/fpm/pool.d/www.conf
+    backup: true
+  register: php_fpm_pool_config
+
+- name: ensure php-fpm service
+  service:
+    name: php7.1-fpm
+    state: started
+    enabled: true
+
+- name: restart php-fpm service if config file changed
+  service:
+    name: php{{ php_version }}-fpm
+    state: restarted
+  when: php_fpm_pool_config.changed

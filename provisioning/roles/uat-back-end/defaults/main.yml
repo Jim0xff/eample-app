@@ -1,0 +1,6 @@
+---
+distribution_path: /data/aijihui
+application_path: /data/aijihui/aijihui-web
+application_user: aijihui
+application_version: master
+crontab_logfile: "{{ application_path }}/storage/logs/crontab.log"

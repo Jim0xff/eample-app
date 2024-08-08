@@ -1,0 +1,47 @@
+---
+- name: ensure appliation group
+  group:
+    name: "{{ application_group }}"
+
+- name: ensure application user
+  user:
+    name: "{{ application_user }}"
+    group: "{{ application_group }}"
+
+- name: distribute code with git
+  git:
+    repo: "{{ front_end_project_repo }}"
+    dest: "{{ front_end_project_path }}"
+    version: "{{ front_end_version }}"
+    force: true
+  become: true
+  become_user: "{{ application_user }}"
+
+- name: setup nginx front-end server config file
+  template:
+    src: front-end.conf.j2
+    dest: "/etc/nginx/conf.d/{{ front_end_project }}.conf"
+    backup: true
+  register: front_end_server_config
+  when: not front_end_project == 'vendor-app'
+
+- name: setup nginx front-end server new config file
+  template:
+    src: new-front-end.conf.j2
+    dest: "/etc/nginx/conf.d/{{ front_end_project }}.conf"
+    backup: true
+  register: front_end_server_config
+  when: front_end_project == 'vendor-app'
+
+- name: ensure nginx service
+  service:
+    name: nginx
+    state: started
+    enabled: true
+
+- name: reload nginx service if config file changed
+  service:
+    name: nginx
+    state: reloaded
+  when: front_end_server_config.changed
+

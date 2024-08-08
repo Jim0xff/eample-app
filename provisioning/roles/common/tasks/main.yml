@@ -1,0 +1,4 @@
+---
+- import_tasks: timezone.yml
+- import_tasks: utilities.yml
+- import_tasks: hostname.yml

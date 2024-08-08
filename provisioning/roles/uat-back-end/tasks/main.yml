@@ -1,0 +1,64 @@
+---
+- name: ensure directory
+  file:
+    path: "{{ distribution_path }}"
+    state: directory
+    owner: "{{ application_user }}"
+
+- name: deploy code
+  git:
+    repo: 'git@code.aihuishou.com:aijihui/aijihui-web.git'
+    dest: "{{ application_path }}"
+    version: "{{ application_version }}"
+    force: true
+  become: true
+  become_user: "{{ application_user }}"
+
+- name: install dependencies
+  composer:
+    command: install
+    working_dir: "{{ application_path }}"
+    no_dev: true
+
+- name: setup env file
+  template:
+    src: templates/env.j2
+    dest: "{{ application_path }}/.env"
+  become: true
+  become_user: "{{ application_user }}"
+
+- name: ensure supervisord
+  shell: . {{ supervisor_path }}/venv/bin/activate && supervisord -c {{ supervisor_path }}/supervisord.conf
+  args:
+    chdir: "{{ supervisor_path }}"
+    creates: "{{ supervisor_path }}/supervisor.sock"
+  become: true
+  become_user: "{{ application_user }}"
+
+- name: update welfare
+  shell: php artisan command:update-welfare
+  args:
+    chdir: "{{ application_path  }}"
+  become: true
+  become_user: "{{ application_user }}"
+  when: jobserver
+- name: update slot-machine
+  shell: php artisan command:update-slot-machine
+  args:
+    chdir: "{{ application_path }}"
+  become: true
+  become_user: "{{ application_user }}"
+  when: jobserver
+- name: restart jobs gracefully
+  shell: php artisan queue:restart
+  args:
+    chdir: "{{ application_path }}"
+  become: true
+  become_user: "{{ application_user }}"
+
+- name: add job into crontab
+  cron:
+    name: "add laravel into crontab"
+    user: "{{ application_user }}"
+    job: "/usr/bin/php {{ application_path }}/artisan schedule:run 1>> {{ crontab_logfile }} 2>&1"
+  when: jobserver

@@ -1,0 +1,3 @@
+---
+- name: install logtail
+  shell:  wget http://logtail-release.oss-cn-hangzhou-internal.aliyuncs.com/linux64/logtail.sh; chmod 755 logtail.sh; sh logtail.sh install cn_hangzhou

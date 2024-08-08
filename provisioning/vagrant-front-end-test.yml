@@ -1,0 +1,10 @@
+---
+- hosts: default
+  roles:
+    - role: front-end
+  become: true
+  vars:
+    application_user: aijihui
+    application_group: aijihui
+    front_end_server_names:
+      web-app: 'aijihui.net'

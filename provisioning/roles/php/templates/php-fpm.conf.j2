@@ -1,0 +1,6 @@
+[global]
+
+pid = /run/php/php{{ php_version }}-fpm.pid
+error_log = /var/log/php{{ php_version }}-fpm.log
+
+include=/etc/php/{{ php_version }}/fpm/pool.d/*.conf

@@ -1,0 +1,10 @@
+---
+- name: remove chef-client
+  apt:
+    name: chef
+    state: absent
+
+- name: remove puppet
+  apt:
+    name: puppet
+    state: absent

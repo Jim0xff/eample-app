@@ -1,0 +1,12 @@
+server {
+    listen {{ front_end_project_listen_port }};
+    root {{ new_front_end_project_root }};
+
+    location / {
+        try_files $uri /index.html?$query_string;
+    }
+
+    location /{{ front_end_api_proxy }}/ {
+        proxy_pass http://localhost;
+    }
+}

@@ -1,0 +1,4 @@
+---
+application_user: aijihui
+application_group: aijihui
+id_rsa: "{{ vault_id_rsa }}" # encrypted in vars/main.yml

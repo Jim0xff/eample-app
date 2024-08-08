@@ -1,0 +1,4 @@
+[webservers]
+ajh-web-1 ansible_host=10.168.216.226 ansible_user=root
+ajh-web-2 ansible_host=10.117.15.194 ansible_user=root
+

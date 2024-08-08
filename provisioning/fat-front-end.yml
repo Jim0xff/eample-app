@@ -1,0 +1,4 @@
+---
+- hosts: fat
+  roles:
+  - role: uat-front-end

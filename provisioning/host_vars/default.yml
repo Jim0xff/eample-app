@@ -1,0 +1,15 @@
+---
+# default vars for vagrant inventory
+jobserver: true
+sendfile: "off"
+application_user: vagrant
+application_group: vagrant
+application_path: /vagrant
+
+supervisor_path: /home/vagrant/supervisor
+
+env_wechat_enable_mock: "true"
+
+wechat_appclient_path: /home/vagrant/wechat
+
+

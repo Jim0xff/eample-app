@@ -1,0 +1,24 @@
+---
+distribution_path: /data/aijihui
+front_end_project: web-app
+front_end_version: master
+front_end_project_listen_ports:
+  web-app: 8001
+  vendor-app: 8002
+  ka-app: 8003
+  agent-app: 8004
+  crm-app: 8005
+front_end_api_proxies:
+  web-app: 'api'
+  vendor-app: 'vendor/ajax'
+  ka-app: 'ka'
+  agent-app: 'agent'
+  crm-app: 'crm'
+
+front_end_project_repo: "git@code.aihuishou.com:aijihui/{{ front_end_project }}.git"
+
+front_end_project_path: "{{ distribution_path }}/{{ front_end_project }}"
+front_end_project_root: "{{ front_end_project_path}}/dist"
+new_front_end_project_root: "{{ front_end_project_path}}/build"
+front_end_project_listen_port: "{{ front_end_project_listen_ports[front_end_project] }}"
+front_end_api_proxy: "{{ front_end_api_proxies[front_end_project] }}"

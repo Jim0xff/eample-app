@@ -1,0 +1,18 @@
+server {
+    listen 80;
+    server_name {{ front_end_server_name }};
+    root {{ front_end_project_root }};
+
+    location / {
+        try_files $uri /index.html?$query_string;
+    }
+
+    location /{{ front_end_api_proxy }}/ {
+        proxy_pass http://{{ front_end_api_host }};
+    }
+
+    {% if front_end_project == 'web-app' %}
+    rewrite ^/a$ https://www.aijihui.net/download/ajh-app.html permanent;
+    rewrite ^/b$ https://www.aijihui.net/download/inquiry-app.html permanent;
+    {% endif %}
+}

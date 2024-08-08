@@ -1,0 +1,12 @@
+---
+hostname: ajh-uat
+ubuntu_codename: xenial
+jobserver: true
+mount_path: /data
+distribution_path: /data/aijihui
+application_path: "{{ distribution_path }}/aijihui-web"
+
+
+ajh_pem_private_path: /data/bica
+ajh_pem_public_path: /data/bica
+env_audit_no_tolerance_ppv_map_id: 35

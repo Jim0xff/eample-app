@@ -1,0 +1,14 @@
+---
+- hosts: webservers
+  roles:
+    - role: common
+    - role: logtail
+    - role: php
+    - role: nginx
+    - role: git
+    - role: web-server
+    - role: supervisor
+      when: jobserver
+    - role: user
+    - role: distribution
+    - role: wechat-api-client

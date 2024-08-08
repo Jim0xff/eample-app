@@ -1,0 +1,26 @@
+---
+# default vars
+
+# current stable version of aijihui web for production
+application_version: 0.0.3
+
+# override vars in roles
+# do not change them if you don't know what you are doing
+jobserver: false
+timezone: Asia/Shanghai
+ubuntu_codename: trusty
+php_version: 7.1
+sendfile: "on"
+distribution_path: /data/aijihui
+application_user: aijihui
+application_group: aijihui
+application_path: "{{ distribution_path }}/release"
+
+repository: '{"type":"git","url":"git@code.aihuishou.com:aijihui/aijihui-web.git"}'
+
+supervisor_path: /data/supervisor
+front_end_path: /data/front-end
+wechat_appclient_path: /data/wechat
+
+ajh_pem_private_path: /data/bica
+ajh_pem_public_path: /data/bica

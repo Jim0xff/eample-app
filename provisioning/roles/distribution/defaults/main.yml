@@ -1,0 +1,14 @@
+---
+distribution_path: /data/aijihui
+application_path: "{{ distribution_path }}/release"
+application_user: aijihui
+application_group: aijihui
+application_version: 0.0.1
+
+supervisor_path: /data/supervisor
+
+crontab_logfile: "{{ application_path }}/storage/logs/crontab.log"
+
+repository: '{"type":"git","url":"git@code.aihuishou.com:aijihui/aijihui-web.git"}'
+
+php_version: 7.1

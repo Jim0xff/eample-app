@@ -1,0 +1,4 @@
+---
+- hosts: uat
+  roles:
+  - role: uat-front-end

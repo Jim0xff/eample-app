@@ -1,0 +1,26 @@
+---
+- hosts: default
+  roles:
+    - role: clean
+    - role: common
+    - role: php
+    - role: nginx
+    - role: nodejs
+    - role: git
+    - role: web-server
+    - role: supervisor
+      when: jobserver
+    - role: distribution
+  become: true
+  vars:
+    jobserver: yes
+    application_user: aijihui
+    application_group: aijihui
+    application_path: /data/aijihui/release
+    application_version: 0.2.6
+    supervisor_path: /data/supervisor
+    env_app_env: production
+    env_app_key: base64:xi8h5IAFOpXEnfXkcjjvzNHaQjEBAMsTBUFK7VnK308=
+    env_app_debug: "false"
+    env_app_log_level: "error"
+    env_app_url: http://localhost:8000

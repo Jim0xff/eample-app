@@ -1,0 +1,19 @@
+---
+- name: setup nginx server config file
+  template:
+    src: nginx/conf.d/aijihui-web.conf.j2
+    dest: /etc/nginx/conf.d/aijihui-web.conf
+    backup: true
+  register: nginx_server_config
+
+- name: ensure nginx service
+  service:
+    name: nginx
+    state: started
+    enabled: true
+
+- name: reload nginx service if config file changed
+  service:
+    name: nginx
+    state: reloaded
+  when: nginx_server_config.changed

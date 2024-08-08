@@ -1,0 +1,5 @@
+---
+application_path: /vagrant
+application_user: vagrant
+supervisor_path: /home/vagrant/supervisor
+crontab_logfile: "{{ application_path }}/storage/logs/crontab.log"

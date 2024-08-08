@@ -1,0 +1,7 @@
+---
+php_version: 7.1
+application_user: aijihui
+application_group: aijihui
+application_path: /data/aijihui/release
+
+nginx_root: "{{ application_path }}/public"

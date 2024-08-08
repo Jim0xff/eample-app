@@ -1,0 +1,13 @@
+---
+- hosts: uat
+  roles:
+#    - role: common
+#    - role: php
+#    - role: nginx
+#    - role: git
+#    - role: user
+#    - role: mount
+    - role: web-server
+    - role: supervisor
+    - role: uat-back-end
+

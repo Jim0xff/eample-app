@@ -1,0 +1,7 @@
+- name: ensure supervisord
+  shell: . {{ supervisor_path }}/venv/bin/activate && supervisord -c {{ supervisor_path }}/supervisord.conf
+  args:
+    chdir: "{{ supervisor_path }}"
+    creates: "{{ supervisor_path }}/supervisord.pid"
+  become: true
+  become_user: "{{ application_user }}"

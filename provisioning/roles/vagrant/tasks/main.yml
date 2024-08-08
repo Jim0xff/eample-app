@@ -1,0 +1,44 @@
+---
+- name: install php packages
+  composer:
+    command: install
+    working_dir: "{{ application_path }}"
+    prefer-dist: true
+    no_dev: false
+  become: true
+  become_user: "{{ application_user }}"
+
+#- name: install nodejs packages
+#  npm:
+#    path: "{{ application_path }}"
+#  become: true
+#  become_user: "{{ application_user }}"
+
+- name: setup application env file
+  template:
+    src: templates/env.j2
+    dest: "{{ application_path }}/.env"
+    force: false
+  become: true
+  become_user: "{{ application_user }}"
+
+#- name: ensure supervisord
+#  shell: . {{ supervisor_path }}/venv/bin/activate && supervisord -c {{ supervisor_path }}/supervisord.conf
+#  args:
+#    chdir: "{{ supervisor_path }}"
+#  become: true
+#  become_user: "{{ application_user }}"
+#
+#- name: restart jobs gracefully
+#  shell: php artisan queue:restart
+#  args:
+#    chdir: "{{ application_path }}"
+#  become: true
+#  become_user: "{{ application_user }}"
+#
+#- name: add Kernel into crontab
+#  cron:
+#    name:  "add laravel into crontab"
+#    user: "{{ application_user }}"
+#    job: "/usr/bin/php {{ application_path }}/artisan schedule:run 1>> {{ crontab_logfile }} 2>&1"
+#  when: jobserver
