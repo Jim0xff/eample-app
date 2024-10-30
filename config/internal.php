@@ -3,7 +3,7 @@
  * Internal Service Client Base URI settings
  */
 return [
-    'graph' => env('GRAPH_URL', 'http://localhost:8000/subgraphs/name/raffle-graph'),
+    'graph' => env('GRAPH_URL', 'http://localhost:8000/subgraphs/name/metis-pump-subgraph'),
     'user' => env('INTERNAL_USER', 'http://192.168.3.115:8831/user/'),
     'vendor' => env('INTERNAL_VENDOR', 'http://192.168.3.115:8817/vender-service/'),
     'wallet' => env('INTERNAL_WALLET', 'http://192.168.3.247:8090/walletservice/api/wallet/'),

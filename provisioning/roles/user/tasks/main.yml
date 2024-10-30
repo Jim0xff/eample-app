@@ -26,7 +26,7 @@
 
 - name: add gitlab to known hosts
   known_hosts:
-    name: code.aihuishou.com
+    name: github.com
     key: "{{ lookup('file', 'gitlab_rsa.pub') }}"
   become: true
   become_user: "{{ application_user }}"

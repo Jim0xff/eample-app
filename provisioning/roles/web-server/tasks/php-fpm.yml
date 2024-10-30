@@ -8,7 +8,7 @@
 
 - name: ensure php-fpm service
   service:
-    name: php7.1-fpm
+    name: php8.3-fpm
     state: started
     enabled: true
 

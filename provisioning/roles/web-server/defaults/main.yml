@@ -1,7 +1,7 @@
 ---
-php_version: 7.1
-application_user: aijihui
-application_group: aijihui
-application_path: /data/aijihui/release
+php_version: 8.3
+application_user: ea
+application_group: ea
+application_path: /data/ea/release
 
 nginx_root: "{{ application_path }}/public"

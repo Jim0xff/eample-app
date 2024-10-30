@@ -7,6 +7,7 @@ use App\InternalServices\DomainException;
 use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\ErrorHandler\Error\FatalError;
 
 class Handler extends ExceptionHandler
 {
@@ -52,11 +53,16 @@ class Handler extends ExceptionHandler
      */
     public function render($request, \Throwable $exception)
     {
+        if(!$exception instanceof (Exception::class)){
+            $exception = new Exception($exception->getMessage());
+        }
 
         if ($request->getRequestFormat() == 'json' || $request->expectsJson()) {
 
             return new ErrorJsonResponse($exception);
         }
+
+
         return new ErrorJsonResponse($exception);
        //return parent::render($request, $exception);
     }

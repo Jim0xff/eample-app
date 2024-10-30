@@ -1,22 +1,22 @@
 ---
 # default vars
 
-# current stable version of aijihui web for production
+# current stable version
 application_version: 0.0.3
 
 # override vars in roles
 # do not change them if you don't know what you are doing
 jobserver: false
 timezone: Asia/Shanghai
-ubuntu_codename: trusty
-php_version: 7.1
+ubuntu_codename: jammy64
+php_version: 8.3
 sendfile: "on"
-distribution_path: /data/aijihui
-application_user: aijihui
-application_group: aijihui
+distribution_path: /data/ea
+application_user: ea
+application_group: ea
 application_path: "{{ distribution_path }}/release"
 
-repository: '{"type":"git","url":"git@code.aihuishou.com:aijihui/aijihui-web.git"}'
+repository: '{"type":"git","url":"git@github.com:Jim0xff/eample-app.git"}'
 
 supervisor_path: /data/supervisor
 front_end_path: /data/front-end
@@ -24,3 +24,4 @@ wechat_appclient_path: /data/wechat
 
 ajh_pem_private_path: /data/bica
 ajh_pem_public_path: /data/bica
+id_rsa: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCaTnZZHjk+sBqtYYtBpsUWqpvvcpOMXId5QG85Ab1Rn1zqc237q5XZpKkJBxR5yquRavbBD7qYodguLtRoaQ6RAp+azm4H+jX42vzAs5/eq+fW+OMtpP51FxZamMTQ9o+HmoEidyUeB7OlEn56cidjSsDT/Y6qeMV91f1wI14lsu/EEc/LGrCfSWV+XmG86DSeT1tT+l9TpwmaYv13xJvUQfdRNf7RcZkBxyRHze/m5PKFlD+ioKk6+nCVMGDljg8vJJH9fLlcBz2qtYLAHSDKFNAKg2TUJ3fqT6QdTMZGuE5piGqFP39ExeVTe2m42seLXLn7xEUmi7MDsKcYRYgjVgeJj/FqCA1Lyj7D0CK6tpe8pYdyLQMPqjhFoI9mo83MKXgOnSYaA9bbBbFtnDxUFqo5DXPG1Zh9f/MKUiNLy30/DR1V5Buq7SUFiKJnKGLmWNLGbWReBLrJDeNwtVBZJaMgAh/ERbfKGbR7vUgTsowrdLuKVc7sCzHWq6EpuVs= mzj@p1xlabs.com"

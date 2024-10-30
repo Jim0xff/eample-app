@@ -3,10 +3,10 @@
   apt_key:
     url: http://nginx.org/keys/nginx_signing.key
 
-- name: add nginx stable repository from official source
-  apt_repository:
-    repo: deb http://nginx.org/packages/ubuntu/ {{ ubuntu_codename }} nginx
-    update_cache: true
+#- name: add nginx stable repository from official source
+#  apt_repository:
+#    repo: deb http://nginx.org/packages/ubuntu/ {{ ubuntu_codename }} nginx
+#    update_cache: true
 
 - name: install nginx
   apt:

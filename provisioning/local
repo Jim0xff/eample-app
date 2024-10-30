@@ -1,0 +1,2 @@
+[default]
+web1 ansible_host=8.155.162.37 ansible_user=root

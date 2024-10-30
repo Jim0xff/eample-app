@@ -13,3 +13,4 @@ env_wechat_enable_mock: "true"
 wechat_appclient_path: /home/vagrant/wechat
 
 
+

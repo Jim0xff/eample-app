@@ -4,9 +4,9 @@
     repo: ppa:ondrej/php
     update_cache: true
 
-- name: install PHP
-  apt:
-    name: php{{ php_version }}
+- name: install php
+  raw: sudo apt-get install -y php8.3
+  register: result
 
 - name: remove apache2
   apt:

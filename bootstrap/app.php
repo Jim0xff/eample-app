@@ -13,6 +13,10 @@ $app = Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->append(\App\Http\Middleware\AssignRequestId::class);
         $middleware->append(\App\Http\Middleware\LogRequest::class);
+        $middleware->validateCsrfTokens(except: [
+            'stripe/*',
+            '/*',
+        ]);
 
     })
 
