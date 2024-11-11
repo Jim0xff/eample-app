@@ -7,5 +7,7 @@ return [
     \Pump\Token\Provider\TokenServiceProvider::class,
     \Pump\Comment\Provider\CommentServiceProvider::class,
     Pump\User\Providers\AuthServiceProvider::class,
-
+    \App\InternalServices\Coingecko\CoingeckoServiceProvider::class,
+    MLL\GraphiQL\GraphiQLServiceProvider::class,
+    \Nuwave\Lighthouse\LighthouseServiceProvider::class
 ];

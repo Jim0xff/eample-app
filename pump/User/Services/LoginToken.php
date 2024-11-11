@@ -25,10 +25,12 @@ class LoginToken
         $token = stripslashes($token);
         $token = str_replace(' ', '+', $token);
         $tokenArr = Crypt::cryptDecode($token);
+
         if (empty($tokenArr['address'])) {
             return null;
         }
         $address = $tokenArr['address'];
+        $address = strtolower($address);
         $redis = resolve('redis');
         $serverToken = $redis->command('get', [self::LOGIN_TOKEN_PRE_KEY . $address]);
         if (empty($token) || empty($serverToken) || $token != $serverToken) {

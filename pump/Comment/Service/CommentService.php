@@ -6,6 +6,7 @@ use App\InternalServices\DomainException;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Pump\Comment\Dao\CommentDAOModel;
 use Pump\Comment\DbModel\ClickLikeDbModel;
 use Pump\Comment\DbModel\CommentDbModel;
 use Pump\Comment\DTO\ClickLikeDTO;
@@ -122,7 +123,6 @@ class CommentService
                 $totalCommentIds[] = $comment->id;
             }
             $subSearchParam['parentCommentIds'] = $parentIds;
-            $subSearchParam['limit'] = 5;
             $subCommentList = CommentRepository::searchComment($subSearchParam);
             $subCommentMap = [];
             if(!empty($subCommentList)) {
@@ -165,6 +165,54 @@ class CommentService
                     $commentDTO->subCommentList = $this->commentDbModelsToDbModels($subCommentMap[$commentDTO->id], $userInfoMap, $clickLikeMap);
                 }
             }
+            $pageResult['items'] = $commentDTOList;
+        }
+        return $pageResult;
+    }
+
+    public function userComments($params)
+    {
+        $userAddress = $params['user'];
+        $searchParam = [];
+        $searchParam['user'] = $userAddress;
+        if(empty($params['perPage'])){
+            $params['perPage'] = 30;
+        }
+        if(empty($params['page'])){
+            $params['page'] = 1;
+        }
+        $searchParam['page'] = $params['page'];
+        $searchParam['perPage'] = $params['perPage'];
+        $commentPageData = CommentRepository::pageSearchComment($searchParam);
+        $pageResult = [];
+        $pageResult['pagination'] = $commentPageData['pagination'];
+        $pageResult['items'] = [];
+        if(!empty($commentPageData['items'])) {
+            $userIds = [];
+            foreach ($commentPageData['items'] as $comment) {
+                $userIds[] = $comment->user;
+                $totalCommentIds[] = $comment->id;
+            }
+
+            $userIds = array_unique($userIds);
+            $userInfo = UserRepository::getUsersByAddressList($userIds);
+
+            $userInfoMap = [];
+            if(!empty($userInfo)) {
+                foreach ($userInfo as $userInfoItem) {
+                    $userInfoMap[$userInfoItem->getAddress()] = $userInfoItem;
+                }
+            }
+            $clickLikeMap = [];
+            if(!empty($params['userId']) && !empty($totalCommentIds)) {
+                $clickLikeList = ClickLikeRepository::getLikeList(['user'=>$params['userId'], 'commentIds'=>$totalCommentIds]);
+                if(!empty($clickLikeList)){
+                    foreach ($clickLikeList as $clickLike) {
+                        $clickLikeMap[$clickLike->commentId] = $clickLike;
+                    }
+                }
+            }
+            $commentDTOList = $this->commentDbModelsToDbModels($commentPageData['items'], $userInfoMap, $clickLikeMap);
             $pageResult['items'] = $commentDTOList;
         }
         return $pageResult;

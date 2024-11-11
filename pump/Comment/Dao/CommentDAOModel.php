@@ -31,6 +31,24 @@ class CommentDAOModel extends Model
        return $mdl->orderBy('love_cnt', 'desc')->orderBy('id', 'desc')->get();
    }
 
+    public static function searchCommentCount($params)
+    {
+        $mdl = self::query();
+        if(isset($params['ids'])){
+            $mdl->whereIn('id', $params['ids']);
+        }
+        if(isset($params['token'])) {
+            $mdl->where('token', $params['token']);
+        }
+        if(isset($params['parent_comment_id_null']) && $params['parent_comment_id_null']) {
+            $mdl->whereNull('parent_comment_id');
+        }
+        if(isset($params['parentCommentIds'])) {
+            $mdl->whereIn('parent_comment_id', $params['parentCommentIds']);
+        }
+        return $mdl->count();
+    }
+
    public static function lockCommentById($id)
    {
        return self::query()->lockForUpdate()->find($id);
@@ -44,6 +62,9 @@ class CommentDAOModel extends Model
         }
         if(isset($params['token'])) {
             $mdl->where('token', $params['token']);
+        }
+        if(isset($params['user'])){
+            $mdl->where('user', $params['user']);
         }
         if(isset($params['parent_comment_id_null']) && $params['parent_comment_id_null']) {
             $mdl->whereNull('parent_comment_id');

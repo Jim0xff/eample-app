@@ -26,12 +26,14 @@ class TokenAuthorizedProvider implements UserProvider
 
     public function retrieveByCredentials($tokenArr)
     {
-
         $token = array_shift($tokenArr);
 
         /** @var $loginTokenService LoginToken */
         $loginTokenService = resolve('login_token_service');
         $rt = $loginTokenService->validateToken($token);
+        if(empty($rt)){
+            return null;
+        }
         return new LoginUser($rt);
     }
 

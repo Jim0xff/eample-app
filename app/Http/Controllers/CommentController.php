@@ -34,6 +34,17 @@ class CommentController extends Controller
         return response()->json(['data' => $data, 'code' => 200]);
     }
 
+    public function userComments(Request $request)
+    {
+        $params = $request->all();
+        /** @var LoginUser $user */
+        $user = auth()->user();
+        /** @var CommentService $commentService */
+        $commentService = resolve("comment_service");
+        $data = $commentService->userComments($params);
+        return response()->json(['data' => $data, 'code' => 200]);
+    }
+
     public function clickLike(Request $request)
     {
         $params = $request->all();
