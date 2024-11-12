@@ -65,7 +65,7 @@ class TokenController extends Controller
        return response()->json(['data' => $tokenService->tokenHolders($params), 'code' => 200]);
    }
 
-   public function trandingList(Request $request)
+   public function tradingList(Request $request)
    {
        $params = $request->all();
        /** @var $tokenService TokenService */

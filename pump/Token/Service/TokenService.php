@@ -124,6 +124,7 @@ class TokenService
                 $currencyAddress = strtolower($currencyAddress);
                 $currencyCode = $currencyCodeList[$currencyAddress]??'';
                 if(!empty($currencyCode)){
+                    $token['currencySymbol'] = $currencyCode;
                     $currencyInfo = $coingeckoService->getTokenPrice($currencyCode, 'usd');
 
                     if($token['status'] != 'TRADING'){
@@ -362,10 +363,12 @@ class TokenService
         }else{
             $whereStr = '{}';
         }
+        $currentPage = $params['page']??1;
+        $pageSize = $params['perPage']??10;
         $orderBy = $params['orderBy']??'createTimestamp';
         $orderDirection = $params['orderDirection']??'desc';
-        $first = $params['first']??10;
-        $skip = $params['skip']??0;
+        $first = $pageSize;
+        $skip = ($currentPage - 1) * $pageSize;
         $graphParams = [
             "query" => "query MyQuery {
   transactions(where: $whereStr
@@ -389,7 +392,11 @@ class TokenService
         ];
 
         $rt = $graphService->baseQuery($graphParams);
+        $items = [];
         $result = [];
+        $pagination = [
+            "currentPage" => $currentPage,
+        ];
         if(!empty($rt['data']) && !empty($rt['data']['transactions'])){
             $userIds = array_column($rt['data']['transactions'], 'user');
             $userIds = array_unique($userIds);
@@ -406,15 +413,19 @@ class TokenService
                 $single['transactionHash'] = $transaction['transactionHash'];
                 $single['currencyAmount'] = $transaction['metisAmount'];
                 $single['userAddress'] = $transaction['user'];
+                $single['createTimestamp'] = $transaction['createTimestamp'];
                 if(!empty($userMap[$transaction['user']])){
                     $single['userName'] = $userMap[$transaction['user']]->nickName;
+                    $single['userImg'] = $userMap[$transaction['user']]->headImgUrl;
                 }else{
                     $single['userName'] = $transaction['user'];
                 }
 
-                $result[] = $single;
+                $items[] = $single;
             }
         }
+        $result['pagination'] = $pagination;
+        $result['items'] = $items;
         return $result;
     }
 

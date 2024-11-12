@@ -26,7 +26,7 @@ Route::post('/token/create.json', ['uses' => '\App\Http\Controllers\TokenControl
 Route::get('/token/tokenDetail.json', ['uses' => '\App\Http\Controllers\TokenController@tokenDetail']);
 Route::post('/token/tokenList.json', ['uses' => '\App\Http\Controllers\TokenController@tokenList']);
 Route::get('/token/tokenHolders.json', ['uses' => '\App\Http\Controllers\TokenController@tokenHolder']);
-Route::get('/token/trandingList.json', ['uses' => '\App\Http\Controllers\TokenController@trandingList']);
+Route::get('/token/tradingList.json', ['uses' => '\App\Http\Controllers\TokenController@tradingList']);
 Route::post('/token/boughtTokenList.json', ['uses' => '\App\Http\Controllers\TokenController@userBoughtTokens']);
 
 Route::post('/comment/create.json', ['uses' => '\App\Http\Controllers\CommentController@createComment','middleware' => \App\Http\Middleware\ApiToken::class]);
