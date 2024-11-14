@@ -1,6 +1,9 @@
 <?php
 
 namespace App\Http\Controllers;
+use Aws\Result;
+use Aws\S3\S3Client;
+use Illuminate\Http\Request;
 use phpseclib\Math\BigInteger;
 use Web3\Formatters\AddressFormatter;
 use Web3\Utils;
@@ -94,6 +97,41 @@ class TestController extends Controller{
             print_r($relativePrice);
         }
         return response()->json(['code' => 200, 'data' => $tokenPrice]);
+    }
+
+    public function test3(Request $request)
+    {
+        //Create a S3Client
+        //https://pump.sgp1.digitaloceanspaces.com
+        $client = new S3Client([
+            'version' => 'latest',
+            'region'  => 'us-east-1',
+            'endpoint' => 'https://sgp1.digitaloceanspaces.com',
+            'use_path_style_endpoint' => false, // Configures to use subdomain/virtual calling format.
+            'credentials' => [
+                'key'    => 'DO00X7XU744W9BRQBJ83',
+                'secret' => 'KDCZLUeRgOM1r/YEQMzoLZzFghhRrefGKFG/p9m/r78',
+            ],
+        ]);
+
+//Listing all S3 Bucket
+//        /** @var Result $result */
+//        $result = $client->getObject([
+//            'Key' => 'pug.png',
+//            'Bucket' => 'pump'
+//        ]);
+//        if(!empty($result->get('@metadata'))){
+//            //print_r($result->get('@metadata')['effectiveUri']);
+//        }
+
+        $file = $request->file('img');
+
+//        $result = $client->upload('pump','pug4.png', $file->get(), 'public-read');
+//        if(!empty($result) && !empty($result->get('@metadata'))){
+//            print_r($result->get('@metadata')['effectiveUri']);
+//        }
+
+        return response()->json(['code' => 200, 'data' => []]);
     }
 
 }

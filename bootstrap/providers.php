@@ -9,5 +9,6 @@ return [
     Pump\User\Providers\AuthServiceProvider::class,
     \App\InternalServices\Coingecko\CoingeckoServiceProvider::class,
     MLL\GraphiQL\GraphiQLServiceProvider::class,
-    \Nuwave\Lighthouse\LighthouseServiceProvider::class
+    \Nuwave\Lighthouse\LighthouseServiceProvider::class,
+    \App\InternalServices\S3\S3ServiceProvider::class,
 ];
