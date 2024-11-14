@@ -115,14 +115,14 @@ class TestController extends Controller{
         ]);
 
 //Listing all S3 Bucket
-//        /** @var Result $result */
-//        $result = $client->getObject([
-//            'Key' => 'pug.png',
-//            'Bucket' => 'pump'
-//        ]);
-//        if(!empty($result->get('@metadata'))){
-//            //print_r($result->get('@metadata')['effectiveUri']);
-//        }
+        /** @var Result $result */
+        $result = $client->getObject([
+            'Key' => 'headImg_0xd4f8bbf9c0b8aff6d76d2c5fa4971a36fc9e4003_wDCrt88vAj',
+            'Bucket' => 'pump'
+        ]);
+        if(!empty($result->get('@metadata'))){
+            print_r($result);
+        }
 
         $file = $request->file('img');
 

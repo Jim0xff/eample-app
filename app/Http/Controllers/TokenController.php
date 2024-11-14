@@ -16,7 +16,7 @@ class TokenController extends Controller
        $params['creator'] =  $user->address;
        /** @var $tokenService TokenService */
        $tokenService = resolve('token_service');
-
+       $params['address'] = strtolower($params['address']);
        $token = $tokenService->createToken($params);
        return response()->json(['data' => $token, 'code' => 200]);
    }

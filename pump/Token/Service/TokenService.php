@@ -48,6 +48,9 @@ class TokenService
             }
         }
         if(!empty($params['tokenIds'])){
+            foreach($params['tokenIds'] as &$tokenId){
+                $tokenId = strtolower($tokenId);
+            }
             $whereArray[] = "id_in:" . json_encode($params['tokenIds']);
         }
         if(!empty($params['statusList'])){
