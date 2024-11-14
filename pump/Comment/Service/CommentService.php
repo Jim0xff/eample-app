@@ -224,7 +224,7 @@ class CommentService
         $dbModel->token = $params['token'];
         $contentObj = [];
         $contentObj['text'] = $params['text'];
-        $contentObj['imgUrl'] = $params['imgUrl'];
+        $contentObj['imgUrl'] = $params['imgUrl']??null;
         $dbModel->content = $contentObj;
         $dbModel->parentCommentId = $params['parentCommentId']??null;
         $dbModel->replyCommentId = $params['replyCommentId']??null;
