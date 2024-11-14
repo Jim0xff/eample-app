@@ -58,14 +58,25 @@ class UserService
         });
     }
 
-    public function getSingleUserDTO($userAddress)
+    public function getSingleUserDTO($userAddress, $loginUserAddress)
     {
         $userList = UserRepository::getUsersByAddressList([$userAddress]);
         if(empty($userList)){
             return null;
         }
-        return $this->userDBModelToUserDTO($userList[0]);
+        $userDTO = $this->userDBModelToUserDTO($userList[0]);
+        if($loginUserAddress){
+            $followersPageData = UserFollowDAOModel::getFollowers([
+                "follower" => $loginUserAddress,
+                "followed" => $userAddress,
+                "statusList" => ["ACTIVE"],
+            ]);
+            if(!empty($followersPageData)){
+                $userDTO->followed = true;
+            }
+        }
 
+        return $userDTO;
     }
 
     public function followUser($params)
@@ -291,7 +302,7 @@ class UserService
     public function login($params)
     {
         $userAddress = $params['address'];
-        $userInfo = $this->getSingleUserDTO($userAddress);
+        $userInfo = $this->getSingleUserDTO($userAddress, null);
         if($userInfo == null){
             throw new DomainException("user not exists");
         }

@@ -37,6 +37,16 @@ class TokenService
         //{id_in: ["0xbacd7cad68f707715461db07d11c3f2be932accc"], status: "TRADING"}
         $whereContent = [];
         $whereArray = [];
+        if(!empty($params['searchKey'])){
+            if(substr($params['searchKey'], 0, 2) === '0x'
+                || substr($params['searchKey'], 0, 2) === '0X'
+                && strlen($params['searchKey']) >= 10
+            ){
+                $params['tokenIds'] = [$params['searchKey']];
+            }else{
+                $params['name'] = $params['searchKey'];
+            }
+        }
         if(!empty($params['tokenIds'])){
             $whereArray[] = "id_in:" . json_encode($params['tokenIds']);
         }

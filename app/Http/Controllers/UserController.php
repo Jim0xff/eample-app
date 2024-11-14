@@ -72,10 +72,16 @@ class UserController extends Controller
         return response()->json(['data' => true, 'code' => 200]);
     }
 
-   public function getUser($userAddress){
+   public function getUser(Request $request){
        /** @var $userService UserService */
        $userService =  resolve('user_service');
-       $user = $userService->getSingleUserDTO($userAddress);
+       $params = $request->all();
+       $user = auth()->user();
+       $loginUserAddress = null;
+       if(!empty($user)){
+           $loginUserAddress = $user->address;
+       }
+       $user = $userService->getSingleUserDTO($params['address'], $loginUserAddress);
        return response()->json(['data' => $user, 'code' => 200]);
    }
 

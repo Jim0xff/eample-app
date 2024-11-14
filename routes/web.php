@@ -14,7 +14,7 @@ Route::get('/test2', [TestController::class, 'test2']);
 
 Route::post('/user/create.json', [UserController::class, 'createUser']);
 Route::post('/user/edit.json', ['uses' => '\App\Http\Controllers\UserController@editUser','middleware' => \App\Http\Middleware\ApiToken::class]);
-Route::get('/user/querySingle.json/{userAddress}', [UserController::class, 'getUser']);
+Route::get('/user/querySingle.json', [UserController::class, 'getUser']);
 Route::post('/user/followUser.json', ['uses' => '\App\Http\Controllers\UserController@followUser','middleware' => \App\Http\Middleware\ApiToken::class]);
 Route::post('/user/cancelFollowUser.json', ['uses' => '\App\Http\Controllers\UserController@cancelFollowUser','middleware' => \App\Http\Middleware\ApiToken::class]);
 Route::get('/user/followerList.json', ['uses' => '\App\Http\Controllers\UserController@followerList']);

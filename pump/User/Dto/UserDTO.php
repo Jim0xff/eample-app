@@ -30,6 +30,8 @@ class UserDTO
 
     public $updated_at;
 
+    public $followed = false;
+
     /**
      * @return mixed
      */
