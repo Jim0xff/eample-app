@@ -21,7 +21,7 @@ class ImageController extends Controller
         if(!empty($user)){
             $userAddress = $user->address;
         }
-        $result = $s3Service->uploadObject($file, 'pump', $userAddress, $params['scene']??'default');
+        $result = $s3Service->uploadObject($file, 'pump', $userAddress, $params['scene']??'default', ['ContentType' => 'image/png']);
         return response()->json(['code' => 200, 'data' => $result]);
     }
 }

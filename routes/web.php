@@ -12,7 +12,7 @@ Route::get('/test/{id}', [TestController::class, 'test1']);
 Route::get('/test2', [TestController::class, 'test2']);
 Route::post('/test3', [TestController::class, 'test3']);
 
-Route::post('/uploadImg.json', ['uses' => '\App\Http\Controllers\ImageController@uploadImg','middleware' => \App\Http\Middleware\ApiToken::class]);
+Route::post('/uploadImg.json', ['uses' => '\App\Http\Controllers\ImageController@uploadImg']);
 
 Route::post('/user/create.json', [UserController::class, 'createUser']);
 Route::post('/user/edit.json', ['uses' => '\App\Http\Controllers\UserController@editUser','middleware' => \App\Http\Middleware\ApiToken::class]);

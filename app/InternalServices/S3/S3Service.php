@@ -24,9 +24,9 @@ class S3Service
          ]);
      }
 
-     public function uploadObject($file, $bucket, $user, $scene){
+     public function uploadObject($file, $bucket, $user, $scene, $params){
          $key = $this->randomKey($scene, $user, 10);
-         $result = $this->s3Client->upload($bucket, $key, $file->get(), 'public-read');
+         $result = $this->s3Client->upload($bucket, $key, $file->get(), 'public-read', ['params' => $params]);
          $rt = [];
          if(!empty($result) && !empty($result->get('@metadata'))){
              $rt['url'] = $result->get('@metadata')['effectiveUri'];
