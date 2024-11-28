@@ -24,6 +24,10 @@ class AssignRequestId
         ]);
 
         $response = $next($request);
+        if($request->getContentTypeFormat() != 'json'){
+            return  $response;
+        }
+
         $contentStr = $response->getContent();
         $contentJSON = json_decode($contentStr, true);
         $contentJSON['request-id'] = $requestId;

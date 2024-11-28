@@ -11,8 +11,10 @@ $app = Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->append(\App\Http\Middleware\GlobalThrottleRequestsMiddleware::class);
         $middleware->append(\App\Http\Middleware\AssignRequestId::class);
         $middleware->append(\App\Http\Middleware\LogRequest::class);
+        $middleware->append(\App\Http\Middleware\VerifySign::class);
         $middleware->validateCsrfTokens(except: [
             'stripe/*',
             '/*',

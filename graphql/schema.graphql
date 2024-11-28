@@ -10,7 +10,43 @@ type Query {
     ): User @find
 
     "List multiple users."
-    users: [User!]! @paginate(defaultCount: 10)
+    users: [User!]! @all
+
+    userComplexQuery(
+        keyWord: String,
+        first: Int,
+        page: Int,
+    ): PageUsers
+
+    "Find a single token by an identifying attribute."
+    token(
+        "Search by primary key."
+        address: String @eq
+    ): Token @find
+
+    tokens: [Token!]! @all
+}
+
+type Mutation {
+    userCreateMutation(
+        address: String @rules(apply: ["required"])
+    ): String @guard
+}
+
+type Token {
+    "Unique primary key."
+    address: String!
+
+    name: String!
+}
+
+type PageUsers{
+    data: [User],
+    pagination: Pagination
+}
+
+type Pagination {
+    total: String
 }
 
 "Account of a person who utilizes this application."

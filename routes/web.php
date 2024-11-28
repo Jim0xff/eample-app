@@ -14,8 +14,10 @@ Route::post('/test3', [TestController::class, 'test3']);
 
 Route::post('/uploadImg.json', ['uses' => '\App\Http\Controllers\ImageController@uploadImg']);
 
+/**  Route::post('/user/create.json', [UserController::class, 'createUser'])->middleware([\App\Http\Middleware\BusinessThrottleRequestsMiddleware::class.':60,60,true']); */
 Route::post('/user/create.json', [UserController::class, 'createUser']);
-Route::post('/user/edit.json', ['uses' => '\App\Http\Controllers\UserController@editUser','middleware' => \App\Http\Middleware\ApiToken::class]);
+
+Route::post('/user/edit.json', ['uses' => '\App\Http\Controllers\UserController@editUser'])->middleware([\App\Http\Middleware\ApiToken::class]);
 Route::get('/user/querySingle.json', [UserController::class, 'getUser']);
 Route::post('/user/followUser.json', ['uses' => '\App\Http\Controllers\UserController@followUser','middleware' => \App\Http\Middleware\ApiToken::class]);
 Route::post('/user/cancelFollowUser.json', ['uses' => '\App\Http\Controllers\UserController@cancelFollowUser','middleware' => \App\Http\Middleware\ApiToken::class]);
@@ -35,8 +37,10 @@ Route::post('/comment/create.json', ['uses' => '\App\Http\Controllers\CommentCon
 Route::post('/comment/pageSearchComment.json', ['uses' => '\App\Http\Controllers\CommentController@pageSearchComment']);
 Route::get('/comment/userComment.json', ['uses' => '\App\Http\Controllers\CommentController@userComments']);
 
-Route::post('/comment/clickLike.json',  ['uses' => '\App\Http\Controllers\CommentController@clickLike','middleware' => \App\Http\Middleware\ApiToken::class]);
+Route::post('/comment/clickLike.json',  ['uses' => '\App\Http\Controllers\CommentController@clickLike'])->middleware([\App\Http\Middleware\ApiToken::class]);
 Route::get('/comment/userLikeList.json', ['uses' => '\App\Http\Controllers\CommentController@clickLikeList','middleware' => \App\Http\Middleware\ApiToken::class]);
+
+
 
 
 

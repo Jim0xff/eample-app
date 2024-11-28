@@ -10,7 +10,6 @@
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
         "mll-lab/laravel-graphiql": "^3.2",
-        "mll-lab/laravel-graphql-playground": "^1.1",
         "nuwave/lighthouse": "^6.45",
         "predis/predis": "^2.0",
         "web3p/web3.php": "dev-master"
