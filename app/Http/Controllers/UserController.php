@@ -43,6 +43,9 @@ class UserController extends Controller
        $params = $request->all();
        /** @var $userService UserService */
        $userService =  resolve('user_service');
+       /** @var LoginUser $user */
+       $user = auth()->user();
+       $params['user'] =  $user->address;
        $userService->editUser($params);
        return response()->json(['data' => true, 'code' => 200]);
 
