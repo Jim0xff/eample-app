@@ -161,8 +161,8 @@ class CommentService
                 }
             }
             $clickLikeMap = [];
-            if(!empty($params['userId']) && !empty($totalCommentIds)) {
-                $clickLikeList = ClickLikeRepository::getLikeList(['user'=>$params['userId'], 'commentIds'=>$totalCommentIds]);
+            if(!empty($params['user']) && !empty($totalCommentIds)) {
+                $clickLikeList = ClickLikeRepository::getLikeList(['user'=>$params['user'], 'commentIds'=>$totalCommentIds]);
                 if(!empty($clickLikeList)){
                     foreach ($clickLikeList as $clickLike) {
                         $clickLikeMap[$clickLike->commentId] = $clickLike;
@@ -267,7 +267,7 @@ class CommentService
         if(!empty($userDbModelMap[$commentDbModel->user])) {
             $commentDto->user = $userDbModelMap[$commentDbModel->user];
         }
-        if($commentDbModel->replyUser && $userDbModelMap[$commentDbModel->replyUser]){
+        if($commentDbModel->replyUser && !empty($userDbModelMap[$commentDbModel->replyUser])){
             $commentDto->replyUser = $userDbModelMap[$commentDbModel->replyUser];
         }
         $commentDto->parentCommentId = $commentDbModel->parentCommentId;
