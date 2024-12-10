@@ -19,11 +19,21 @@ use Pump\User\Services\UserService;
 
 class CommentService
 {
-    public function createComment($params): CommentDbModel
+    public function createComment($params): CommentDTO
     {
        return DB::transaction(function () use ($params) {
             $commentDbModel = $this->createParamsToDbModel($params);
-            return CommentRepository::createComment($commentDbModel);
+            $commentDbModel = CommentRepository::createComment($commentDbModel);
+            $userIds = [$commentDbModel->user, $commentDbModel->replyUser];
+            $userInfoMap = [];
+            $userInfo = UserRepository::getUsersByAddressList($userIds);
+            /** @var $userService UserService */
+            $userService = resolve('user_service');
+            $userInfoFormat = $userService->userDBModelsToUserDTOs($userInfo);
+            foreach($userInfoFormat as $user){
+               $userInfoMap[$user->address] = $user;
+            }
+            return $this->commentDbModelToDTO($commentDbModel, $userInfoMap, null);
         });
     }
 
@@ -239,10 +249,10 @@ class CommentService
             $replyModel = CommentRepository::searchComment(['ids'=>[$replyId]]);
             if(!empty($replyModel)){
                 $replyModelSingle = $replyModel[0];
-                $dbModel->replyUser = $replyModelSingle->user;
+                $dbModel->replyUser = strtolower($replyModelSingle->user);
             }
         }
-        $dbModel->user = $params['user'];
+        $dbModel->user = strtolower($params['user']);
         return $dbModel;
     }
 
@@ -250,6 +260,10 @@ class CommentService
         $commentDto = new CommentDTO();
         $commentDto->id = $commentDbModel->id;
         $commentDto->token = $commentDbModel->token;
+        $commentDto->user = strtolower($commentDbModel->user);
+        if(!empty($commentDbModel->replyUser)){
+            $commentDto->replyUser = strtolower($commentDbModel->replyUser);
+        }
         if(!empty($userDbModelMap[$commentDbModel->user])) {
             $commentDto->user = $userDbModelMap[$commentDbModel->user];
         }
