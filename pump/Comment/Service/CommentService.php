@@ -44,6 +44,22 @@ class CommentService
             $existsLikeClick = ClickLikeRepository::getLikeList(['user'=>$params['userId'], 'commentId'=>$commentId]);
             if(empty($existsLikeClick)){
                 $commentDbModel = CommentRepository::lockCommentById($commentId);
+                if($commentDbModel == null){
+                    throw new DomainException("comment not fund!");
+                }
+                if($params['userId'] == $commentDbModel->user){
+                    throw new DomainException("can not like yourself comment!");
+                }
+
+                $clickLikeModel = $this->createLikeParamsToClickLikeComment($params, $commentDbModel);
+                try{
+                    ClickLikeRepository::createClickLike($clickLikeModel);
+                    $commentDbModel->loveCnt = $commentDbModel->loveCnt+1;
+                    CommentRepository::updateComment($commentDbModel);
+                }catch (UniqueConstraintViolationException $e){
+                    Log::info("duplicate_click_like,params = " . json_encode($params));
+                    return;
+                }
                 $commentUser = UserDAOModel::getUserByAddressForLock($commentDbModel->user);
                 $commentUserContent = json_decode($commentUser->content,true);
                 if(empty($commentUserContent['likeCnt'])){
@@ -52,17 +68,6 @@ class CommentService
                 $commentUserContent['likeCnt']++;
                 $commentUser->content = json_encode($commentUserContent);
                 $commentUser->save();
-                if($commentDbModel == null){
-                    throw new DomainException("comment not fund!");
-                }
-                $clickLikeModel = $this->createLikeParamsToClickLikeComment($params, $commentDbModel);
-                try{
-                    ClickLikeRepository::createClickLike($clickLikeModel);
-                    $commentDbModel->loveCnt = $commentDbModel->loveCnt+1;
-                    CommentRepository::updateComment($commentDbModel);
-                }catch (UniqueConstraintViolationException $e){
-                    Log::info("duplicate_click_like,params = " . json_encode($params));
-                }
             }
         });
     }
