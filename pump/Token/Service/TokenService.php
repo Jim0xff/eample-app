@@ -3,7 +3,9 @@
 namespace Pump\Token\Service;
 
 use App\InternalServices\Coingecko\CoingeckoService;
+use App\InternalServices\DomainException;
 use App\InternalServices\GraphService\Service;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Pump\Token\DbModel\TokenDbModel;
 use Pump\Token\Repository\TokenRepository;
@@ -440,6 +442,182 @@ class TokenService
         $result['pagination'] = $pagination;
         $result['items'] = $items;
         return $result;
+    }
+
+    public function getTokenHistory($param)
+    {
+        $t = [];
+        $o = [];
+        $h = [];
+        $l = [];
+        $c = [];
+        $v = [];
+
+        $token = strtolower($param['symbol']);
+        $resolution = $param['resolution'];
+        $from = $param['from'];
+        $to = $param['to'];
+
+        /** @var Service $graphService */
+        $graphService = resolve(Service::class);
+        $whereArray = [];
+        $whereArray[] = "token:\"".$token."\"";
+        $whereArray[] = "createTimestamp_gte:\"".$from."\"";
+        $whereArray[] = "createTimestamp_lte:\"".$to."\"";
+        $whereStr = "{".implode(",", $whereArray)."}";
+        $currentPage = 1;
+        $pageSize = 1000;
+        $orderBy = $params['orderBy']??'createTimestamp';
+        $orderDirection = 'asc';
+        $first = $pageSize;
+        $rt = [];
+
+        do{
+            $skip = ($currentPage - 1) * $pageSize;
+            $graphParams = [
+                "query" => "query MyQuery {
+  transactions(where: $whereStr
+     orderBy: $orderBy
+     orderDirection: $orderDirection
+     first: $first
+     skip: $skip
+  ) {
+    blockNumber
+    createTimestamp
+    id
+    metisAmount
+    token
+    tokenAmount
+    tokenName
+    tokenPrice
+    transactionHash
+    type
+    user
+  }
+}"
+            ];
+            $rtTmp = $graphService->baseQuery($graphParams);
+
+            if(!empty($rtTmp['data']) && !empty($rtTmp['data']['transactions'])){
+                $rt = array_merge($rt, $rtTmp['data']['transactions']);
+            }
+            $currentPage++;
+        }while(!empty($rtTmp['data']) && !empty($rtTmp['data']['transactions']));
+
+        $dateList = $this->getDateList($resolution, $from, $to);
+        $dateListItem = $dateList['dateList'];
+
+        $contentList = [];
+        for($i = 1; $i < count($dateListItem); $i++){
+            $contentList[$dateListItem[$i]] = [];
+        }
+
+        if(!empty($dateListItem) && count($dateListItem) > 1){
+            if(!empty($rt)){
+                foreach($rt as $transaction){
+                    $this->inWhichPeriod($dateListItem, $transaction, $contentList);
+                }
+            }
+
+            foreach ($contentList as $time => $transactions){
+                $oPrice = 0;
+                $hPrice = 0;
+                $lPrice = 0;
+                $cPrice = 0;
+                $amount = 0;
+                if(!empty($transactions)){
+                    $oPrice = $lPrice = $transactions[0]['tokenPrice'];
+                    $cPrice = $transactions[count($transactions) - 1]['tokenPrice'];
+                    foreach($transactions as $transaction){
+                        if($transaction['tokenPrice'] > $hPrice){
+                            $hPrice = $transaction['tokenPrice'];
+                        }
+                        if($transaction['tokenPrice'] < $lPrice){
+                            $lPrice = $transaction['tokenPrice'];
+                        }
+                        $amount += $transaction['tokenAmount']/1000000000000000000;
+                    }
+                    $t[] = $time;
+                    $o[] = $oPrice;
+                    $h[] = $hPrice;
+                    $l[] = $lPrice;
+                    $c[] = $cPrice;
+                    $v[] = $amount;
+                }
+            }
+        }
+
+
+        return [
+            "t" => $t, // 时间戳
+            "o" => $o, // 开盘价
+            "h" => $h, // 最高价
+            "l" => $l, // 最低价
+            "c" => $c, // 收盘价
+            "v" => $v  // 成交量
+        ];
+    }
+
+    private function inWhichPeriod($dates, $transaction, &$contentList)
+    {
+        for($i = 0; $i < count($dates)-1; $i++){
+            $start = $dates[$i];
+            $end = $dates[$i + 1];
+            if($transaction['createTimestamp'] > $start && $transaction['createTimestamp'] <= $end){
+
+                $contentList[$end][] = $transaction;
+            }
+        }
+    }
+
+    private function getDateList($res, $from, $to)
+    {
+        //"1", "5", "30", "60", "1D", "1W", "1M"
+        $dateList = [];
+        $toTmp = $to;
+        switch ($res){
+            case "1":
+                while($toTmp > $from){
+                    array_unshift($dateList, $toTmp);
+                    $toTmp = $toTmp - 1;
+                }
+                array_unshift($dateList, $toTmp);
+                break;
+            case "5":
+                while($toTmp > $from){
+                    array_unshift($dateList, $toTmp);
+                    $toTmp = $toTmp - 5;
+                }
+                array_unshift($dateList, $toTmp);
+                break;
+            case "30":
+                while($toTmp > $from){
+                    array_unshift($dateList, $toTmp);
+                    $toTmp = $toTmp - 30;
+                }
+                array_unshift($dateList, $toTmp);
+                break;
+            case "60":
+                while($toTmp > $from){
+                    array_unshift($dateList, $toTmp);
+                    $toTmp = $toTmp - 60;
+                }
+                array_unshift($dateList, $toTmp);
+                break;
+            case "1D":
+                while($toTmp > $from){
+                    array_unshift($dateList, $toTmp);
+                    $toTmp =  Carbon::createFromTimestamp($toTmp)->subDay()->endOfDay()->timestamp;
+                }
+                array_unshift($dateList, $toTmp);
+                break;
+            default:
+                throw new DomainException("unsupported date range");
+        }
+        return [
+            "dateList" => $dateList,
+            "res" => $res
+        ];
     }
 
     public function createToken($params): TokenDbModel

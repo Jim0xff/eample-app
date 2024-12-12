@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Adapters\LoginUser;
+use App\InternalServices\DomainException;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Pump\Token\Service\TokenService;
 
@@ -33,6 +35,8 @@ class TokenController extends Controller
        }
        return response()->json(['data' => $tokenService->tokenList($params), 'code' => 200]);
    }
+
+
 
    public function userBoughtTokens(Request $request)
    {
@@ -72,4 +76,53 @@ class TokenController extends Controller
        $tokenService = resolve('token_service');
        return response()->json(['data' => $tokenService->tradingList($params), 'code' => 200]);
    }
+
+
+    public function getConfig()
+    {
+        return response()->json([
+            'data'=>[
+                "supports_search" => true,
+                "supports_group_request" => false,
+                "supports_marks" => false,
+                "supports_timescale_marks" => false,
+                "supports_time" => true,
+                "exchanges" => [
+                    ["value" => "", "name" => "All Exchanges", "desc" => ""]
+                ],
+                "symbols_types" => [
+                    ["name" => "All types", "value" => ""]
+                ],
+                "supported_resolutions" => ["1", "5", "15", "30", "60", "1D", "1W", "1M"]
+            ],
+            'code' => 200
+        ]);
+    }
+
+    // 时间接口
+    public function getTime()
+    {
+        return response()->json(['data' => Carbon::now()->timestamp, 'code' => 200]);
+    }
+
+    public function getHistory(Request $request)
+    {
+        $params = $request->all();
+        if(empty($request->get('symbol'))){
+            throw new DomainException("symbol is required");
+        }
+
+        $resolution = $request->get('resolution', '60');
+        $from = $request->get('from', Carbon::now()->subDay()->timestamp);
+        $to = $request->get('to', Carbon::now()->timestamp);
+        $params['resolution'] = $resolution;
+        $params['from'] = $from;
+        $params['to'] = $to;
+        $params['symbol'] = strtolower($request->get('symbol'));
+        /** @var $tokenService TokenService */
+        $tokenService = resolve('token_service');
+        $data = $tokenService->getTokenHistory($params);
+        return response()->json(['data' => $data, 'code' => 200]);
+    }
+
 }

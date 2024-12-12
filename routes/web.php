@@ -11,6 +11,8 @@ Route::get('/', function () {
 Route::get('/test/{id}', [TestController::class, 'test1']);
 Route::get('/test2', [TestController::class, 'test2']);
 Route::post('/test3', [TestController::class, 'test3']);
+Route::get('/test4', [TestController::class, 'test4']);
+
 
 Route::post('/uploadImg.json', ['uses' => '\App\Http\Controllers\ImageController@uploadImg']);
 
@@ -32,6 +34,10 @@ Route::post('/token/tokenList.json', ['uses' => '\App\Http\Controllers\TokenCont
 Route::get('/token/tokenHolders.json', ['uses' => '\App\Http\Controllers\TokenController@tokenHolder']);
 Route::get('/token/tradingList.json', ['uses' => '\App\Http\Controllers\TokenController@tradingList']);
 Route::post('/token/boughtTokenList.json', ['uses' => '\App\Http\Controllers\TokenController@userBoughtTokens']);
+Route::get('/token/history.json', ['uses' => '\App\Http\Controllers\TokenController@getHistory']);
+Route::get('/token/time.json', ['uses' => '\App\Http\Controllers\TokenController@getTime']);
+Route::get('/token/config.json', ['uses' => '\App\Http\Controllers\TokenController@getConfig']);
+
 
 Route::post('/comment/create.json', ['uses' => '\App\Http\Controllers\CommentController@createComment','middleware' => \App\Http\Middleware\ApiToken::class]);
 Route::post('/comment/pageSearchComment.json', ['uses' => '\App\Http\Controllers\CommentController@pageSearchComment']);
