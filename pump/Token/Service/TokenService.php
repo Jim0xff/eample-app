@@ -123,6 +123,9 @@ class TokenService
                      $dbModelTmp = $dbModelsMap[$token['id']];
                      $token = array_merge($token, $dbModelTmp->content);
                 }
+                $fundingGoal = $token['fundingGoal'];
+                $fundingGoal = ceil($fundingGoal/(10 ** 18));
+                $token['fundingGoal'] = $fundingGoal;
                 $totalSupply = $token['totalSupply'];
                 //1000000000000000000000000000
                 $totalSupply = ceil($totalSupply/(10 ** 18));
