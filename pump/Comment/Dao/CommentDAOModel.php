@@ -28,7 +28,7 @@ class CommentDAOModel extends Model
        }else{
            $mdl->limit(100);
        }
-       return $mdl->orderBy('love_cnt', 'desc')->orderBy('id', 'desc')->get();
+       return $mdl->orderBy('love_cnt', 'desc')->orderBy('id', 'asc')->get();
    }
 
     public static function searchCommentCount($params)
@@ -72,6 +72,6 @@ class CommentDAOModel extends Model
         if(isset($params['parentCommentIds'])) {
             $mdl->whereIn('parent_comment_id', $params['parentCommentIds']);
         }
-        return $mdl->orderBy('love_cnt', 'desc')->orderBy('id', 'desc')->paginate($params["perPage"]);
+        return $mdl->orderBy('love_cnt', 'desc')->orderBy('id', 'asc')->paginate($params["perPage"]);
     }
 }
