@@ -448,9 +448,9 @@ class TokenService
                 $single = [];
                 $single['token'] = $transaction['token'];
                 $single['type'] = $transaction['type'];
-                $single['tokenAmount'] = $transaction['tokenAmount'];
+                $single['tokenAmount'] = number_format($transaction['tokenAmount']/(10 ** 18),5);
                 $single['transactionHash'] = $transaction['transactionHash'];
-                $single['currencyAmount'] = $transaction['metisAmount'];
+                $single['currencyAmount'] =  number_format($transaction['metisAmount']/(10 ** 18),5);
                 $single['userAddress'] = $transaction['user'];
                 $single['createTimestamp'] = $transaction['createTimestamp'];
                 if(!empty($userMap[$transaction['user']])){
