@@ -440,6 +440,7 @@ class TokenService
             $userIds = array_unique($userIds);
             $userList = UserRepository::getUsersByAddressList($userIds);
             $userMap = [];
+            $pagination['total'] = count($rt['data']['transactions']);
             foreach($userList as $user){
                 $userMap[$user->address] = $user;
             }
