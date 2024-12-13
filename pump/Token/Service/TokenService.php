@@ -126,6 +126,7 @@ class TokenService
                 $fundingGoal = $token['fundingGoal'];
                 $fundingGoal = ceil($fundingGoal/(10 ** 18));
                 $token['fundingGoal'] = $fundingGoal;
+                $token['collateral'] = ceil($token['collateral']/(10 ** 18));
                 $totalSupply = $token['totalSupply'];
                 //1000000000000000000000000000
                 $totalSupply = ceil($totalSupply/(10 ** 18));
