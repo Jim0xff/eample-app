@@ -12,6 +12,7 @@ use Pump\Comment\Service\CommentService;
 use Pump\Token\DbModel\TokenDbModel;
 use Pump\Token\Repository\TokenRepository;
 use Pump\User\Repository\UserRepository;
+use Pump\User\Services\UserService;
 use Web3\Contract;
 use Web3\Providers\HttpAsyncProvider;
 use Web3\Web3;
@@ -109,6 +110,17 @@ class TokenService
         $result = [];
         $redis = Redis::connection();
         if(!empty($rt['data']) && !empty($rt['data']['tokens'])){
+            $creatorIds = array_column($rt['data']['tokens'], 'creator');
+
+            $userInfo = UserRepository::getUsersByAddressList($creatorIds);
+            /** @var $userService UserService */
+            $userService = resolve('user_service');
+            $userInfoFormat = $userService->userDBModelsToUserDTOs($userInfo);
+            $userInfoMap = [];
+            foreach($userInfoFormat as $user){
+                $userInfoMap[$user->address] = $user;
+            }
+
             $tokensIdsRt = array_column($rt['data']['tokens'], 'id');
             $dbModels = TokenRepository::queryTokens(['addressList'=>$tokensIdsRt]);
             $dbModelsMap = [];
@@ -141,6 +153,9 @@ class TokenService
                 $replyCnt = $redis->get(CommentService::$TOKEN_COMMNET_COUNT . $token['id']);
                 if(empty($replyCnt)){
                     $replyCnt = 0;
+                }
+                if(!empty($userInfoMap[$token['creator']])){
+                    $token['creatorObj'] = $userInfoMap[$token['creator']];
                 }
                 $token['replyCnt'] = $replyCnt;
                 $currencyAddress = $token['currencyAddress'];
