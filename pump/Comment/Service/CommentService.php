@@ -6,6 +6,7 @@ use App\InternalServices\DomainException;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 use Pump\Comment\Dao\CommentDAOModel;
 use Pump\Comment\DbModel\ClickLikeDbModel;
 use Pump\Comment\DbModel\CommentDbModel;
@@ -19,9 +20,12 @@ use Pump\User\Services\UserService;
 
 class CommentService
 {
+    public static  $TOKEN_COMMNET_COUNT = 'token_comment_count_pre_key_';
+
     public function createComment($params): CommentDTO
     {
        return DB::transaction(function () use ($params) {
+            $params['token'] = strtolower($params['token']);
             $commentDbModel = $this->createParamsToDbModel($params);
             $commentDbModel = CommentRepository::createComment($commentDbModel);
             $userIds = [$commentDbModel->user, $commentDbModel->replyUser];
@@ -30,9 +34,17 @@ class CommentService
             /** @var $userService UserService */
             $userService = resolve('user_service');
             $userInfoFormat = $userService->userDBModelsToUserDTOs($userInfo);
+
             foreach($userInfoFormat as $user){
                $userInfoMap[$user->address] = $user;
             }
+            $redis = Redis::connection();
+            $commentCnt = $redis->get(self::$TOKEN_COMMNET_COUNT . $params['token']);
+            if(empty($commentCnt)){
+                $commentCnt = 0;
+            }
+            $commentCnt++;
+            $redis->command('set',[self::$TOKEN_COMMNET_COUNT . $params['token'], $commentCnt]);
             return $this->commentDbModelToDTO($commentDbModel, $userInfoMap, null);
         });
     }
