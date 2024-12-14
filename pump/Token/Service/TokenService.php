@@ -26,7 +26,7 @@ class TokenService
         $innerParams = [
             'tokenIds' => [$params['tokenId']],
         ];
-        $innerRt = $this->tokenList($innerParams);
+        $innerRt = $this->tokenList($innerParams, true);
         if(!empty($innerRt)){
             return $innerRt[0];
         }else{
@@ -47,7 +47,7 @@ class TokenService
         }
     }
 
-    public function tokenList($params)
+    public function tokenList($params, $needBeforePrice = false)
     {
         /** @var Service $graphService */
         $graphService = resolve(Service::class);
@@ -161,6 +161,12 @@ class TokenService
                 $nowPrice = $token['nowPrice'];
                 $nowPrice = $nowPrice/(10 ** 18);
                 $token['nowPrice'] = $nowPrice;
+                if($needBeforePrice){
+                    $beforeTrans = $this->getTokenLatestPrice($token['id']);
+                    if(!empty($beforeTrans)){
+                        $token['beforeTrans'] = $beforeTrans;
+                    }
+                }
                 $totalPrice = $nowPrice * $totalSupply;
                 $token['totalPrice'] = ceil($totalPrice);
                 $replyCnt = $redis->get(CommentService::$TOKEN_COMMNET_COUNT . $token['id']);
@@ -171,6 +177,7 @@ class TokenService
                     $token['creatorObj'] = $userInfoMap[$token['creator']];
                 }
                 $token['replyCnt'] = $replyCnt;
+                $token['fundingGoal'] = config('biz.fundingGoalMetis');
                 $currencyAddress = $token['currencyAddress'];
                 $currencyAddress = strtolower($currencyAddress);
                 $currencyCode = $currencyCodeList[$currencyAddress]??'';
@@ -486,6 +493,48 @@ class TokenService
         $result['pagination'] = $pagination;
         $result['items'] = $items;
         return $result;
+    }
+
+    public function getTokenLatestPrice($token)
+    {
+        $to = Carbon::now()->subHour()->timestamp;
+        /** @var Service $graphService */
+        $graphService = resolve(Service::class);
+        $whereArray = [];
+        $whereArray[] = "token:\"".$token."\"";
+        $whereArray[] = "createTimestamp_lte:\"".$to."\"";
+        $whereStr = "{".implode(",", $whereArray)."}";
+        $orderBy = $params['orderBy']??'createTimestamp';
+        $orderDirection = 'desc';
+        $first = 1;
+        $graphParams = [
+            "query" => "query MyQuery {
+  transactions(where: $whereStr
+     orderBy: $orderBy
+     orderDirection: $orderDirection
+     first: $first
+  ) {
+    blockNumber
+    createTimestamp
+    id
+    metisAmount
+    token
+    tokenAmount
+    tokenName
+    tokenPrice
+    transactionHash
+    type
+    user
+  }
+}"
+        ];
+        $rt = $graphService->baseQuery($graphParams);
+        if(!empty($rt['data']) && !empty($rt['data']['transactions'])){
+            $trans = $rt['data']['transactions'][0];
+            $trans['tokenPrice'] = $trans['tokenPrice']/(10 ** 18);
+            return $trans;
+        }
+        return null;
     }
 
     public function getTokenHistory($param)
