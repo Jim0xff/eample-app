@@ -194,8 +194,10 @@ class TokenService
                         if(!empty($currencyInfo) && !empty($currencyInfo[$currencyCode]['usd'])){
                             $pairAddress = strtolower($token['pairAddress']);
                             $relativePrice = $this->getPriceByNetSwap($pairAddress, $token['currencyAddress']);
-                            $token['totalPriceUsd'] = $currencyPrice * $relativePrice;
-                            $token['totalPrice'] = $relativePrice;
+                            $currencyPrice = $currencyInfo[$currencyCode]['usd'];
+                            $token['nowPrice'] = $currencyPrice * $relativePrice;
+                            $token['totalPrice'] = $token['nowPrice'] * $totalSupply;
+                            $token['totalPriceUsd'] = $currencyPrice * $token['totalPrice'];
                         }
                     }
 
@@ -327,7 +329,7 @@ class TokenService
                 $memeToken = $token0Result[0];
                 $memeTokenAmount = $functionResult['_reserve0']->toString();
             }
-            $relativePrice = number_format($currencyAmount/$memeTokenAmount,5);
+            $relativePrice = number_format($currencyAmount/$memeTokenAmount,10);
             return $relativePrice;
         }
         return 0;
