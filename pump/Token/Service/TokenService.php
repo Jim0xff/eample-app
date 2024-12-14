@@ -34,6 +34,19 @@ class TokenService
         }
     }
 
+    public function topOfTheMoon($param)
+    {
+        $innerParams = [
+            'tokenIds' => config("biz.topOfTheMoonTokens"),
+        ];
+        $innerRt = $this->tokenList($innerParams);
+        if(!empty($innerRt)){
+            return $innerRt[0];
+        }else{
+            return null;
+        }
+    }
+
     public function tokenList($params)
     {
         /** @var Service $graphService */
@@ -396,6 +409,13 @@ class TokenService
             $params['token'] = strtolower($params['token']);
             $whereArray[] = "token:\"".$params['token']."\"";
         }
+        if(!empty($params['user'])){
+            $params['user'] = strtolower($params['user']);
+            $whereArray[] = "user:\"".$params['user']."\"";
+        }
+        if(!empty($params['type'])){
+            $whereArray[] = "type:\"".$params['type']."\"";
+        }
         if(!empty($whereArray)){
             $whereStr = "{".implode(",", $whereArray)."}";
         }else{
@@ -448,9 +468,9 @@ class TokenService
                 $single = [];
                 $single['token'] = $transaction['token'];
                 $single['type'] = $transaction['type'];
-                $single['tokenAmount'] = number_format($transaction['tokenAmount']/(10 ** 18),5);
+                $single['tokenAmount'] = number_format($transaction['tokenAmount']/(10 ** 18),1);
                 $single['transactionHash'] = $transaction['transactionHash'];
-                $single['currencyAmount'] =  number_format($transaction['metisAmount']/(10 ** 18),5);
+                $single['currencyAmount'] =  number_format($transaction['metisAmount']/(10 ** 18),4);
                 $single['userAddress'] = $transaction['user'];
                 $single['createTimestamp'] = $transaction['createTimestamp'];
                 if(!empty($userMap[$transaction['user']])){

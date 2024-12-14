@@ -61,6 +61,19 @@ class TokenController extends Controller
        return response()->json(['data' => $tokenService->tokenDetail($params), 'code' => 200]);
    }
 
+   public function topOfTheMoon(Request $request)
+   {
+       $params = $request->all();
+       /** @var $tokenService TokenService */
+       $tokenService = resolve('token_service');
+       /** @var LoginUser $user */
+       $user = auth()->user();
+       if(!empty($user)){
+           $params['userId'] = $user->address;
+       }
+       return response()->json(['data' => $tokenService->topOfTheMoon($params), 'code' => 200]);
+   }
+
    public function tokenHolder(Request $request)
    {
        $params = $request->all();
