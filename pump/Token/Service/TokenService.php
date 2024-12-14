@@ -395,6 +395,7 @@ class TokenService
                     $single['userName'] = $userMap[$balance['user']]->nickName;
                 }else{
                     $single['userName'] = 'bondingCurve';
+                    $single['type'] = 'bondingCurve';
                 }
                 //799999992827630470754520845
                 $amount = $balance['tokenAmount']/1000000000000000000;
