@@ -36,8 +36,10 @@ class TokenService
 
     public function topOfTheMoon($param)
     {
+        $tokenIds = config("biz.topOfTheMoonTokens");
+        $randomKey = array_rand($tokenIds);
         $innerParams = [
-            'tokenIds' => config("biz.topOfTheMoonTokens"),
+            'tokenIds' => [$tokenIds[$randomKey]],
         ];
         $innerRt = $this->tokenList($innerParams);
         if(!empty($innerRt)){
@@ -347,7 +349,7 @@ class TokenService
         $whereContent = [];
         $whereArray = [];
         if(empty($params['tokenAmountGt'])){
-            $params['tokenAmountGt'] = 1000;
+            $params['tokenAmountGt'] =   number_format(10000 * (10 ** 18),0,'.','');
         }
         if(!empty($params['token'])){
             $params['token'] = strtolower($params['token']);
