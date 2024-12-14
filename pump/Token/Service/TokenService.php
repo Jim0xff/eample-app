@@ -161,7 +161,7 @@ class TokenService
                 $nowPrice = $token['nowPrice'];
                 $nowPrice = $nowPrice/(10 ** 18);
                 $token['nowPrice'] = $nowPrice;
-                if($needBeforePrice){
+                if($needBeforePrice && $token['status'] != 'TRADING'){
                     $beforeTrans = $this->getTokenLatestPrice($token['id']);
                     if(!empty($beforeTrans)){
                         $token['beforeTrans'] = $beforeTrans;
@@ -178,6 +178,9 @@ class TokenService
                 }
                 $token['replyCnt'] = $replyCnt;
                 $token['fundingGoal'] = config('biz.fundingGoalMetis');
+                if($token['status'] == 'TRADING'){
+                    $token['collateral'] = $token['fundingGoal'];
+                }
                 $currencyAddress = $token['currencyAddress'];
                 $currencyAddress = strtolower($currencyAddress);
                 $currencyCode = $currencyCodeList[$currencyAddress]??'';
