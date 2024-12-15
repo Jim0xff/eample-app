@@ -336,9 +336,6 @@ class TokenService
                 $memeToken = $token0Result[0];
                 $memeTokenAmount = $functionResult['_reserve0']->toString();
             }
-            print_r($memeTokenAmount);
-            print_r(PHP_EOL);
-            print_r($currencyAmount);
             $relativePrice = number_format($currencyAmount/$memeTokenAmount,20);
             return $relativePrice;
         }
