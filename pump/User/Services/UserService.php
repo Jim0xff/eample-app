@@ -66,11 +66,16 @@ class UserService
         }
         $userDTO = $this->userDBModelToUserDTO($userList[0]);
         if($loginUserAddress){
+            print_r($loginUserAddress);
+            print_r(PHP_EOL);
+            print_r($userAddress);
             $followersPageData = UserFollowDAOModel::getFollowers([
                 "follower" => $loginUserAddress,
                 "followed" => $userAddress,
                 "statusList" => ["ACTIVE"],
             ]);
+            print_r(PHP_EOL);
+            print_r($followersPageData);
             if(!empty($followersPageData)){
                 $userDTO->followed = true;
             }
