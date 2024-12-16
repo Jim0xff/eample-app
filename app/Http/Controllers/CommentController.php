@@ -39,6 +39,7 @@ class CommentController extends Controller
         $params = $request->all();
         /** @var LoginUser $user */
         $user = auth()->user();
+        $params['user'] = $user->address;
         /** @var CommentService $commentService */
         $commentService = resolve("comment_service");
         $data = $commentService->userComments($params);

@@ -216,6 +216,7 @@ class CommentService
         $pageResult['items'] = [];
         if(!empty($commentPageData['items'])) {
             $userIds = [];
+            $userIds[] = $params['user'];
             foreach ($commentPageData['items'] as $comment) {
                 $userIds[] = $comment->user;
                 $totalCommentIds[] = $comment->id;
