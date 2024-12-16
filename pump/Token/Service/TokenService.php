@@ -404,10 +404,10 @@ class TokenService
                     $single['userName'] = $userMap[$balance['user']]->nickName;
                     $single['userImg'] = $userMap[$balance['user']]->headImgUrl;
                 }else{
-                    if($balance['user'] == env('BOUNDING_CURVE_ADDRESS')){
+                    if($balance['user'] == env('BOUNDING_CURVE_ADDRESS', '0xe8385f3115f2aa17b1AB5B54508a41b834f7787b')){
                         $single['userName'] = 'boundingCurve';
                         $single['type'] = 'boundingCurve';
-                    }else if($balance['user'] == env('LP_MANAGER_ADDRESS')){
+                    }else if($balance['user'] == env('LP_MANAGER_ADDRESS', '0xb673B8a4c24B450c391E7756E2FbF62DF436B630')){
                         $single['userName'] = 'lpManager';
                         $single['type'] = 'lpManager';
                     }else{
