@@ -301,7 +301,7 @@ class TokenService
     {
         $abiObj = config("abi.NetswapPair");
 
-        $web3 = new Web3(new HttpAsyncProvider('https://sepolia.metisdevops.link'),30);
+        $web3 = new Web3(new HttpAsyncProvider(env('METIS_RPC_URL','https://sepolia.metisdevops.link')),30);
 
         $contract = new Contract($web3->provider, $abiObj);
         $tokenPrice = 0;
@@ -403,8 +403,17 @@ class TokenService
                 if(!empty($userMap[$balance['user']])){
                     $single['userName'] = $userMap[$balance['user']]->nickName;
                 }else{
-                    $single['userName'] = 'bondingCurve';
-                    $single['type'] = 'bondingCurve';
+                    if($balance['user'] == env('BOUNDING_CURVE_ADDRESS')){
+                        $single['userName'] = 'boundingCurve';
+                        $single['type'] = 'boundingCurve';
+                    }else if($balance['user'] == env('LP_MANAGER_ADDRESS')){
+                        $single['userName'] = 'lpManager';
+                        $single['type'] = 'lpManager';
+                    }else{
+                        $single['userName'] = 'netLP';
+                        $single['type'] = 'netLP';
+                    }
+
                 }
                 //799999992827630470754520845
                 $amount = $balance['tokenAmount']/1000000000000000000;
