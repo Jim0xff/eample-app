@@ -402,6 +402,7 @@ class TokenService
                 $single['userAddress'] = $balance['user'];
                 if(!empty($userMap[$balance['user']])){
                     $single['userName'] = $userMap[$balance['user']]->nickName;
+                    $single['userImg'] = $userMap[$balance['user']]->headImgUrl;
                 }else{
                     if($balance['user'] == env('BOUNDING_CURVE_ADDRESS')){
                         $single['userName'] = 'boundingCurve';
