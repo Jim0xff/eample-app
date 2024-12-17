@@ -36,9 +36,9 @@ Route::post('/token/tokenList.json', ['uses' => '\App\Http\Controllers\TokenCont
 Route::get('/token/tokenHolders.json', ['uses' => '\App\Http\Controllers\TokenController@tokenHolder']);
 Route::get('/token/tradingList.json', ['uses' => '\App\Http\Controllers\TokenController@tradingList']);
 Route::post('/token/boughtTokenList.json', ['uses' => '\App\Http\Controllers\TokenController@userBoughtTokens']);
-Route::get('/history', ['uses' => '\App\Http\Controllers\TokenController@getHistory']);
-Route::get('/time', ['uses' => '\App\Http\Controllers\TokenController@getTime']);
-Route::get('/config', ['uses' => '\App\Http\Controllers\TokenController@getConfig']);
+Route::get('/history.json', ['uses' => '\App\Http\Controllers\TokenController@getHistory']);
+Route::get('/time.json', ['uses' => '\App\Http\Controllers\TokenController@getTime']);
+Route::get('/config.json', ['uses' => '\App\Http\Controllers\TokenController@getConfig']);
 
 
 Route::post('/comment/create.json', ['uses' => '\App\Http\Controllers\CommentController@createComment','middleware' => \App\Http\Middleware\ApiToken::class]);

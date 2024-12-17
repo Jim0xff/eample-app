@@ -93,7 +93,8 @@ class TokenController extends Controller
 
     public function getConfig()
     {
-        return response()->json([
+        return response()->json(['data'=>
+            [
                 "supports_search" => true,
                 "supports_group_request" => false,
                 "supports_marks" => false,
@@ -106,7 +107,9 @@ class TokenController extends Controller
                     ["name" => "All types", "value" => ""]
                 ],
                 "supported_resolutions" => ["1", "5", "15", "30", "60", "1D", "1W", "1M"]
-            ]);
+            ],
+            'code' => 200
+        ]);
     }
 
     // 时间接口
@@ -132,7 +135,7 @@ class TokenController extends Controller
         /** @var $tokenService TokenService */
         $tokenService = resolve('token_service');
         $data = $tokenService->getTokenHistory($params);
-        return response()->json($data);
+        return response()->json(['data'=>$data, 'code' => 200]);
     }
 
 }
