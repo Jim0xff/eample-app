@@ -138,4 +138,47 @@ class TokenController extends Controller
         return response()->json(['data'=>$data, 'code' => 200]);
     }
 
+    public function getHistoryMock(Request $request)
+    {
+        $symbol = $request->get('symbol', 'BTC/USDT');
+        $resolution = $request->get('resolution', '1D');
+        $from = $request->get('from', Carbon::now()->subMonths(4)->timestamp);
+        $to = $request->get('to', Carbon::now()->timestamp);
+
+        // 模拟历史数据
+        $data = [
+            "t" => [], // 时间戳
+            "o" => [], // 开盘价
+            "h" => [], // 最高价
+            "l" => [], // 最低价
+            "c" => [], // 收盘价
+            "v" => []  // 成交量
+        ];
+
+        for ($i = $from; $i <= $to; $i += 86400) { // 每日一根K线
+            $open = rand(30000, 40000);
+            $high = $open + rand(0, 1000);
+            $low = $open - rand(0, 1000);
+            $close = rand($low, $high);
+            $volume = rand(100, 1000);
+
+            $data["t"][] = $i;
+            $data["o"][] = $open;
+            $data["h"][] = $high;
+            $data["l"][] = $low;
+            $data["c"][] = $close;
+            $data["v"][] = $volume;
+        }
+
+        return response()->json(['data'=>[
+            "s" => "ok", // 状态
+            "t" => $data["t"],
+            "o" => $data["o"],
+            "h" => $data["h"],
+            "l" => $data["l"],
+            "c" => $data["c"],
+            "v" => $data["v"]
+        ], "code" => 200]);
+    }
+
 }

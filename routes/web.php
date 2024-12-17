@@ -37,6 +37,7 @@ Route::get('/token/tokenHolders.json', ['uses' => '\App\Http\Controllers\TokenCo
 Route::get('/token/tradingList.json', ['uses' => '\App\Http\Controllers\TokenController@tradingList']);
 Route::post('/token/boughtTokenList.json', ['uses' => '\App\Http\Controllers\TokenController@userBoughtTokens']);
 Route::get('/token/history.json', ['uses' => '\App\Http\Controllers\TokenController@getHistory']);
+Route::get('/token/historyMock.json', ['uses' => '\App\Http\Controllers\TokenController@getHistoryMock']);
 Route::get('/time.json', ['uses' => '\App\Http\Controllers\TokenController@getTime']);
 Route::get('/token/config.json', ['uses' => '\App\Http\Controllers\TokenController@getConfig']);
 
