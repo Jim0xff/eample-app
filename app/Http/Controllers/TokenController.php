@@ -167,6 +167,7 @@ class TokenController extends Controller
                 break;
             case '7D':
                 $timeAdd = 86400*7;
+                break;
             default:
                 $timeAdd = 86400;
         }
