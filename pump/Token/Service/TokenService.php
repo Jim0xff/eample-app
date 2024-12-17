@@ -640,14 +640,15 @@ class TokenService
                 $cPrice = 0;
                 $amount = 0;
                 if(!empty($transactions)){
-                    $oPrice = $lPrice = $transactions[0]['tokenPrice'];
-                    $cPrice = $transactions[count($transactions) - 1]['tokenPrice'];
+                    $oPrice = $lPrice = $transactions[0]['tokenPrice']/(10**18);
+                    $cPrice = $transactions[count($transactions) - 1]['tokenPrice']/(10**18);
                     foreach($transactions as $transaction){
-                        if($transaction['tokenPrice'] > $hPrice){
-                            $hPrice = $transaction['tokenPrice'];
+                        $price = $transaction['tokenPrice']/(10**18);
+                        if($price > $hPrice){
+                            $hPrice = $price;
                         }
-                        if($transaction['tokenPrice'] < $lPrice){
-                            $lPrice = $transaction['tokenPrice'];
+                        if($price < $lPrice){
+                            $lPrice = $price;
                         }
                         $amount += $transaction['tokenAmount']/1000000000000000000;
                     }
