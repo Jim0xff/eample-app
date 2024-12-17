@@ -154,8 +154,23 @@ class TokenController extends Controller
             "c" => [], // 收盘价
             "v" => []  // 成交量
         ];
-
-        for ($i = $from; $i <= $to; $i += 86400) { // 每日一根K线
+        $timeAdd = 0;
+        switch ($resolution) {
+            case '1':
+                $timeAdd = 60;
+                break;
+            case '30':
+                $timeAdd = 1800;
+                break;
+            case '60':
+                $timeAdd = 3600;
+                break;
+            case '7D':
+                $timeAdd = 86400*7;
+            default:
+                $timeAdd = 86400;
+        }
+        for ($i = $from; $i <= $to; $i += $timeAdd) { // 每日一根K线
             $open = rand(30000, 40000);
             $high = $open + rand(0, 1000);
             $low = $open - rand(0, 1000);
