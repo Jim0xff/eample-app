@@ -6,6 +6,7 @@ use App\Adapters\LoginUser;
 use App\InternalServices\DomainException;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Pump\Token\Service\TokenService;
 
 class TokenController extends Controller
@@ -120,6 +121,7 @@ class TokenController extends Controller
 
     public function getHistory(Request $request)
     {
+        $now = microtime(true);
         $params = $request->all();
         if(empty($request->get('symbol'))){
             throw new DomainException("symbol is required");
@@ -136,6 +138,7 @@ class TokenController extends Controller
         /** @var $tokenService TokenService */
         $tokenService = resolve('token_service');
         $data = $tokenService->getTokenHistory($params);
+        Log::info("getHistory.json cost time:" . (microtime(true) - $now) * 1000);
         return response()->json(['data'=>$data, 'code' => 200]);
     }
 
