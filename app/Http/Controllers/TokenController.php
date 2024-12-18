@@ -128,6 +128,7 @@ class TokenController extends Controller
         $resolution = $request->get('resolution', '60');
         $from = $request->get('from', Carbon::now()->subDay()->timestamp);
         $to = $request->get('to', Carbon::now()->timestamp);
+        $this->getFromToByResolution($resolution, $to, $from);
         $params['resolution'] = $resolution;
         $params['from'] = $from;
         $params['to'] = $to;
@@ -136,6 +137,27 @@ class TokenController extends Controller
         $tokenService = resolve('token_service');
         $data = $tokenService->getTokenHistory($params);
         return response()->json(['data'=>$data, 'code' => 200]);
+    }
+
+    private function getFromToByResolution($resolution, $to, &$from)
+    {
+        switch ($resolution){
+            case "1":
+                $from = Carbon::createFromTimestamp($to)->subHours(1);
+                break;
+            case "5":
+                $from = Carbon::createFromTimestamp($to)->subHours(4);
+                break;
+            case "30":
+                $from = Carbon::createFromTimestamp($to)->subHours(24);
+                break;
+            case "60":
+                $from = Carbon::createFromTimestamp($to)->subHours(24 * 7);
+                break;
+            case "1D":
+                $from = Carbon::createFromTimestamp($to)->subMonths(6);
+                break;
+        }
     }
 
     public function getHistoryMock(Request $request)

@@ -406,8 +406,8 @@ class TokenService
                     $single['type'] = 'user';
                 }else{
                     if(strtolower($balance['user']) == strtolower(env('BOUNDING_CURVE_ADDRESS', '0xe8385f3115f2aa17b1AB5B54508a41b834f7787b'))){
-                        $single['userName'] = 'boundingCurve';
-                        $single['type'] = 'boundingCurve';
+                        $single['userName'] = 'bondingCurve';
+                        $single['type'] = 'bondingCurve';
                     }else if(strtolower($balance['user']) == strtolower(env('LP_MANAGER_ADDRESS', '0xb673B8a4c24B450c391E7756E2FbF62DF436B630'))){
                         $single['userName'] = 'lpManager';
                         $single['type'] = 'lpManager';
@@ -628,7 +628,7 @@ class TokenService
 
         if(!empty($dateListItem) && count($dateListItem) > 1){
             if(!empty($rt)){
-                foreach($rt as $transaction){
+                foreach($rt as &$transaction){
                     $this->inWhichPeriod($dateListItem, $transaction, $contentList);
                 }
             }
@@ -640,6 +640,7 @@ class TokenService
                 $cPrice = 0;
                 $amount = 0;
                 if(!empty($transactions)){
+
                     $oPrice = $lPrice = $transactions[0]['tokenPrice']/(10**18);
                     $cPrice = $transactions[count($transactions) - 1]['tokenPrice']/(10**18);
                     foreach($transactions as $transaction){
@@ -723,6 +724,13 @@ class TokenService
                 while($toTmp > $from){
                     array_unshift($dateList, $toTmp);
                     $toTmp =  Carbon::createFromTimestamp($toTmp)->subDay()->endOfDay()->timestamp;
+                }
+                array_unshift($dateList, $toTmp);
+                break;
+            case "1W":
+                while($toTmp > $from){
+                    array_unshift($dateList, $toTmp);
+                    $toTmp =  Carbon::createFromTimestamp($toTmp)->subDays(7)->endOfDay()->timestamp;
                 }
                 array_unshift($dateList, $toTmp);
                 break;
