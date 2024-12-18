@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Pump\Token\Service\TokenService;
+use Pump\Utils\LogUtils;
 
 class TokenController extends Controller
 {
@@ -121,25 +122,24 @@ class TokenController extends Controller
 
     public function getHistory(Request $request)
     {
-        $now = microtime(true);
-        $params = $request->all();
-        if(empty($request->get('symbol'))){
-            throw new DomainException("symbol is required");
-        }
-
-        $resolution = $request->get('resolution', '60');
-        $from = $request->get('from', Carbon::now()->subDay()->timestamp);
-        $to = $request->get('to', Carbon::now()->timestamp);
-        $this->getFromToByResolution($resolution, $to, $from);
-        $params['resolution'] = $resolution;
-        $params['from'] = $from;
-        $params['to'] = $to;
-        $params['symbol'] = strtolower($request->get('symbol'));
-        /** @var $tokenService TokenService */
-        $tokenService = resolve('token_service');
-        $data = $tokenService->getTokenHistory($params);
-        Log::info("getHistory.json cost time:" . (microtime(true) - $now) * 1000);
-        return response()->json(['data'=>$data, 'code' => 200]);
+        return LogUtils::process($request, function () use ($request) {
+            if(empty($request->get('symbol'))){
+                throw new DomainException("symbol is required");
+            }
+            $params = $request->all();
+            $resolution = $request->get('resolution', '60');
+            $from = $request->get('from', Carbon::now()->subDay()->timestamp);
+            $to = $request->get('to', Carbon::now()->timestamp);
+            $this->getFromToByResolution($resolution, $to, $from);
+            $params['resolution'] = $resolution;
+            $params['from'] = $from;
+            $params['to'] = $to;
+            $params['symbol'] = strtolower($request->get('symbol'));
+            /** @var $tokenService TokenService */
+            $tokenService = resolve('token_service');
+            $data = $tokenService->getTokenHistory($params);
+            return response()->json(['data'=>$data, 'code' => 200]);
+        }) ;
     }
 
     private function getFromToByResolution($resolution, $to, &$from)
