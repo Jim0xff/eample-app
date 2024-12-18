@@ -49,6 +49,19 @@ class TokenService
         }
     }
 
+    private function isTopOfTheMoon($tokenId)
+    {
+        $tokenId = strtolower($tokenId);
+        $tokenIds = config("biz.topOfTheMoonTokens");
+        foreach($tokenIds as $idSingle){
+            $idSingle = strtolower($idSingle);
+            if($tokenId == $idSingle){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public function tokenList($params, $needBeforePrice = false)
     {
         /** @var Service $graphService */
@@ -171,6 +184,7 @@ class TokenService
                 }
                 $totalPrice = $nowPrice * $totalSupply;
                 $token['totalPrice'] = number_format($totalPrice,10);
+                $token['topOfTheMoon'] = $this->isTopOfTheMoon($token['id']);
                 $replyCnt = $redis->get(CommentService::$TOKEN_COMMNET_COUNT . $token['id']);
                 if(empty($replyCnt)){
                     $replyCnt = 0;
@@ -663,8 +677,7 @@ class TokenService
             }
         }
 
-
-        return [
+        $result = [
             "t" => $t, // 时间戳
             "o" => $o, // 开盘价
             "h" => $h, // 最高价
@@ -672,6 +685,13 @@ class TokenService
             "c" => $c, // 收盘价
             "v" => $v  // 成交量
         ];
+
+        return $result;
+    }
+
+    private function cacheHistory($result, $resolution)
+    {
+
     }
 
     private function inWhichPeriod($dates, $transaction, &$contentList)
