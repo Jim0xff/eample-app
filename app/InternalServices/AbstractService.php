@@ -3,6 +3,8 @@
 namespace App\InternalServices;
 
 
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use Mockery\Exception\RuntimeException;
 
 abstract class AbstractService
@@ -112,7 +114,10 @@ abstract class AbstractService
      */
     public function getData($uri, array $params = [])
     {
-        return $this->requestAndParse('GET', $uri, ['query' => $params]);
+        Log::info("http get,uri:".$uri." params:".json_encode($params)." startTime:" . Carbon::now()->format("Y-m-d H:i:s"));
+        $rt = $this->requestAndParse('GET', $uri, ['query' => $params]);
+        Log::info("http get, endTime:" . Carbon::now()->format("Y-m-d H:i:s"));
+        return $rt;
     }
 
     /**
@@ -123,11 +128,14 @@ abstract class AbstractService
      */
     public function postData($uri, $params = [], $prefix = null)
     {
+        Log::info("http post,uri:".$uri." params:".json_encode($params)." startTime:" . Carbon::now()->format("Y-m-d H:i:s"));
         $key = is_array($params) ? 'json' : 'body';
 
         if ($prefix) $key = $prefix;
 
-        return $this->requestAndParse('POST', $uri, [$key => $params]);
+        $rt = $this->requestAndParse('POST', $uri, [$key => $params]);
+        Log::info("http post, endTime:" . Carbon::now()->format("Y-m-d H:i:s"));
+        return $rt;
     }
 
     /**
