@@ -143,25 +143,25 @@ class TokenController extends Controller
     {
         switch ($resolution){
             case "1":
-                $from = Carbon::createFromTimestamp($to)->subHours(1);
+                $from = Carbon::createFromTimestamp($to)->subHours(1)->timestamp;
                 break;
             case "5":
-                $from = Carbon::createFromTimestamp($to)->subHours(4);
+                $from = Carbon::createFromTimestamp($to)->subHours(4)->timestamp;
                 break;
             case "30":
-                $from = Carbon::createFromTimestamp($to)->subHours(24);
+                $from = Carbon::createFromTimestamp($to)->subHours(24)->timestamp;
                 break;
             case "60":
-                $from = Carbon::createFromTimestamp($to)->subHours(24 * 7);
+                $from = Carbon::createFromTimestamp($to)->subHours(24 * 7)->timestamp;
                 break;
             case "30M":
-                $from = Carbon::createFromTimestamp($to)->subDays(2);
+                $from = Carbon::createFromTimestamp($to)->subDays(2)->timestamp;
                 break;
             case "1H":
-                $from = Carbon::createFromTimestamp($to)->subDays(7);
+                $from = Carbon::createFromTimestamp($to)->subDays(7)->timestamp;
                 break;
             case "1D":
-                $from = Carbon::createFromTimestamp($to)->subMonths(6);
+                $from = Carbon::createFromTimestamp($to)->subMonths(6)->timestamp;
                 break;
         }
     }
