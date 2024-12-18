@@ -114,9 +114,9 @@ abstract class AbstractService
      */
     public function getData($uri, array $params = [])
     {
-        Log::info("http get,uri:".$uri." params:".json_encode($params)." startTime:" . Carbon::now()->format("Y-m-d H:i:s"));
+        $startTime = microtime();
         $rt = $this->requestAndParse('GET', $uri, ['query' => $params]);
-        Log::info("http get, endTime:" . Carbon::now()->format("Y-m-d H:i:s"));
+        Log::info("http get,uri:".$uri." params:".json_encode($params)." duration:" . (microtime() - $startTime)*1000);
         return $rt;
     }
 
@@ -128,13 +128,13 @@ abstract class AbstractService
      */
     public function postData($uri, $params = [], $prefix = null)
     {
-        Log::info("http post,uri:".$uri." params:".json_encode($params)." startTime:" . Carbon::now()->format("Y-m-d H:i:s"));
+        $startTime = microtime();
         $key = is_array($params) ? 'json' : 'body';
 
         if ($prefix) $key = $prefix;
 
         $rt = $this->requestAndParse('POST', $uri, [$key => $params]);
-        Log::info("http post, endTime:" . Carbon::now()->format("Y-m-d H:i:s"));
+        Log::info("http post,uri:".$uri." params:".json_encode($params)." duration:" . (microtime() - $startTime)*1000);
         return $rt;
     }
 
