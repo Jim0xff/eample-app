@@ -116,7 +116,7 @@ abstract class AbstractService
     {
         $startTime = microtime(true);
         $rt = $this->requestAndParse('GET', $uri, ['query' => $params]);
-        //Log::info("http get,uri:".$uri." params:".json_encode($params)." duration:" . (microtime() - $startTime)*1000);
+        Log::info("http get,uri:".$uri." params:".json_encode($params)." duration:" . (microtime(true) - $startTime)*1000);
         return $rt;
     }
 
@@ -134,7 +134,7 @@ abstract class AbstractService
         if ($prefix) $key = $prefix;
 
         $rt = $this->requestAndParse('POST', $uri, [$key => $params]);
-        //Log::info("http post,uri:".$uri." params:".json_encode($params)." duration:" . (microtime() - $startTime)*1000);
+        Log::info("http post,uri:".$uri." params:".json_encode($params)." duration:" . (microtime(true) - $startTime)*1000);
         return $rt;
     }
 
