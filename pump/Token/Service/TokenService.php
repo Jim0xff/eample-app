@@ -720,6 +720,20 @@ class TokenService
                 }
                 array_unshift($dateList, $toTmp);
                 break;
+            case "30M":
+                while($toTmp > $from){
+                    array_unshift($dateList, $toTmp);
+                    $toTmp = $toTmp - 60*30;
+                }
+                array_unshift($dateList, $toTmp);
+                break;
+            case "1H":
+                while($toTmp > $from){
+                    array_unshift($dateList, $toTmp);
+                    $toTmp = $toTmp - 60*60;
+                }
+                array_unshift($dateList, $toTmp);
+                break;
             case "1D":
                 while($toTmp > $from){
                     array_unshift($dateList, $toTmp);

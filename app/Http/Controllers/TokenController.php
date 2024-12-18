@@ -154,6 +154,12 @@ class TokenController extends Controller
             case "60":
                 $from = Carbon::createFromTimestamp($to)->subHours(24 * 7);
                 break;
+            case "30M":
+                $from = Carbon::createFromTimestamp($to)->subDays(2);
+                break;
+            case "1H":
+                $from = Carbon::createFromTimestamp($to)->subDays(7);
+                break;
             case "1D":
                 $from = Carbon::createFromTimestamp($to)->subMonths(6);
                 break;
