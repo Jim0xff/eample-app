@@ -7,6 +7,7 @@ use App\InternalServices\DomainException;
 use App\InternalServices\GraphService\Service;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use Pump\Comment\Service\CommentService;
 use Pump\Token\DbModel\TokenDbModel;
@@ -693,7 +694,7 @@ class TokenService
         $orderDirection = 'asc';
         $first = $pageSize;
         $rt = [];
-
+        Log::info("gpppgp:$canUseCache,$needFill");
         do{
             $skip = ($currentPage - 1) * $pageSize;
             $graphParams = [
