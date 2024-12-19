@@ -801,12 +801,12 @@ class TokenService
 
             $result = [
                 "s" => "ok",
-                "t" => !empty($cacheRt['t'])?array_merge($t,$cacheRt['t']):$t, // 时间戳
-                "o" => !empty($cacheRt['o'])?array_merge($o,$cacheRt['o']):$o, // 开盘价
-                "h" => !empty($cacheRt['h'])?array_merge($h,$cacheRt['h']):$h, // 最高价
-                "l" => !empty($cacheRt['l'])?array_merge($l,$cacheRt['l']):$l, // 最低价
-                "c" => !empty($cacheRt['c'])?array_merge($c,$cacheRt['c']):$c, // 收盘价
-                "v" => !empty($cacheRt['v'])?array_merge($v,$cacheRt['v']):$v,  // 成交量
+                "t" => !empty($cacheRt['t'])?array_merge($cacheRt['t'],$t):$t, // 时间戳
+                "o" => !empty($cacheRt['o'])?array_merge($cacheRt['o'],$o):$o, // 开盘价
+                "h" => !empty($cacheRt['h'])?array_merge($cacheRt['h'],$h):$h, // 最高价
+                "l" => !empty($cacheRt['l'])?array_merge($cacheRt['l'],$l):$l, // 最低价
+                "c" => !empty($cacheRt['c'])?array_merge($cacheRt['c'],$c):$c, // 收盘价
+                "v" => !empty($cacheRt['v'])?array_merge($cacheRt['v'],$v):$v,  // 成交量
             ];
         }else{
             $result = [
