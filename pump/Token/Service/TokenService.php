@@ -613,7 +613,7 @@ class TokenService
             if($needFill){
                 //part from cache,part from graph
                 $fromFill = $toCache;
-                $cacheRt = json_decode($redis->get(self::$TOKEN_HISTORY_CACHE_RT_KEY.$token.'_'.$resolution.'_'.$from.'_'.$to), true);
+                $cacheRt = json_decode($redis->get(self::$TOKEN_HISTORY_CACHE_RT_KEY.$token.'_'.$resolution.'_'.$fromCache.'_'.$toCache), true);
                 if(!empty($cacheRt) && !empty($cacheRt['t'])){
                     $i = 0;
                     $count = 0;
@@ -639,7 +639,7 @@ class TokenService
                 }
             }else{
                 //all from cache
-                $cacheRt = json_decode($redis->get(self::$TOKEN_HISTORY_CACHE_RT_KEY.$token.'_'.$resolution.'_'.$from.'_'.$to), true);
+                $cacheRt = json_decode($redis->get(self::$TOKEN_HISTORY_CACHE_RT_KEY.$token.'_'.$resolution.'_'.$fromCache.'_'.$toCache), true);
                 if(!empty($cacheRt) && !empty($cacheRt['t'])){
                     $i = 0;
                     $j = 0;
