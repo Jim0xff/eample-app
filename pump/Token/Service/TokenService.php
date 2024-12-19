@@ -21,6 +21,12 @@ use function React\Async\await;
 class TokenService
 {
 
+    public static $TOKEN_HISTORY_CACHE_FROM_KEY = 'history_cache_on_from_';
+
+    public static $TOKEN_HISTORY_CACHE_TO_KEY = 'history_cache_on_to_';
+
+    public static $TOKEN_HISTORY_CACHE_RT_KEY = 'history_cache_rt_';
+
     public function tokenDetail($params)
     {
         $innerParams = [
@@ -581,10 +587,80 @@ class TokenService
         $c = [];
         $v = [];
 
+        $redis = Redis::connection();
+//        $redis->command('set',['history_cache_on_from_'.$symbol.'_resolution_'.$resolution.'_', $from, 'EX',  120]);
+//        $redis->command('set',['history_cache_on_to_'.$symbol.'_resolution_'.$resolution.'_', $to, 'EX',  120]);
+//        $redis->command('set',['history_cache_rt_'.$symbol.'_resolution_'.$resolution.'_from_'.$from.'_to_'.$to, json_encode($result),'EX',  120]);
+
         $token = strtolower($param['symbol']);
         $resolution = $param['resolution'];
         $from = $param['from'];
         $to = $param['to'];
+
+        $canUseCache = false;
+        $needFill = false;
+        $fromCache = $redis->get(self::$TOKEN_HISTORY_CACHE_FROM_KEY .$token.'_'.$resolution);
+        $toCache = $redis->get(self::$TOKEN_HISTORY_CACHE_TO_KEY .$token.'_'.$resolution);
+        if(!empty($fromCache) && !empty($toCache)){
+            if($fromCache <= $from){
+                $canUseCache = true;
+                if($toCache < $to){
+                    $needFill = true;
+                }
+            }
+        }
+
+        if($canUseCache){
+            if($needFill){
+                //part from cache,part from graph
+            }else{
+                //all from cache
+                $cacheRt = json_decode($redis->get(self::$TOKEN_HISTORY_CACHE_RT_KEY.$token.'_'.$resolution.'_'.$from.'_'.$to), true);
+//                $result = [
+//                    "t" => $t, // 时间戳
+//                    "o" => $o, // 开盘价
+//                    "h" => $h, // 最高价
+//                    "l" => $l, // 最低价
+//                    "c" => $c, // 收盘价
+//                    "v" => $v  // 成交量
+//                ];
+                if(!empty($cacheRt) && !empty($cacheRt['t'])){
+                    $i = 0;
+                    $j = 0;
+                    $count = 0;
+                    foreach($cacheRt['t'] as $tSingle){
+                        $count++;
+                        if($tSingle < $from){
+                            $i++;
+                        }
+                        if($tSingle > $to){
+                            $j++;
+                        }
+                    }
+                    if($i > 0){
+                        array_splice($cacheRt['t'], $count-1-$j);
+                        array_splice($cacheRt['t'], 0, $i);
+
+                        array_splice($cacheRt['o'], $count-1-$j);
+                        array_splice($cacheRt['o'], 0, $i);
+
+                        array_splice($cacheRt['h'], $count-1-$j);
+                        array_splice($cacheRt['h'], 0, $i);
+
+                        array_splice($cacheRt['l'], $count-1-$j);
+                        array_splice($cacheRt['l'], 0, $i);
+
+                        array_splice($cacheRt['c'], $count-1-$j);
+                        array_splice($cacheRt['c'], 0, $i);
+
+                        array_splice($cacheRt['v'], $count-1-$j);
+                        array_splice($cacheRt['v'], 0, $i);
+
+                    }
+                    return $cacheRt;
+                }
+            }
+        }
 
         /** @var Service $graphService */
         $graphService = resolve(Service::class);
@@ -689,8 +765,12 @@ class TokenService
         return $result;
     }
 
-    private function cacheHistory($result, $resolution)
+    private function cacheHistory($symbol, $result, $resolution,$from,$to)
     {
+        $redis = Redis::connection();
+        $redis->command('set',[self::$TOKEN_HISTORY_CACHE_FROM_KEY.$symbol.'_'.$resolution.'_', $from, 'EX',  120]);
+        $redis->command('set',[self::$TOKEN_HISTORY_CACHE_TO_KEY.$symbol.'_'.$resolution.'_', $to, 'EX',  120]);
+        $redis->command('set',[self::$TOKEN_HISTORY_CACHE_RT_KEY.$symbol.'_'.$resolution.'_'.$from.'_'.$to, json_encode($result),'EX',  120]);
 
     }
 
@@ -735,21 +815,24 @@ class TokenService
                 break;
             case "60":
                 while($toTmp > $from){
-                    array_unshift($dateList, $toTmp);
+                    $toTmpObj = Carbon::createFromTimestamp($toTmp);
+                    array_unshift($dateList, $toTmpObj->endOfMinute());
                     $toTmp = $toTmp - 60;
                 }
                 array_unshift($dateList, $toTmp);
                 break;
             case "30M":
                 while($toTmp > $from){
-                    array_unshift($dateList, $toTmp);
+                    $toTmpObj = Carbon::createFromTimestamp($toTmp);
+                    array_unshift($dateList, $toTmpObj->endOfMinute());
                     $toTmp = $toTmp - 60*30;
                 }
                 array_unshift($dateList, $toTmp);
                 break;
             case "1H":
                 while($toTmp > $from){
-                    array_unshift($dateList, $toTmp);
+                    $toTmpObj = Carbon::createFromTimestamp($toTmp);
+                    array_unshift($dateList, $toTmpObj->endOfHour());
                     $toTmp = $toTmp - 60*60;
                 }
                 array_unshift($dateList, $toTmp);
