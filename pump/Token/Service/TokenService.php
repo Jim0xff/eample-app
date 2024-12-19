@@ -725,7 +725,21 @@ class TokenService
             }
             $currentPage++;
         }while(!empty($rtTmp['data']) && !empty($rtTmp['data']['transactions']));
-
+        if(empty($rt)){
+            if($canUseCache && !empty($cacheRt)){
+                return $cacheRt;
+            }else{
+                return [
+                    "s" => "ok",
+                    "t" => $t, // 时间戳
+                    "o" => $o, // 开盘价
+                    "h" => $h, // 最高价
+                    "l" => $l, // 最低价
+                    "c" => $c, // 收盘价
+                    "v" => $v  // 成交量
+                ];
+            }
+        }
         $dateList = $this->getDateList($resolution, $fromFill, $to);
         $dateListItem = $dateList['dateList'];
 
