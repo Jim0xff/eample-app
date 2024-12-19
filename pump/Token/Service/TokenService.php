@@ -827,9 +827,9 @@ class TokenService
     private function cacheHistory($symbol, $result, $resolution,$from,$to)
     {
         $redis = Redis::connection();
-        $redis->command('set',[self::$TOKEN_HISTORY_CACHE_FROM_KEY.$symbol.'_'.$resolution, $from, 'EX',  120]);
-        $redis->command('set',[self::$TOKEN_HISTORY_CACHE_TO_KEY.$symbol.'_'.$resolution, $to, 'EX',  120]);
-        $redis->command('set',[self::$TOKEN_HISTORY_CACHE_RT_KEY.$symbol.'_'.$resolution.'_'.$from.'_'.$to, json_encode($result),'EX',  120]);
+        $redis->command('set',[self::$TOKEN_HISTORY_CACHE_FROM_KEY.$symbol.'_'.$resolution, $from, 'EX',  300]);
+        $redis->command('set',[self::$TOKEN_HISTORY_CACHE_TO_KEY.$symbol.'_'.$resolution, $to, 'EX',  300]);
+        $redis->command('set',[self::$TOKEN_HISTORY_CACHE_RT_KEY.$symbol.'_'.$resolution.'_'.$from.'_'.$to, json_encode($result),'EX',  300]);
 
     }
 
