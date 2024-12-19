@@ -589,9 +589,6 @@ class TokenService
         $v = [];
 
         $redis = Redis::connection();
-//        $redis->command('set',['history_cache_on_from_'.$symbol.'_resolution_'.$resolution.'_', $from, 'EX',  120]);
-//        $redis->command('set',['history_cache_on_to_'.$symbol.'_resolution_'.$resolution.'_', $to, 'EX',  120]);
-//        $redis->command('set',['history_cache_rt_'.$symbol.'_resolution_'.$resolution.'_from_'.$from.'_to_'.$to, json_encode($result),'EX',  120]);
 
         $token = strtolower($param['symbol']);
         $resolution = $param['resolution'];
@@ -815,8 +812,8 @@ class TokenService
     private function cacheHistory($symbol, $result, $resolution,$from,$to)
     {
         $redis = Redis::connection();
-        $redis->command('set',[self::$TOKEN_HISTORY_CACHE_FROM_KEY.$symbol.'_'.$resolution.'_', $from, 'EX',  120]);
-        $redis->command('set',[self::$TOKEN_HISTORY_CACHE_TO_KEY.$symbol.'_'.$resolution.'_', $to, 'EX',  120]);
+        $redis->command('set',[self::$TOKEN_HISTORY_CACHE_FROM_KEY.$symbol.'_'.$resolution, $from, 'EX',  120]);
+        $redis->command('set',[self::$TOKEN_HISTORY_CACHE_TO_KEY.$symbol.'_'.$resolution, $to, 'EX',  120]);
         $redis->command('set',[self::$TOKEN_HISTORY_CACHE_RT_KEY.$symbol.'_'.$resolution.'_'.$from.'_'.$to, json_encode($result),'EX',  120]);
 
     }
