@@ -816,7 +816,7 @@ class TokenService
             case "60":
                 while($toTmp > $from){
                     $toTmpObj = Carbon::createFromTimestamp($toTmp);
-                    array_unshift($dateList, $toTmpObj->endOfMinute());
+                    array_unshift($dateList, $toTmpObj->endOfMinute()->timestamp);
                     $toTmp = $toTmp - 60;
                 }
                 array_unshift($dateList, $toTmp);
@@ -824,7 +824,7 @@ class TokenService
             case "30M":
                 while($toTmp > $from){
                     $toTmpObj = Carbon::createFromTimestamp($toTmp);
-                    array_unshift($dateList, $toTmpObj->endOfMinute());
+                    array_unshift($dateList, $toTmpObj->endOfMinute()->timestamp);
                     $toTmp = $toTmp - 60*30;
                 }
                 array_unshift($dateList, $toTmp);
@@ -832,7 +832,7 @@ class TokenService
             case "1H":
                 while($toTmp > $from){
                     $toTmpObj = Carbon::createFromTimestamp($toTmp);
-                    array_unshift($dateList, $toTmpObj->endOfHour());
+                    array_unshift($dateList, $toTmpObj->endOfHour()->timestamp);
                     $toTmp = $toTmp - 60*60;
                 }
                 array_unshift($dateList, $toTmp);
