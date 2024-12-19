@@ -168,6 +168,8 @@ class TokenController extends Controller
                 if($to - $from > 7 * 24 * 3600){
                     $from = Carbon::createFromTimestamp($to)->subHours(24 * 7)->timestamp;
                 }
+                $from = Carbon::createFromTimestamp($to)->subHours(24 * 7)->timestamp;
+
                 break;
             case "30M":
                 //30分钟 不能查超过30天的数据，否则可能出现性能问题
