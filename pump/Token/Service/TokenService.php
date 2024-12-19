@@ -609,21 +609,39 @@ class TokenService
                 }
             }
         }
-
+        $cacheRt = [];
+        $fromFill = $from;
         if($canUseCache){
             if($needFill){
                 //part from cache,part from graph
+                $fromFill = $toCache;
+                $cacheRt = json_decode($redis->get(self::$TOKEN_HISTORY_CACHE_RT_KEY.$token.'_'.$resolution.'_'.$from.'_'.$to), true);
+                if(!empty($cacheRt) && !empty($cacheRt['t'])){
+                    $i = 0;
+                    $count = 0;
+                    foreach($cacheRt['t'] as $tSingle){
+                        $count++;
+                        if($tSingle < $from){
+                            $i++;
+                        }
+                    }
+                    if($i > 0){
+                        array_splice($cacheRt['t'], 0, $i);
+
+                        array_splice($cacheRt['o'], 0, $i);
+
+                        array_splice($cacheRt['h'], 0, $i);
+
+                        array_splice($cacheRt['l'], 0, $i);
+
+                        array_splice($cacheRt['c'], 0, $i);
+
+                        array_splice($cacheRt['v'], 0, $i);
+                    }
+                }
             }else{
                 //all from cache
                 $cacheRt = json_decode($redis->get(self::$TOKEN_HISTORY_CACHE_RT_KEY.$token.'_'.$resolution.'_'.$from.'_'.$to), true);
-//                $result = [
-//                    "t" => $t, // 时间戳
-//                    "o" => $o, // 开盘价
-//                    "h" => $h, // 最高价
-//                    "l" => $l, // 最低价
-//                    "c" => $c, // 收盘价
-//                    "v" => $v  // 成交量
-//                ];
                 if(!empty($cacheRt) && !empty($cacheRt['t'])){
                     $i = 0;
                     $j = 0;
@@ -666,7 +684,7 @@ class TokenService
         $graphService = resolve(Service::class);
         $whereArray = [];
         $whereArray[] = "token:\"".$token."\"";
-        $whereArray[] = "createTimestamp_gte:\"".$from."\"";
+        $whereArray[] = "createTimestamp_gt:\"".$fromFill."\"";
         $whereArray[] = "createTimestamp_lte:\"".$to."\"";
         $whereStr = "{".implode(",", $whereArray)."}";
         $currentPage = 1;
@@ -708,7 +726,7 @@ class TokenService
             $currentPage++;
         }while(!empty($rtTmp['data']) && !empty($rtTmp['data']['transactions']));
 
-        $dateList = $this->getDateList($resolution, $from, $to);
+        $dateList = $this->getDateList($resolution, $fromFill, $to);
         $dateListItem = $dateList['dateList'];
 
         $contentList = [];
@@ -752,15 +770,29 @@ class TokenService
                 }
             }
         }
-
-        $result = [
-            "t" => $t, // 时间戳
-            "o" => $o, // 开盘价
-            "h" => $h, // 最高价
-            "l" => $l, // 最低价
-            "c" => $c, // 收盘价
-            "v" => $v  // 成交量
-        ];
+        $result = [];
+        if(!empty($cacheRt)){
+            $result = [
+                "s" => "ok",
+                "t" => !empty($cacheRt['t'])?array_merge($t,$cacheRt['t']):$t, // 时间戳
+                "o" => !empty($cacheRt['o'])?array_merge($o,$cacheRt['o']):$o, // 开盘价
+                "h" => !empty($cacheRt['h'])?array_merge($h,$cacheRt['h']):$h, // 最高价
+                "l" => !empty($cacheRt['l'])?array_merge($l,$cacheRt['l']):$l, // 最低价
+                "c" => !empty($cacheRt['c'])?array_merge($c,$cacheRt['c']):$c, // 收盘价
+                "v" => !empty($cacheRt['v'])?array_merge($v,$cacheRt['v']):$v,  // 成交量
+            ];
+        }else{
+            $result = [
+                "s" => "ok",
+                "t" => $t, // 时间戳
+                "o" => $o, // 开盘价
+                "h" => $h, // 最高价
+                "l" => $l, // 最低价
+                "c" => $c, // 收盘价
+                "v" => $v  // 成交量
+            ];
+        }
+        $this->cacheHistory($token, $result, $resolution, $from, $to);
 
         return $result;
     }

@@ -137,7 +137,7 @@ class TestController extends Controller{
 
     public function test4(Request $request){
         $ccc = Carbon::createFromTimestamp(1731560817);
-        $now = microtime(true);
+        print_r($ccc->endOfHour());
         return response()->json(['code' => 200, 'data' => $ccc]);
     }
 
