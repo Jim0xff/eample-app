@@ -614,6 +614,7 @@ class TokenService
                 //part from cache,part from graph
                 $fromFill = $toCache;
                 $cacheRt = json_decode($redis->get(self::$TOKEN_HISTORY_CACHE_RT_KEY.$token.'_'.$resolution.'_'.$fromCache.'_'.$toCache), true);
+                Log::info("need fill history cache:".json_encode($cacheRt));
                 if(!empty($cacheRt) && !empty($cacheRt['t'])){
                     $i = 0;
                     $count = 0;
@@ -640,6 +641,8 @@ class TokenService
             }else{
                 //all from cache
                 $cacheRt = json_decode($redis->get(self::$TOKEN_HISTORY_CACHE_RT_KEY.$token.'_'.$resolution.'_'.$fromCache.'_'.$toCache), true);
+                Log::info("all from cache history cache:".json_encode($cacheRt));
+
                 if(!empty($cacheRt) && !empty($cacheRt['t'])){
                     $i = 0;
                     $j = 0;
@@ -691,7 +694,7 @@ class TokenService
         $orderDirection = 'asc';
         $first = $pageSize;
         $rt = [];
-        Log::info("gpppgp:$canUseCache,$needFill");
+        Log::info("can use cache?:$canUseCache,$needFill");
         do{
             $skip = ($currentPage - 1) * $pageSize;
             $graphParams = [
@@ -784,6 +787,18 @@ class TokenService
         }
         $result = [];
         if(!empty($cacheRt)){
+            Log::info("before merge,cache:".json_encode($cacheRt));
+            $dataCurrent = [
+                "s" => "ok",
+                "t" => $t, // 时间戳
+                "o" => $o, // 开盘价
+                "h" => $h, // 最高价
+                "l" => $l, // 最低价
+                "c" => $c, // 收盘价
+                "v" => $v  // 成交量
+            ];
+            Log::info("before merge,data:".json_encode($dataCurrent));
+
             $result = [
                 "s" => "ok",
                 "t" => !empty($cacheRt['t'])?array_merge($t,$cacheRt['t']):$t, // 时间戳
