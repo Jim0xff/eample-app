@@ -333,7 +333,8 @@ class CommentService
         $commentTmp['text'] = $clickLikeDbModel->content['commentText'];
         $commentTmp['imgUrl'] = $clickLikeDbModel->content['commentImgUrl'];
         $clickLikeDTO->comment = $commentTmp;
-
+        $clickLikeDTO->createdAt = $clickLikeDbModel->createdAt;
+        $clickLikeDTO->updatedAt = $clickLikeDbModel->updatedAt;
         return $clickLikeDTO;
     }
 
