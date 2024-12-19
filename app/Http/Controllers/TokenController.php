@@ -146,25 +146,46 @@ class TokenController extends Controller
     {
         switch ($resolution){
             case "1":
-                $from = Carbon::createFromTimestamp($to)->subHours(1)->timestamp;
+                //1秒钟 不能查超过一小时的数据，否则可能出现性能问题
+                if($to - $from > 3600){
+                    $from = Carbon::createFromTimestamp($to)->subHours(1)->timestamp;
+                }
                 break;
             case "5":
-                $from = Carbon::createFromTimestamp($to)->subHours(4)->timestamp;
+                //5秒钟 不能查超过5小时的数据，否则可能出现性能问题
+                if($to - $from > 5 * 3600){
+                    $from = Carbon::createFromTimestamp($to)->subHours(5)->timestamp;
+                }
                 break;
             case "30":
-                $from = Carbon::createFromTimestamp($to)->subHours(24)->timestamp;
+                //30秒钟 不能查超过3天的数据，否则可能出现性能问题
+                if($to - $from > 3 * 24 * 3600){
+                    $from = Carbon::createFromTimestamp($to)->subHours(72)->timestamp;
+                }
                 break;
             case "60":
-                $from = Carbon::createFromTimestamp($to)->subHours(24 * 7)->timestamp;
+                //60秒钟 不能查超过7天的数据，否则可能出现性能问题
+                if($to - $from > 7 * 24 * 3600){
+                    $from = Carbon::createFromTimestamp($to)->subHours(24 * 7)->timestamp;
+                }
                 break;
             case "30M":
-                $from = Carbon::createFromTimestamp($to)->subDays(2)->timestamp;
+                //30分钟 不能查超过30天的数据，否则可能出现性能问题
+                if($to - $from > 30 * 24 * 3600){
+                    $from = Carbon::createFromTimestamp($to)->subDays(30)->timestamp;
+                }
                 break;
             case "1H":
-                $from = Carbon::createFromTimestamp($to)->subDays(7)->timestamp;
+                //60分钟 不能查超过80天的数据，否则可能出现性能问题
+                if($to - $from > 80 * 24 * 3600){
+                    $from = Carbon::createFromTimestamp($to)->subDays(80)->timestamp;
+                }
                 break;
             case "1D":
-                $from = Carbon::createFromTimestamp($to)->subMonths(6)->timestamp;
+                //1天 不能查超过3年的数据，否则可能出现性能问题
+                if($to - $from > 3 * 365 * 24 * 3600){
+                    $from = Carbon::createFromTimestamp($to)->subyears(3)->timestamp;
+                }
                 break;
         }
     }
