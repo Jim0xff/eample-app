@@ -44,6 +44,9 @@ Route::get('/token/config.json', ['uses' => '\App\Http\Controllers\TokenControll
 Route::get('/history', ['uses' => '\App\Http\Controllers\TokenController@getHistoryPure']);
 Route::get('/time', ['uses' => '\App\Http\Controllers\TokenController@getTimePure']);
 Route::get('/config', ['uses' => '\App\Http\Controllers\TokenController@getConfigPure']);
+Route::get('/resolveSymbol', ['uses' => '\App\Http\Controllers\TokenController@resolveSymbol']);
+Route::get('/searchSymbols', ['uses' => '\App\Http\Controllers\TokenController@searchSymbols']);
+
 
 
 

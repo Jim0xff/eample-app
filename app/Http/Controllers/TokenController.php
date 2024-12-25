@@ -114,6 +114,66 @@ class TokenController extends Controller
         ]);
     }
 
+    public function resolveSymbol(Request $request)
+    {
+        $symbol = $request->query('symbol');
+
+        // Example response for a symbol
+        $data = [
+            'name' => $symbol,
+            'ticker' => $symbol,
+            'description' => 'Description of ' . $symbol,
+            'type' => 'crypto',
+            'session' => '24x7',
+            'exchange' => 'ExampleExchange',
+            'listed_exchange' => 'ExampleExchange',
+            'timezone' => 'UTC',
+            'minmov' => 1,
+            'pricescale' => 100,
+            'has_intraday' => true,
+            'has_daily' => true,
+            'has_weekly_and_monthly' => true,
+            'currency_code' => 'METIS',
+        ];
+
+        return response()->json($data);
+    }
+
+    public function searchSymbols(Request $request)
+    {
+        $query = $request->query('query'); // The search query (e.g., symbol or name)
+        $type = $request->query('type'); // The type of symbol (optional)
+        $exchange = $request->query('exchange'); // The exchange filter (optional)
+
+        // Example data (replace with real database or API logic)
+        $symbols = [
+            [
+                'symbol' => $query,
+                'full_name' => 'Bitcoin / US Dollar',
+                'description' => 'Bitcoin vs US Dollar',
+                'exchange' => 'ExampleExchange',
+                'type' => 'crypto',
+            ],
+//            [
+//                'symbol' => 'ETHUSD',
+//                'full_name' => 'Ethereum / US Dollar',
+//                'description' => 'Ethereum vs US Dollar',
+//                'exchange' => 'ExampleExchange',
+//                'type' => 'crypto',
+//            ],
+//            [
+//                'symbol' => 'AAPL',
+//                'full_name' => 'Apple Inc.',
+//                'description' => 'Apple Inc.',
+//                'exchange' => 'NASDAQ',
+//                'type' => 'stock',
+//            ],
+        ];
+
+        // Return the filtered symbols
+        return response()->json($symbols);
+    }
+
     public function getConfigPure()
     {
         return response()->json([
