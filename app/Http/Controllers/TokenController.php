@@ -119,24 +119,9 @@ class TokenController extends Controller
         $symbol = $request->query('symbol');
 
         // Example response for a symbol
-        $data = [
-            'name' => $symbol,
-            'ticker' => $symbol,
-            'description' => 'Description of ' . $symbol,
-            'type' => 'crypto',
-            'session' => '24x7',
-            'exchange' => 'ExampleExchange',
-            'listed_exchange' => 'ExampleExchange',
-            'timezone' => 'UTC',
-            'minmov' => 1,
-            'pricescale' => 100,
-            'has_intraday' => true,
-            'has_daily' => true,
-            'has_weekly_and_monthly' => true,
-            'currency_code' => 'METIS',
-        ];
-
-        return response()->json($data);
+        /** @var $tokenService TokenService */
+        $tokenService = resolve('token_service');
+        return response()->json($tokenService->resolveSymbol($request->all()));
     }
 
     public function searchSymbols(Request $request)

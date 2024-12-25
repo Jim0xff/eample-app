@@ -847,13 +847,6 @@ class TokenService
 
     public function searchSymbols($params)
     {
-//        [
-//            'symbol' => $query,
-//            'full_name' => 'Bitcoin / US Dollar',
-//            'description' => 'Bitcoin vs US Dollar',
-//            'exchange' => 'ExampleExchange',
-//            'type' => 'crypto',
-//        ],
         $tokenRt = $this->tokenList(
             [
                 'searchKey' => $params['query'],
@@ -865,7 +858,7 @@ class TokenService
             foreach($tokenRt as $token){
                 $single = [
                     'symbol' => $token['symbol'],
-                    'full_name' => $token['name'],
+                    'ticker' => $token['name'],
                     'description' => $token['description'],
                     'exchange' => 'ExampleExchange',
                     'type' => 'crypto',
@@ -875,6 +868,56 @@ class TokenService
         }
         return $result;
     }
+
+    public function resolveSymbol($params)
+    {
+//        ticker: 'BTCUSD',
+//    name: 'BTCUSD',
+//    description: 'Bitcoin/USD',
+//    type: symbolItem.type,
+//    session: '24x7',
+//    timezone: 'Etc/UTC',
+//    exchange: 'Example Exchange',
+//    minmov: 1,
+//    pricescale: 100,
+//    has_intraday: false,
+//    visible_plots_set: 'ohlcv',
+//    has_weekly_and_monthly: false,
+//    supported_resolutions: ['1', '5', '30', '60', '1D', '1W'],
+//    volume_precision: 2,
+//    data_status: 'streaming',
+
+        $tokenRt = $this->tokenList(
+            [
+                'searchKey' => $params['symbol'],
+            ],
+            false
+        );
+
+        $result = null;
+        if(!empty($tokenRt)){
+            $token = $tokenRt[0];
+            $result = [
+                'name' => $token['name'],
+                'ticker' => $token['name'],
+                'description' => $token['description'],
+                'type' => 'crypto',
+                'session' => '24x7',
+                'exchange' => 'ExampleExchange',
+                'listed_exchange' => 'ExampleExchange',
+                'timezone' => 'UTC',
+                'minmov' => 1,
+                'pricescale' => 100,
+                'has_intraday' => true,
+                'has_daily' => true,
+                'has_weekly_and_monthly' => true,
+                'currency_code' => 'METIS'
+            ];
+        }
+        return $result;
+    }
+
+
 
     private function getDateList($res, $from, $to)
     {
