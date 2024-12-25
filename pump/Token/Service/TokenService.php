@@ -845,6 +845,37 @@ class TokenService
         }
     }
 
+    public function searchSymbols($params)
+    {
+//        [
+//            'symbol' => $query,
+//            'full_name' => 'Bitcoin / US Dollar',
+//            'description' => 'Bitcoin vs US Dollar',
+//            'exchange' => 'ExampleExchange',
+//            'type' => 'crypto',
+//        ],
+        $tokenRt = $this->tokenList(
+            [
+                'searchKey' => $params['query'],
+            ],
+            false
+        );
+        $result = [];
+        if(!empty($tokenRt)){
+            foreach($tokenRt as $token){
+                $single = [
+                    'symbol' => $token['symbol'],
+                    'full_name' => $token['name'],
+                    'description' => $token['description'],
+                    'exchange' => 'ExampleExchange',
+                    'type' => 'crypto',
+                ];
+                $result[] = $single;
+            }
+        }
+        return $result;
+    }
+
     private function getDateList($res, $from, $to)
     {
         //"1", "5", "30", "60", "1D", "1W", "1M"

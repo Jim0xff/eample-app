@@ -144,34 +144,11 @@ class TokenController extends Controller
         $query = $request->query('query'); // The search query (e.g., symbol or name)
         $type = $request->query('type'); // The type of symbol (optional)
         $exchange = $request->query('exchange'); // The exchange filter (optional)
-
-        // Example data (replace with real database or API logic)
-        $symbols = [
-            [
-                'symbol' => $query,
-                'full_name' => 'Bitcoin / US Dollar',
-                'description' => 'Bitcoin vs US Dollar',
-                'exchange' => 'ExampleExchange',
-                'type' => 'crypto',
-            ],
-//            [
-//                'symbol' => 'ETHUSD',
-//                'full_name' => 'Ethereum / US Dollar',
-//                'description' => 'Ethereum vs US Dollar',
-//                'exchange' => 'ExampleExchange',
-//                'type' => 'crypto',
-//            ],
-//            [
-//                'symbol' => 'AAPL',
-//                'full_name' => 'Apple Inc.',
-//                'description' => 'Apple Inc.',
-//                'exchange' => 'NASDAQ',
-//                'type' => 'stock',
-//            ],
-        ];
+        /** @var $tokenService TokenService */
+        $tokenService = resolve('token_service');
 
         // Return the filtered symbols
-        return response()->json($symbols);
+        return response()->json($tokenService->searchSymbols($request->all()));
     }
 
     public function getConfigPure()
