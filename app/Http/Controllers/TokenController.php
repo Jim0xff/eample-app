@@ -114,8 +114,32 @@ class TokenController extends Controller
         ]);
     }
 
+    public function getConfigPure()
+    {
+        return response()->json([
+            "supports_search" => true,
+            "supports_group_request" => false,
+            "supports_marks" => false,
+            "supports_timescale_marks" => false,
+            "supports_time" => true,
+            "exchanges" => [
+                ["value" => "", "name" => "All Exchanges", "desc" => ""]
+            ],
+            "symbols_types" => [
+                ["name" => "All types", "value" => ""]
+            ],
+            "supported_resolutions" => ["1", "5", "30", "60", "30M", "1H", "1D","1W"]
+        ],);
+    }
+
     // 时间接口
     public function getTime()
+    {
+        return response()->json(Carbon::now()->timestamp);
+    }
+
+    // 时间接口
+    public function getTimePure()
     {
         return response()->json(Carbon::now()->timestamp);
     }
@@ -141,6 +165,29 @@ class TokenController extends Controller
             return response()->json(['data'=>$data, 'code' => 200]);
         }) ;
     }
+
+    public function getHistoryPure(Request $request)
+    {
+        return LogUtils::process($request, function () use ($request) {
+            if(empty($request->get('symbol'))){
+                throw new DomainException("symbol is required");
+            }
+            $params = $request->all();
+            $resolution = $request->get('resolution', '60');
+            $from = $request->get('from', Carbon::now()->subDay()->timestamp);
+            $to = $request->get('to', Carbon::now()->timestamp);
+            $this->getFromToByResolution($resolution, $to, $from);
+            $params['resolution'] = $resolution;
+            $params['from'] = $from;
+            $params['to'] = $to;
+            $params['symbol'] = strtolower($request->get('symbol'));
+            /** @var $tokenService TokenService */
+            $tokenService = resolve('token_service');
+            $data = $tokenService->getTokenHistory($params);
+            return response()->json($data);
+        }) ;
+    }
+
 
     private function getFromToByResolution($resolution, $to, &$from)
     {

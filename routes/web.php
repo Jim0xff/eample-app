@@ -41,6 +41,11 @@ Route::get('/token/historyMock.json', ['uses' => '\App\Http\Controllers\TokenCon
 Route::get('/time.json', ['uses' => '\App\Http\Controllers\TokenController@getTime']);
 Route::get('/token/config.json', ['uses' => '\App\Http\Controllers\TokenController@getConfig']);
 
+Route::get('/history', ['uses' => '\App\Http\Controllers\TokenController@getHistoryPure']);
+Route::get('/time', ['uses' => '\App\Http\Controllers\TokenController@getTimePure']);
+Route::get('/config', ['uses' => '\App\Http\Controllers\TokenController@getConfigPure']);
+
+
 
 Route::post('/comment/create.json', ['uses' => '\App\Http\Controllers\CommentController@createComment','middleware' => \App\Http\Middleware\ApiToken::class]);
 Route::post('/comment/pageSearchComment.json', ['uses' => '\App\Http\Controllers\CommentController@pageSearchComment']);
