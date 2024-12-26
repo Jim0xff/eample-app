@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use Pump\Comment\Service\CommentService;
+use Pump\Token\Dao\TopOfTheMoonDAOModel;
 use Pump\Token\DbModel\TokenDbModel;
 use Pump\Token\Repository\TokenRepository;
 use Pump\User\Repository\UserRepository;
@@ -43,7 +44,12 @@ class TokenService
 
     public function topOfTheMoon($param)
     {
-        $tokenIds = config("biz.topOfTheMoonTokens");
+        $topOfTheMoonTokens = TopOfTheMoonDAOModel::query()->where('status','active')->get()->toArray();
+        if(!empty($topOfTheMoonTokens)){
+            $tokenIds = array_column($topOfTheMoonTokens,'address');
+        }else{
+            $tokenIds = config("biz.topOfTheMoonTokens");
+        }
         $randomKey = array_rand($tokenIds);
         $innerParams = [
             'tokenIds' => [$tokenIds[$randomKey]],
@@ -56,10 +62,15 @@ class TokenService
         }
     }
 
-    private function isTopOfTheMoon($tokenId)
+    private function isTopOfTheMoon($tokenId, $all)
     {
         $tokenId = strtolower($tokenId);
-        $tokenIds = config("biz.topOfTheMoonTokens");
+        if(!empty($all)){
+            $tokenIds = array_column($all,'address');
+        }else{
+            $tokenIds = config("biz.topOfTheMoonTokens");
+
+        }
         foreach($tokenIds as $idSingle){
             $idSingle = strtolower($idSingle);
             if($tokenId == $idSingle){
@@ -147,6 +158,11 @@ class TokenService
         $rt = $graphService->baseQuery($graphParams);
         $result = [];
         $redis = Redis::connection();
+        $topOfTheMoonTokens = TopOfTheMoonDAOModel::query()->where('status','active')->get()->toArray();
+        $topOfTheMoonTokensMap = [];
+        foreach($topOfTheMoonTokens as $topTmp){
+            $topOfTheMoonTokensMap[strtolower($topTmp['address'])] = $topTmp;
+        }
         if(!empty($rt['data']) && !empty($rt['data']['tokens'])){
             $creatorIds = array_column($rt['data']['tokens'], 'creator');
 
@@ -194,7 +210,7 @@ class TokenService
                 }
                 $totalPrice = $nowPrice * $totalSupply;
                 $token['totalPrice'] = number_format($totalPrice,10);
-                $token['topOfTheMoon'] = $this->isTopOfTheMoon($token['id']);
+                $token['topOfTheMoon'] = isset($token['id'], $topOfTheMoonTokensMap);
                 $replyCnt = $redis->get(CommentService::$TOKEN_COMMNET_COUNT . $token['id']);
                 if(empty($replyCnt)){
                     $replyCnt = 0;
