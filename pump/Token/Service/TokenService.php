@@ -936,7 +936,7 @@ class TokenService
                 'has_daily' => true,
                 'has_weekly_and_monthly' => true,
                 'currency_code' => 'METIS',
-                "supported_resolutions"=>["1", "5", "15", "30", "60", "1D", "1W", "1M"]
+                "supported_resolutions"=>["1", "5", "1D", "1W"]
             ];
         }
         return $result;
@@ -952,46 +952,17 @@ class TokenService
         switch ($res){
             case "1":
                 while($toTmp > $from){
-                    array_unshift($dateList, $toTmp);
-                    $toTmp = $toTmp - 1;
-                }
-                array_unshift($dateList, $toTmp);
-                break;
-            case "5":
-                while($toTmp > $from){
-                    array_unshift($dateList, $toTmp);
-                    $toTmp = $toTmp - 5;
-                }
-                array_unshift($dateList, $toTmp);
-                break;
-            case "30":
-                while($toTmp > $from){
-                    array_unshift($dateList, $toTmp);
-                    $toTmp = $toTmp - 30;
-                }
-                array_unshift($dateList, $toTmp);
-                break;
-            case "60":
-                while($toTmp > $from){
                     $toTmpObj = Carbon::createFromTimestamp($toTmp);
                     array_unshift($dateList, $toTmpObj->endOfMinute()->timestamp);
                     $toTmp = $toTmp - 60;
                 }
                 array_unshift($dateList, $toTmp);
                 break;
-            case "30M":
+            case "5":
                 while($toTmp > $from){
                     $toTmpObj = Carbon::createFromTimestamp($toTmp);
                     array_unshift($dateList, $toTmpObj->endOfMinute()->timestamp);
-                    $toTmp = $toTmp - 60*30;
-                }
-                array_unshift($dateList, $toTmp);
-                break;
-            case "1H":
-                while($toTmp > $from){
-                    $toTmpObj = Carbon::createFromTimestamp($toTmp);
-                    array_unshift($dateList, $toTmpObj->endOfHour()->timestamp);
-                    $toTmp = $toTmp - 60*60;
+                    $toTmp = $toTmp - (5 * 60);
                 }
                 array_unshift($dateList, $toTmp);
                 break;
