@@ -906,7 +906,7 @@ class TokenService
             $token = $tokenRt[0];
             $result = [
                 'name' => $token['name'],
-                'ticker' => $token['name'],
+                'ticker' => $token['id'],
                 'pointvalue'=>1,
                 'description' => $token['description'],
                 'type' => 'crypto',
