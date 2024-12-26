@@ -216,14 +216,14 @@ class TokenController extends Controller
         switch ($resolution){
             case "1":
                 //1秒钟 不能查超过一小时的数据，否则可能出现性能问题
-                if($to - $from > 3600){
-                    $from = Carbon::createFromTimestamp($to)->subHours(1)->timestamp;
+                if($to - $from > 500){
+                    $from = Carbon::createFromTimestamp($to)->subSeconds(500)->timestamp;
                 }
                 break;
             case "5":
-                //5秒钟 不能查超过5小时的数据，否则可能出现性能问题
-                if($to - $from > 5 * 3600){
-                    $from = Carbon::createFromTimestamp($to)->subHours(5)->timestamp;
+                //5秒钟 不能查超过1小时的数据，否则可能出现性能问题
+                if($to - $from >   3600){
+                    $from = Carbon::createFromTimestamp($to)->subHours(1)->timestamp;
                 }
                 break;
             case "30":
