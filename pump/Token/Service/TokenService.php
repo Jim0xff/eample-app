@@ -87,6 +87,9 @@ class TokenService
                 $params['name'] = $params['searchKey'];
             }
         }
+        if(!empty($params['symbol'])){
+            $whereArray[] = "symbol:\"".$params['symbol']."\"";
+        }
         if(!empty($params['tokenIds'])){
             foreach($params['tokenIds'] as &$tokenId){
                 $tokenId = strtolower($tokenId);
