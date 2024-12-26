@@ -896,7 +896,7 @@ class TokenService
 
         $tokenRt = $this->tokenList(
             [
-                'searchKey' => $params['symbol'],
+                'symbol' => $params['symbol'],
             ],
             false
         );
