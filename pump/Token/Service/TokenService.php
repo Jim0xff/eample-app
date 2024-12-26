@@ -210,7 +210,7 @@ class TokenService
                 }
                 $totalPrice = $nowPrice * $totalSupply;
                 $token['totalPrice'] = number_format($totalPrice,10);
-                $token['topOfTheMoon'] = isset($token['id'], $topOfTheMoonTokensMap);
+                $token['topOfTheMoon'] = isset($topOfTheMoonTokensMap[$token['id']]);
                 $replyCnt = $redis->get(CommentService::$TOKEN_COMMNET_COUNT . $token['id']);
                 if(empty($replyCnt)){
                     $replyCnt = 0;
