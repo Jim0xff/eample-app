@@ -3,6 +3,7 @@
 namespace Pump\Token\Provider;
 
 use Pump\Token\Service\TokenService;
+use Pump\Token\Service\TopOfTheMoonService;
 
 class TokenServiceProvider extends \Illuminate\Support\ServiceProvider
 {
@@ -13,5 +14,12 @@ class TokenServiceProvider extends \Illuminate\Support\ServiceProvider
         });
 
         $this->app->alias(TokenService::class, "token_service");
+
+
+        $this->app->singleton(TopOfTheMoonService::class, function() {
+            return new TopOfTheMoonService();
+        });
+
+        $this->app->alias(TopOfTheMoonService::class, "top_of_the_moon_service");
     }
 }
