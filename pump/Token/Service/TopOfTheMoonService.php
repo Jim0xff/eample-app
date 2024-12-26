@@ -26,14 +26,14 @@ class TopOfTheMoonService
                 });
                 $needGenerationRecords = array_slice($tradingTokens, 0, $needGeneration);
             }
-            if(count($manualTokens) < $needGeneration) {
+            if(count($needGenerationRecords) < $needGeneration) {
                 //从未发射的token中找
                 $fundingTokens = $tokenService->tokenList([
                     'statusList'=>['FUNDING'],
                     'orderBy'=> 'nowPrice',
                 ]);
                 if(!empty($fundingTokens)) {
-                    $needGenerationRecords = array_merge($needGenerationRecords, array_slice($fundingTokens,0,($needGeneration - count($fundingTokens))));
+                    $needGenerationRecords = array_merge($needGenerationRecords, array_slice($fundingTokens,0,($needGeneration - count($needGenerationRecords))));
                 }
             }
             if(!empty($needGenerationRecords)) {
