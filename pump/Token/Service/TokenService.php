@@ -871,21 +871,25 @@ class TokenService
 
     public function resolveSymbol($params)
     {
-//        ticker: 'BTCUSD',
-//    name: 'BTCUSD',
-//    description: 'Bitcoin/USD',
-//    type: symbolItem.type,
-//    session: '24x7',
-//    timezone: 'Etc/UTC',
-//    exchange: 'Example Exchange',
-//    minmov: 1,
-//    pricescale: 100,
-//    has_intraday: false,
-//    visible_plots_set: 'ohlcv',
-//    has_weekly_and_monthly: false,
-//    supported_resolutions: ['1', '5', '30', '60', '1D', '1W'],
-//    volume_precision: 2,
-//    data_status: 'streaming',
+//        {
+//            "name": "AAPL",
+//	"exchange-traded": "NasdaqNM",
+//	"exchange-listed": "NasdaqNM",
+//	"timezone": "America/New_York",
+//	"minmov": 1,
+//	"minmov2": 0,
+//	"pointvalue": 1,
+//	"session": "0930-1630",
+//	"has_intraday": false,
+//	"visible_plots_set": "ohlcv",
+//	"description": "Apple Inc.",
+//	"type": "stock",
+//	"supported_resolutions": ["D", "2D", "3D", "W", "3W", "M", "6M"],
+//	"pricescale": 100,
+//	"ticker": "AAPL",
+//	"logo_urls": ["https://s3-symbol-logo.tradingview.com/apple.svg"],
+//	"exchange_logo": "https://s3-symbol-logo.tradingview.com/country/US.svg"
+//}
 
         $tokenRt = $this->tokenList(
             [
@@ -900,6 +904,7 @@ class TokenService
             $result = [
                 'name' => $token['name'],
                 'ticker' => $token['name'],
+                'pointvalue'=>1,
                 'description' => $token['description'],
                 'type' => 'crypto',
                 'session' => '24x7',
@@ -911,7 +916,8 @@ class TokenService
                 'has_intraday' => true,
                 'has_daily' => true,
                 'has_weekly_and_monthly' => true,
-                'currency_code' => 'METIS'
+                'currency_code' => 'METIS',
+                "supported_resolutions"=>["1", "5", "15", "30", "60", "1D", "1W", "1M"]
             ];
         }
         return $result;
