@@ -212,6 +212,11 @@ class TokenController extends Controller
             $tokenService = resolve('token_service');
             $data = $tokenService->getTokenHistory($params);
             $data['nextTime'] = Carbon::now()->addMinute()->timestamp;
+            if(empty($data['t'])){
+                $data['s'] = 'no_data';
+            }else{
+                $data['s'] = 'ok';
+            }
             return response()->json($data);
         }) ;
     }
