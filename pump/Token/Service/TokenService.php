@@ -932,7 +932,7 @@ class TokenService
                 'timezone' => 'UTC',
                 'minmov' => 1,
                 'pricescale' => 100,
-                'has_intraday' => false,
+                'has_intraday' => true,
                 'has_daily' => true,
                 'has_weekly_and_monthly' => true,
                 'currency_code' => 'METIS',
