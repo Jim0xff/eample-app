@@ -184,6 +184,11 @@ class TokenController extends Controller
             /** @var $tokenService TokenService */
             $tokenService = resolve('token_service');
             $data = $tokenService->getTokenHistory($params);
+            if(empty($data['t'])){
+                $data['s'] = 'no_data';
+            }else{
+                $data['s'] = 'ok';
+            }
             return response()->json(['data'=>$data, 'code' => 200]);
         }) ;
     }
