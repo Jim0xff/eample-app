@@ -805,10 +805,14 @@ class TokenService
             }
         }
         $result = [];
+        $rtStatus = 'ok';
         if(!empty($cacheRt)){
             Log::info("before merge,cache:".json_encode($cacheRt));
+            if(empty($t)){
+                $rtStatus = 'no_data';
+            }
             $dataCurrent = [
-                "s" => "ok",
+                "s" => $rtStatus,
                 "t" => $t, // 时间戳
                 "o" => $o, // 开盘价
                 "h" => $h, // 最高价
@@ -817,9 +821,12 @@ class TokenService
                 "v" => $v  // 成交量
             ];
             Log::info("before merge,data:".json_encode($dataCurrent));
-
+            $tMerge = !empty($cacheRt['t'])?array_merge($cacheRt['t'],$t):$t;
+            if(empty($tMerge)){
+                $rtStatus = 'no_data';
+            }
             $result = [
-                "s" => "ok",
+                "s" => $rtStatus,
                 "t" => !empty($cacheRt['t'])?array_merge($cacheRt['t'],$t):$t, // 时间戳
                 "o" => !empty($cacheRt['o'])?array_merge($cacheRt['o'],$o):$o, // 开盘价
                 "h" => !empty($cacheRt['h'])?array_merge($cacheRt['h'],$h):$h, // 最高价
@@ -828,8 +835,11 @@ class TokenService
                 "v" => !empty($cacheRt['v'])?array_merge($cacheRt['v'],$v):$v,  // 成交量
             ];
         }else{
+            if(empty($t)){
+                $rtStatus = 'no_data';
+            }
             $result = [
-                "s" => "ok",
+                "s" => $rtStatus,
                 "t" => $t, // 时间戳
                 "o" => $o, // 开盘价
                 "h" => $h, // 最高价
