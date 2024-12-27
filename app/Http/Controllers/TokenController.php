@@ -214,7 +214,7 @@ class TokenController extends Controller
             $datNew = [];
             if(empty($data['t'])){
                 $dataNew['s'] = 'no_data';
-                $datNew['nextTime'] = Carbon::now()->addMinute()->timestamp;
+                $dataNew['nextTime'] = Carbon::now()->addMinute()->timestamp;
                 $data = $dataNew;
             }else{
                 $data['s'] = 'ok';
