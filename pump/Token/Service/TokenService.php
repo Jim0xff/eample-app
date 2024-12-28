@@ -209,6 +209,10 @@ class TokenService
                     }
                 }
                 $totalPrice = $nowPrice * $totalSupply;
+                if($token['createTimestamp'] <  Carbon::createFromFormat('Y-m-d H:i:s', '2024-12-28 00:00:00')->timestamp){
+                    $token['name'] = '【expired】'.$token['name'];
+                    $token['symbol'] =  '【expired】'.$token['symbol'];
+                }
                 $token['totalPrice'] = number_format($totalPrice,10);
                 $token['topOfTheMoon'] = isset($topOfTheMoonTokensMap[$token['id']]);
                 $replyCnt = $redis->get(CommentService::$TOKEN_COMMNET_COUNT . $token['id']);
