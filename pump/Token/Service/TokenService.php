@@ -433,6 +433,8 @@ class TokenService
         ];
         $rt = $graphService->baseQuery($graphParams);
         $result = [];
+        $bondingCurveAddress = config('biz.bondingCurveAddress');
+
         if(!empty($rt['data']) && !empty($rt['data']['userMeMeTokenBalances'])){
             $userIds = array_column($rt['data']['userMeMeTokenBalances'], 'user');
             $userIds = array_unique($userIds);
@@ -450,7 +452,7 @@ class TokenService
                     $single['userImg'] = $userMap[$balance['user']]->headImgUrl;
                     $single['type'] = 'user';
                 }else{
-                    if(strtolower($balance['user']) == strtolower(env('BOUNDING_CURVE_ADDRESS', '0xe8385f3115f2aa17b1AB5B54508a41b834f7787b'))){
+                    if($this->isBondingCurve($balance['user'], $bondingCurveAddress)){
                         $single['userName'] = 'bondingCurve';
                         $single['type'] = 'bondingCurve';
                     }else if(strtolower($balance['user']) == strtolower(env('LP_MANAGER_ADDRESS', '0xb673B8a4c24B450c391E7756E2FbF62DF436B630'))){
@@ -471,6 +473,16 @@ class TokenService
             }
         }
         return $result;
+    }
+
+    private function isBondingCurve($address, $bondingCurveAddresses)
+    {
+        foreach($bondingCurveAddresses as $bondingCurveAddressSingle){
+            if(strtolower($bondingCurveAddressSingle) == strtolower($address)){
+                return true;
+            }
+        }
+        return false;
     }
 
     public function tradingList($params)
