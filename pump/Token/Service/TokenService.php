@@ -212,6 +212,7 @@ class TokenService
                 if($token['createTimestamp'] <  Carbon::createFromFormat('Y-m-d H:i:s', '2024-12-28 00:00:00')->timestamp){
                     $token['name'] = '【expired】'.$token['name'];
                     $token['symbol'] =  '【expired】'.$token['symbol'];
+                    $token['fundingGoal'] = config('biz.fundingGoalMetis');
                 }
                 $token['totalPrice'] = number_format($totalPrice,10);
                 $token['topOfTheMoon'] = isset($topOfTheMoonTokensMap[$token['id']]);
@@ -223,7 +224,7 @@ class TokenService
                     $token['creatorObj'] = $userInfoMap[$token['creator']];
                 }
                 $token['replyCnt'] = $replyCnt;
-                $token['fundingGoal'] = config('biz.fundingGoalMetis');
+
                 if($token['status'] == 'TRADING'){
                     $token['collateral'] = $token['fundingGoal'];
                 }
