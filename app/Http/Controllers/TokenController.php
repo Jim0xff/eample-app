@@ -232,18 +232,39 @@ class TokenController extends Controller
                 if($to - $from > 24 * 3600){
                     $from = Carbon::createFromTimestamp($to)->subHours(24)->timestamp;
                 }
-                //$from = Carbon::createFromTimestamp($to)->subHours(24 * 7)->timestamp;
-
                 break;
             case "5":
                 //5分 不能查超过5天的数据，否则可能出现性能问题
                 if($to - $from > 5 * 24 * 3600){
                     $from = Carbon::createFromTimestamp($to)->subHours(24 * 5)->timestamp;
                 }
-                //$from = Carbon::createFromTimestamp($to)->subHours(24 * 30)->timestamp;
+                break;
+            case "10":
+                //10分 不能查超过3天的数据，否则可能出现性能问题
+                if($to - $from > 3 * 24 * 3600){
+                    $from = Carbon::createFromTimestamp($to)->subHours(24 * 3)->timestamp;
+                }
+                break;
+            case "1H":
+                //1小时    不能查超过7天的数据，否则可能出现性能问题
+                if($to - $from > 7 * 24 * 3600){
+                    $from = Carbon::createFromTimestamp($to)->subHours(24 * 7)->timestamp;
+                }
+                break;
+            case "12H":
+                //1小时    不能查超过30天的数据，否则可能出现性能问题
+                if($to - $from > 30 * 24 * 3600){
+                    $from = Carbon::createFromTimestamp($to)->subHours(24 * 30)->timestamp;
+                }
                 break;
             case "1D":
                 //1天 不能查超过3年的数据，否则可能出现性能问题
+                if($to - $from > 3 * 365 * 24 * 3600){
+                    $from = Carbon::createFromTimestamp($to)->subyears(3)->timestamp;
+                }
+                break;
+            case "1W":
+                //1周 不能查超过3年的数据，否则可能出现性能问题
                 if($to - $from > 3 * 365 * 24 * 3600){
                     $from = Carbon::createFromTimestamp($to)->subyears(3)->timestamp;
                 }

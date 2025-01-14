@@ -979,17 +979,44 @@ class TokenService
                 }
                 array_unshift($dateList, $toTmp);
                 break;
+            case "10":
+                while($toTmp > $from){
+                    $toTmpObj = Carbon::createFromTimestamp($toTmp);
+                    array_unshift($dateList, $toTmpObj->endOfMinute()->timestamp);
+                    $toTmp = $toTmp - (10 * 60);
+                }
+                array_unshift($dateList, $toTmp);
+                break;
+            case "1H":
+                while($toTmp > $from){
+                    $toTmpObj = Carbon::createFromTimestamp($toTmp);
+                    array_unshift($dateList, $toTmpObj->endOfHour()->timestamp);
+                    $toTmp = $toTmp - (60 * 60);
+                }
+                array_unshift($dateList, $toTmp);
+                break;
+            case "12H":
+                while($toTmp > $from){
+                    $toTmpObj = Carbon::createFromTimestamp($toTmp);
+                    array_unshift($dateList, $toTmpObj->endOfHour()->timestamp);
+                    $toTmp = $toTmp - (60 * 60 * 12);
+                }
+                array_unshift($dateList, $toTmp);
+                break;
+
             case "1D":
                 while($toTmp > $from){
-                    array_unshift($dateList, $toTmp);
-                    $toTmp =  Carbon::createFromTimestamp($toTmp)->subDay()->endOfDay()->timestamp;
+                    $toTmpObj = Carbon::createFromTimestamp($toTmp);
+                    array_unshift($dateList, $toTmpObj->endOfDay()->timestamp);
+                    $toTmp =  $toTmpObj->subDay()->endOfDay()->timestamp;
                 }
                 array_unshift($dateList, $toTmp);
                 break;
             case "1W":
                 while($toTmp > $from){
-                    array_unshift($dateList, $toTmp);
-                    $toTmp =  Carbon::createFromTimestamp($toTmp)->subDays(7)->endOfDay()->timestamp;
+                    $toTmpObj = Carbon::createFromTimestamp($toTmp);
+                    array_unshift($dateList, $toTmpObj->endOfDay()->timestamp);
+                    $toTmp =  $toTmpObj->subDays(7)->endOfDay()->timestamp;
                 }
                 array_unshift($dateList, $toTmp);
                 break;
