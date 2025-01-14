@@ -892,7 +892,7 @@ class TokenService
                     'symbol' => $token['symbol'],
                     'ticker' => $token['name'],
                     'description' => $token['description'],
-                    'exchange' => 'ExampleExchange',
+                    'exchange' => 'TokenExchange',
                     'type' => 'crypto',
                 ];
                 $result[] = $single;
@@ -940,7 +940,7 @@ class TokenService
                 'description' => $token['symbol'],
                 'type' => 'crypto',
                 'session' => '24x7',
-                'exchange' => 'ExampleExchange',
+                'exchange' => 'TokenExchange',
                 'listed_exchange' => '',
                 'timezone' => 'UTC',
                 'minmov' => 1,
