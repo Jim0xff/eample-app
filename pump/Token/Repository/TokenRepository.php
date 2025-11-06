@@ -42,6 +42,12 @@ class TokenRepository
         $tokenDaoModel->status = $tokenDbModel->status;
         $tokenDaoModel->symbol = $tokenDbModel->symbol;
         $tokenDaoModel->creator = $tokenDbModel->creator;
+        $tokenDaoModel->co_build_agent_id = $tokenDbModel->coBuildAgentId;
+        $tokenDaoModel->sell_at = $tokenDbModel->sellAt;
+        $tokenDaoModel->ai_agent_type = $tokenDbModel->aiAgentType;
+        $tokenDaoModel->features = $tokenDbModel->features;
+        $tokenDaoModel->airdrop_rate = $tokenDbModel->airdropRate;
+        $tokenDaoModel->trading_volume = $tokenDbModel->tradingVolume;
         return $tokenDaoModel;
     }
 
@@ -61,6 +67,12 @@ class TokenRepository
        $tokenDbModel->status = $tokenDaoModel->status;
        $tokenDbModel->symbol = $tokenDaoModel->symbol;
        $tokenDbModel->creator = $tokenDaoModel->creator;
+       $tokenDbModel->coBuildAgentId = $tokenDaoModel->co_build_agent_id;
+       $tokenDbModel->sellAt = $tokenDaoModel->sell_at;
+       $tokenDbModel->aiAgentType = $tokenDaoModel->ai_agent_type;
+       $tokenDbModel->features = $tokenDaoModel->features;
+       $tokenDbModel->airdropRate = $tokenDaoModel->airdrop_rate;
+       $tokenDbModel->tradingVolume = $tokenDaoModel->trading_volume;
        return $tokenDbModel;
     }
 

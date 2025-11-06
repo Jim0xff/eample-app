@@ -22,7 +22,7 @@ class ApiToken
         /** @var \Illuminate\Auth\TokenGuard $guard */
         $guard = auth()->guard();
         if (!$guard->check()) {
-            throw new DomainException('not login', 602);
+            throw new DomainException('not login', 401);
         }
 
         return $next($request);

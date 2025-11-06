@@ -3,6 +3,7 @@
 namespace Pump\User\Services;
 
 use App\InternalServices\DomainException;
+use App\InternalServices\LazpadTaskService\LazpadTaskService;
 use Carbon\Carbon;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
@@ -32,6 +33,21 @@ class UserService
         return $this->login(['address'=>$request->address]);
     }
 
+    public function createUserNotLogin(CreateUserRequest $request)
+    {
+
+        $exists = UserRepository::getUsersByAddressList([$request->address]);
+        if(empty($exists)){
+            try{
+                UserRepository::createUser($this->userCreateRequestToDbModel($request));
+            }catch (UniqueConstraintViolationException $e){
+                Log::info("duplicate_create_user,params = " . json_encode($request));
+            }
+        }
+
+        return null;
+    }
+
     public function editUser($params)
     {
         DB::transaction(function () use ($params) {
@@ -54,6 +70,23 @@ class UserService
 
             if($needUpdate){
                 $user->save();
+                if(!empty($params['user'])){
+                    /** @var LazpadTaskService $taskService */
+                    $taskService = resolve('lazpad_task_service');
+                    $taskService->postDataWithHeaders('user/updateUserById', [
+                        'headers'=>[
+                            'Authorization' => request()->header('Authorization'),
+                        ],
+                        'json'=> [
+                            'id' => $params['user']->id,
+                            'name' => $params['nickName'],
+                            'content' =>[
+                                'headImgUrl' =>  $params['headImgUrl'],
+                            ]
+                        ]
+                    ]);
+                }
+
             }
         });
     }

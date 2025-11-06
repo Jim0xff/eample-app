@@ -2,14 +2,19 @@
 
 namespace Pump\Token\Service;
 
+use App\InternalServices\Airdrop\AirdropService;
 use App\InternalServices\Coingecko\CoingeckoService;
 use App\InternalServices\DomainException;
 use App\InternalServices\GraphService\Service;
+use App\InternalServices\LazpadTaskService\LazpadTaskService;
+use App\InternalServices\OpenLaunchChatService\OpenLaunchChatService;
+use Brick\PessimisticLocking\PessimisticLocking;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use Pump\Comment\Service\CommentService;
+use Pump\Token\Dao\AgentDAOModel;
 use Pump\Token\Dao\TopOfTheMoonDAOModel;
 use Pump\Token\DbModel\TokenDbModel;
 use Pump\Token\Repository\TokenRepository;
@@ -28,6 +33,8 @@ class TokenService
     public static $TOKEN_HISTORY_CACHE_TO_KEY = 'history_cache_on_to_';
 
     public static $TOKEN_HISTORY_CACHE_RT_KEY = 'history_cache_rt_';
+
+    public static $CREATE_TOKEN_KEY_PRE = "create_token_";
 
     public function tokenDetail($params)
     {
@@ -80,7 +87,7 @@ class TokenService
         return false;
     }
 
-    public function tokenList($params, $needBeforePrice = false)
+    public function tokenList($params, $needBeforePrice = false, $needAgentInfo = false)
     {
         /** @var Service $graphService */
         $graphService = resolve(Service::class);
@@ -125,13 +132,15 @@ class TokenService
         }
         $orderBy = $params['orderBy']??'createTimestamp';
         $orderDirection = $params['orderDirection']??'desc';
-        $first = $params['first']??100;
+        $first = $params['pageSize']??100;
+        $skip = !empty($params['page']) ? ($params['page']-1)*$first : 0;
         $graphParams = [
             "query" => "query MyQuery {
   tokens(where: $whereStr
          orderBy: $orderBy
          orderDirection: $orderDirection
          first: $first
+         skip: $skip
   ) {
     blockNumber
     collateral
@@ -152,6 +161,8 @@ class TokenService
     currencyAddress
     transactionHash
     updateTimestamp
+    sellAt
+    airdropRate
   }
 }"
         ];
@@ -216,6 +227,14 @@ class TokenService
                 }
                 $token['totalPrice'] = number_format($totalPrice,10);
                 $token['topOfTheMoon'] = isset($topOfTheMoonTokensMap[$token['id']]);
+
+                if($needAgentInfo){
+                   $agentInfo =  AgentDAOModel::query()->where("token_address", $token['id'])->get()->first();
+                   if(!empty($agentInfo)){
+                       $token['agentInfo'] = $agentInfo->toArray();
+                   }
+                }
+
                 $replyCnt = $redis->get(CommentService::$TOKEN_COMMNET_COUNT . $token['id']);
                 if(empty($replyCnt)){
                     $replyCnt = 0;
@@ -227,6 +246,10 @@ class TokenService
 
                 if($token['status'] == 'TRADING'){
                     $token['collateral'] = $token['fundingGoal'];
+                }
+                if(!empty($token['sellAt'])){
+                    $sellAt = Carbon::createFromTimestamp($token['sellAt']);
+                    $token['status'] = $sellAt->isFuture() ? 'PRE_SALE' : $token['status'];
                 }
                 $currencyAddress = $token['currencyAddress'];
                 $currencyAddress = strtolower($currencyAddress);
@@ -341,6 +364,7 @@ class TokenService
         }
         return $result;
     }
+
 
     private function getPriceByNetSwap($pairAddress, $currencyAddress)
     {
@@ -571,6 +595,45 @@ class TokenService
         $result['pagination'] = $pagination;
         $result['items'] = $items;
         return $result;
+    }
+
+    public function getTokenTradingAmount($params)
+    {
+        /** @var Service $graphService */
+        $graphService = resolve(Service::class);
+        $whereArray = [];
+        if(!empty($params['token'])){
+            $params['token'] = strtolower($params['token']);
+            $whereArray[] = "token:\"".$params['token']."\"";
+        }
+        if(!empty($params['startTime'])){
+            $whereArray[] = "createTimestamp_gte:\"".$params['startTime']."\"";
+        }
+        if(!empty($params['endTime'])){
+            $whereArray[] = "createTimestamp_lte:\"".$params['endTime']."\"";
+        }
+
+        if(!empty($whereArray)){
+            $whereStr = "{".implode(",", $whereArray)."}";
+        }else{
+            $whereStr = '{}';
+        }
+        $graphParams = [
+            "query" => "query MyQuery {
+  transactions(where: $whereStr
+  ) {
+    tokenAmount
+  }
+}"
+        ];
+        $rt = $graphService->baseQuery($graphParams);
+        $result = 0;
+        if(!empty($rt['data']) && !empty($rt['data']['transactions'])){
+            foreach($rt['data']['transactions'] as $transaction){
+                $result += $transaction['tokenAmount'];
+            }
+        }
+        return sprintf("%.0f", $result);
     }
 
     public function getTokenLatestPrice($token)
@@ -1031,18 +1094,149 @@ class TokenService
 
     public function createToken($params): TokenDbModel
     {
-       return DB::transaction(function () use ($params) {
-            $queryParams = [
-                'addressList'=> [$params['address']]
-            ];
-            $existsToken = TokenRepository::queryTokens($queryParams);
-            if(empty($existsToken)){
-                $tokenDbModel = $this->createParamsToDbModel($params);
-                return TokenRepository::createToken($tokenDbModel);
-            }else{
-                return $existsToken[0];
-            }
+        /** @var PessimisticLocking $lock */
+        $lock = resolve('locker');
+        return $lock->process(self::$CREATE_TOKEN_KEY_PRE . $params['address'], 10, 100000, 3, function () use ($params) {
+            return DB::transaction(function () use ($params) {
+                $queryParams = [
+                    'addressList'=> [$params['address']]
+                ];
+                $existsToken = TokenRepository::queryTokens($queryParams);
+                if(empty($existsToken)){
+                    $tokenDbModel = $this->createParamsToDbModel($params);
+
+                    if(!empty($params['coBuildAgent'])){
+                        $params['coBuildAgent']['tokenAddress'] = $params['address'];
+                        $params['coBuildAgent']['agentType'] = $params['agentType'];
+                        if(!empty($params['coBuildAgent']["knowledgeUrl"])){
+                            $params['coBuildAgent']["knowledgeStr"] = $markdown = file_get_contents($params['coBuildAgent']["knowledgeUrl"]);
+                        }
+                        $agentModel = $this->createParamsToCoAgentDbModel($params['coBuildAgent']);
+                        //TODO create agent knowledge
+//                        /** @var OpenLaunchChatService $openLaunchChatService */
+//                        $openLaunchChatService = resolve('open_launch_chat_service');
+//                        $createParams = [
+//                            "app"=>"lazpad",
+//                            "outAgentId" => $agentModel->id,
+//                            "agentName" => $agentModel->agentName,
+//                            "type" => $agentModel->type,
+//                            "tokenAddress" => $agentModel->tokenAddress,
+//                            "tagLine"=>$params['coBuildAgent']["tagLine"],
+//                            "description"=>$params['coBuildAgent']["description"],
+//                            "greeting"=>$params['coBuildAgent']["greeting"],
+//                            "knowledgeUrl"=>$params['coBuildAgent']["knowledgeUrl"],
+//                            "knowledgeStr"=>$params['coBuildAgent']["knowledgeStr"],
+//                            "dayTotalLimit"=>100
+//                        ];
+//                        $createRt = $openLaunchChatService->chatGet('co-build-agent/create.json', $createParams,[], true);
+                        /** @var \App\InternalServices\CoBuildAgent\CoBuildAgentInternalService $coBuildAgentInternalService */
+                        $coBuildAgentInternalService = resolve('co_build_agent_service');
+
+                        $createParams = [
+                            "name" => $params['address'],
+                            "title" => $agentModel->agent_name,
+                            "description" => $params['coBuildAgent']["description"],
+                            "knowledge" => $params['coBuildAgent']["knowledgeStr"],
+                            "userAddress" => $params['user']->address,
+                        ];
+                        $createRt = $coBuildAgentInternalService->agentPost("api/agents", $createParams,[], true);
+                        if(!empty($params['airdropRate'])){
+                            /** @var AirdropService $airdropService */
+                            $airdropService = resolve('airdrop_service');
+
+                            $airdropActivity = $airdropService->airdropPost('insert-airdrop-activity', [
+                                "tokenAddress"=> $params['address'],
+                                "tokenName" => $tokenDbModel->name,
+                                "tokenSymbol" => $tokenDbModel->symbol,
+                                "tokenDecimals" => "1000000000000000000",
+                                "name" => "airdrop_".$params['address'],
+                                "startTime" => Carbon::now()->timestamp,
+                                "endTime" => Carbon::now()->addYears(2)->timestamp,
+                            ],
+                                [
+                                    "apiToken"=>config("internal.airdrop_service_api_key")
+                                ]
+                            );
+                            $tokenDbModel->content['airdropActivityId'] = $airdropActivity['id'];
+                        }
+                        $agentContentObj = json_decode($agentModel->content, true);
+                        $agentContentObj['outAgentId'] = $createRt['id'];
+                        $agentModel->content = json_encode($agentContentObj);
+                        $agentModel->out_agent_id = $createRt['id'];
+                        $agentModel->save();
+
+                        $tokenDbModel->coBuildAgentId = $agentModel->id;
+                    }
+                    $rt = TokenRepository::createToken($tokenDbModel);
+                    return $rt;
+                }else{
+                    return $existsToken[0];
+                }
+            });
         });
+    }
+
+    public function syncTokenTransaction($user, $currencyAmount, $currencyType, $transactionHash, $transactionType)
+    {
+        /** @var AirdropService $airdropService */
+        $airdropService = resolve('airdrop_service');
+
+        /** @var $taskPointService LazpadTaskService */
+        $taskPointService = resolve('lazpad_task_service');
+        $invitedByWho = $taskPointService->getDataWithHeaders("user/invitedByWho",
+            [
+                "headers"=>[
+                    "x-server-call" => "true",
+                    "traceId"=> app('requestId')
+                ],
+                "query"=>[
+                    "userId"=>$user->id
+                ]
+            ]);
+        if(empty($invitedByWho)){
+            return;
+        }
+        try{
+            $airdropService->airdropPost("insert-service-fee", [
+                "userAddress"=>$invitedByWho['ethAddress'],
+                "bizId" => $transactionHash,
+                "bizType" => $transactionType,
+                "amount" => floor($currencyAmount/1000),
+            ],
+                ["apiToken"=>config("internal.airdrop_service_api_key")], false);
+
+        }catch (\Throwable $e){
+            Log::error("insert service fee error:$e");
+        }
+    }
+
+    public function createParamsToCoAgentDbModel($params)
+    {
+        $model = new AgentDAOModel();
+        $model->agent_name = $params['agentName'];
+        $model->token_address = $params['tokenAddress'];
+        $model->status = 'running';
+        $content = [];
+        if(!empty($params['tagLine'])){
+            $content['tagLine'] = $params['tagLine'];
+        }
+        if(!empty($params['description'])){
+            $content['description'] = $params['description'];
+        }
+        if(!empty($params['greeting'])){
+            $content['greeting'] = $params['greeting'];
+        }
+        if(!empty($params['knowledgeUrl'])){
+            $content['knowledgeUrl'] = $params['knowledgeUrl'];
+        }
+        if(!empty($params['knowledgeStr'])){
+            $content['knowledgeStr'] = $params['knowledgeStr'];
+        }
+        $content['dayTotalLimit'] = 100;
+        $model->content = json_encode($content);
+        $model->type = $params['agentType'];
+        $model->save();
+        return $model;
     }
 
     public function createParamsToDbModel($params): TokenDbModel
@@ -1065,6 +1259,12 @@ class TokenService
         $tokenDbModel->imgUrl = $params['imgUrl'];
         $tokenDbModel->symbol = $params['symbol'];
         $tokenDbModel->creator = $params['creator'];
+        if(!empty($params['sellAt'])){
+            $params['sellAt'] = date('Y-m-d H:i:s', $params['sellAt']);
+        }
+        $tokenDbModel->sellAt = $params['sellAt'];
+        $tokenDbModel->aiAgentType = $params['agentType'];
+        $tokenDbModel->airdropRate = $params['airdropRate'];
         return $tokenDbModel;
     }
 

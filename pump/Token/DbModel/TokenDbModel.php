@@ -27,4 +27,18 @@ class TokenDbModel
     public $deletedAt;
 
     public $creator;
+
+    public $sellAt;
+
+    public $aiAgentType;
+
+    public $coBuildAgentId;
+
+    public $features;
+
+    public $tradingVolume;
+
+    public $airdropRate;
+
+
 }

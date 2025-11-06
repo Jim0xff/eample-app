@@ -82,7 +82,7 @@ class Handler extends ExceptionHandler
 
 
         if (starts_with($request->path(), 'api')) {
-            throw new DomainException('未登录', 602);
+            throw new DomainException('未登录', 403);
         }
 
         return redirect()->guest('login');

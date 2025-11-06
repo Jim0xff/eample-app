@@ -12,9 +12,11 @@ Route::get('/test/{id}', [TestController::class, 'test1']);
 Route::get('/test2', [TestController::class, 'test2']);
 Route::post('/test3', [TestController::class, 'test3']);
 Route::get('/test4', [TestController::class, 'test4']);
+Route::get('/test88', [TestController::class, 'test88']);
 
 
 Route::post('/uploadImg.json', ['uses' => '\App\Http\Controllers\ImageController@uploadImg']);
+Route::post('/uploadFile.json', ['uses' => '\App\Http\Controllers\ImageController@uploadFile']);
 
 /**  Route::post('/user/create.json', [UserController::class, 'createUser'])->middleware([\App\Http\Middleware\BusinessThrottleRequestsMiddleware::class.':60,60,true']); */
 Route::post('/user/create.json', [UserController::class, 'createUser']);
@@ -40,6 +42,8 @@ Route::get('/token/history.json', ['uses' => '\App\Http\Controllers\TokenControl
 Route::get('/token/historyMock.json', ['uses' => '\App\Http\Controllers\TokenController@getHistoryMock']);
 Route::get('/time.json', ['uses' => '\App\Http\Controllers\TokenController@getTime']);
 Route::get('/token/config.json', ['uses' => '\App\Http\Controllers\TokenController@getConfig']);
+Route::get('/token/getTokenTradingAmount.json', ['uses' => '\App\Http\Controllers\TokenController@getTokenTradingAmount']);
+
 
 Route::get('/history', ['uses' => '\App\Http\Controllers\TokenController@getHistoryPure']);
 Route::get('/time', ['uses' => '\App\Http\Controllers\TokenController@getTimePure']);
@@ -57,6 +61,11 @@ Route::get('/comment/userComment.json', ['uses' => '\App\Http\Controllers\Commen
 Route::post('/comment/clickLike.json',  ['uses' => '\App\Http\Controllers\CommentController@clickLike'])->middleware([\App\Http\Middleware\ApiToken::class]);
 Route::get('/comment/userLikeList.json', ['uses' => '\App\Http\Controllers\CommentController@clickLikeList','middleware' => \App\Http\Middleware\ApiToken::class]);
 
+
+Route::post('/coBuildAgent/sendChat.json', ['uses' => '\App\Http\Controllers\CoBuildAgentController@sendChat','middleware' => \App\Http\Middleware\ApiToken::class]);
+Route::get('/coBuildAgent/chatList.json', ['uses' => '\App\Http\Controllers\CoBuildAgentController@chatList','middleware' => \App\Http\Middleware\ApiToken::class]);
+Route::get('/coBuildAgent/myContributeData.json', ['uses' => '\App\Http\Controllers\CoBuildAgentController@myContributeData','middleware' => \App\Http\Middleware\ApiToken::class]);
+Route::post('/coBuildAgent/contributeData.json', ['uses' => '\App\Http\Controllers\CoBuildAgentController@contributeData','middleware' => \App\Http\Middleware\ApiToken::class]);
 
 
 

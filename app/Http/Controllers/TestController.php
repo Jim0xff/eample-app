@@ -1,57 +1,145 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\InternalServices\OpenLaunchChatService\OpenLaunchChatService;
 use Aws\Result;
 use Aws\S3\S3Client;
+use Blockchainethdev\EthereumTx\Transaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use phpseclib\Math\BigInteger;
 use Web3\Formatters\AddressFormatter;
+use Web3\Methods\Eth\Accounts;
 use Web3\Utils;
 use Web3\Web3;
-use Web3\ValueObjects\{Transaction, Wei};
 use Web3\Contract;
 use Web3\Providers\HttpAsyncProvider;
 use function React\Async\await;
+use Illuminate\Support\Facades\Log;
 
 
 class TestController extends Controller{
 
+    function contract_call($from_address,$contract_address,$callData, $privateKey){
+        $web3 = new Web3(new HttpAsyncProvider('https://sepolia.metisdevops.link'),false);
+
+        $Eth = $web3->getEth();
+        $transaction_dict =[
+            'from' => $from_address,
+            'to' => $contract_address,
+            'data' => $callData
+        ];
+        $Eth->getTransactionCount($from_address, function ($err, $transactionCount)use($contract_address,$callData,$Eth,$transaction_dict,$privateKey) {
+            if ($err !== null) {
+                //print_r($err);
+            }
+            $nonce = $transactionCount->toString();
+            $transaction_dict['nonce'] = intval($nonce);
+            $Eth->gasPrice(function ($err, $gasPrice)use($nonce,$contract_address,$callData,$Eth,$transaction_dict,$privateKey) {
+                $Eth->estimateGas($transaction_dict, function ($err, $gas)use($gasPrice,$Eth,$transaction_dict,$privateKey) {
+                    if ($err !== null) {
+                        Log::error("estimateGasError:$err");
+                        exit(1);
+                    }
+                    $transaction_dict['gasPrice'] =intval($gasPrice->toString());
+                    $transaction_dict["gas"] = intval($gas->toString());
+                    $transaction_dict["chainId"] = '59902';
+                    $transaction = new Transaction($transaction_dict);
+                    $sign_data = $transaction->sign($privateKey);
+                    $Eth->sendRawTransaction("0x".$sign_data, function ($err, $transaction) use ($Eth){
+                        if ($err !== null) {
+                            Log::error("sendRawTransactionError:$err");
+                            exit(1);
+                        }
+                        echo 'tx: ' . $transaction . PHP_EOL;
+                    });
+                });
+            });
+        });
+    }
 
     public function test1(string $id)
     {
         $abiObj = config("abi.TokenFactory");
 
-        $web3 = new Web3(new HttpAsyncProvider('https://sepolia.metisdevops.link'),30);
-
+        $web3 = new Web3(new HttpAsyncProvider('https://sepolia.metisdevops.link'),false);
+//        $ee = ($web3->getPersonal()->listAccounts(function ($err, $result){
+//            var_dump($result);
+//        }));
+//        await($ee);
+//        exit;
         $contract = new Contract($web3->provider, $abiObj);
-        $tokenPrice = 0;
-        $rt = $contract->at("0xe8385f3115f2aa17b1AB5B54508a41b834f7787b")->call("tokenCap","0x245212f8791ab253e8170bf65cf1c9d753cdd607",[], function($err, $result) use(&$tokenPrice) {
 
-            if(!empty($result[0])){
-                /** @var BigInteger $priceObj */
-                $priceObj = $result[0];
-                $tokenPrice = $priceObj->toString();
-            }
+        $functionResult = null;
+        $callData = $contract->at("0xe8385f3115f2aa17b1AB5B54508a41b834f7787b")->getData("createToken",
+            "PTXEEETBB",
+            "PTX2",
+            "descdesc3",
+            "https://pump.sgp1.digitaloceanspaces.com/tokenImg_0xd4f8bbf9c0b8aff6d76d2c5fa4971a36fc9e4003_aR9CMa9QbX",
+            '0',
+            '0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000'
+        );
+
+        //$rry = $this->contract_call(strtolower("0xd4F8bbF9c0B8AFF6D76d2C5Fa4971a36fC9e4003"),"0xe8385f3115f2aa17b1AB5B54508a41b834f7787b", "0x".$callData, "ccc61019e6a49bcc428812c80c8ddebeebbe8530213d2ac4699909248cf32e92");
+        $rrte = $web3->getEth()->getTransactionReceipt("0x02a20bdc6492edda34b835fe9d8f877575a0a13d308c0226400862374595a334", function ($err, $transactionReceipt) {
+            print_r(json_encode($transactionReceipt));
+        });
+        await($rrte);
+        exit;
+        $rt = $contract->at("0xe8385f3115f2aa17b1AB5B54508a41b834f7787b")->send("createToken",
+            "PTXEEETAA",
+            "PTX1",
+            "descdesc2",
+            "https://pump.sgp1.digitaloceanspaces.com/tokenImg_0xd4f8bbf9c0b8aff6d76d2c5fa4971a36fc9e4003_aR9CMa9QbX",
+            '0',
+            '0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000'
+            ,[], function($err, $result) use(&$functionResult) {
+            Log::info("ghpp:$err");
             $functionResult = $result;
         });
+        await($rt);
 //        $net = $web3->getNet();
 //        $net->listening(function ($err, $result){
 //            var_dump($result);
 //        });
-
+//
 //        $logInfo = [];
-//        $rt2 = $web3->getEth()->getLogs(["topics"=>[Utils::sha3("RaffleEnter(address,uint256,uint256)")]],function ($err, $result) use (&$logInfo){
+//        $rt2 = $web3->getEth()->getLogs(["topics"=>[Utils::sha3("TokenCreated(indexed address,string,string,indexed address,string,string,uint256,uint256,address)")]],function ($err, $result) use (&$logInfo){
 //            $logInfo['content'] = json_decode(json_encode($result), true);
 //
 //            $address = AddressFormatter::format($result[0]->topics[1]);
 //
 //        });
+//
+//        //0xAb02bbc8F7eE65e8F03014A9580071e1b439DbB3
+//
+//        await($rt2);
+        return response()->json(['code' => 200, 'data' => $functionResult]);
+    }
+
+    public function test88()
+    {
+        $web3 = new Web3(new HttpAsyncProvider('https://sepolia.metisdevops.link'),false);
+        $net = $web3->getNet();
+        $net->listening(function ($err, $result){
+            var_dump($result);
+        });
+
+        $logInfo = [];
+        $rt2 = $web3->getEth()->getLogs([
+            "topics"=>[
+            Utils::sha3("TokenCreated(address,string,string,address,string,string,uint256,uint256,address)")
+            ],
+            "address"=>"0xe8385f3115f2aa17b1AB5B54508a41b834f7787b"
+        ],function ($err, $result) use (&$logInfo){
+            $logInfo['content'] = json_decode(json_encode($result), true);
+            //$address = AddressFormatter::format($result[0]->topics[1]);
+        });
 
         //0xAb02bbc8F7eE65e8F03014A9580071e1b439DbB3
-        await($rt);
-//        await($rt2);
-        return response()->json(['code' => 200, 'data' => $tokenPrice]);
+
+        await($rt2);
+        print_r($logInfo);
     }
 
 
@@ -136,9 +224,14 @@ class TestController extends Controller{
     }
 
     public function test4(Request $request){
-        $ccc = Carbon::createFromTimestamp(1731560817);
-        print_r($ccc->endOfHour());
-        return response()->json(['code' => 200, 'data' => $ccc]);
+//        $ccc = Carbon::createFromTimestamp(1731560817);
+//        print_r($ccc->endOfHour());
+        $user = auth()->user();
+
+        /** @var OpenLaunchChatService $sss */
+        $sss = resolve('open_launch_chat_service');
+        //$rt = $sss->chatPost("co-build-agent/chat.json", ['app'=>'lazpad', 'outAgentId'=>'1','content'=>'Who is the next president of USA?'],[], true);
+        return response()->json(['code' => 200, 'data' => true]);
     }
 
 }

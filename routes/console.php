@@ -7,4 +7,10 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote')->hourly();
 
-\Illuminate\Support\Facades\Schedule::command(" app:generate-top-of-the-moon")->dailyAt('24:00');
+//\Illuminate\Support\Facades\Schedule::command("app:generate-top-of-the-moon")->dailyAt('24:00');
+
+
+\Illuminate\Support\Facades\Schedule::command("app:scan-graduated-token")->everyTenMinutes();
+
+
+\Illuminate\Support\Facades\Schedule::command("app:retry-insert-airdrop")->everyTenMinutes();

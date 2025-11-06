@@ -3,9 +3,12 @@
 namespace App\Adapters;
 
 
+use App\InternalServices\LazpadTaskService\LazpadTaskService;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\UserProvider;
+use Pump\User\Request\CreateUserRequest;
 use Pump\User\Services\LoginToken;
+use Pump\User\Services\UserService;
 
 class TokenAuthorizedProvider implements UserProvider
 {
@@ -28,13 +31,31 @@ class TokenAuthorizedProvider implements UserProvider
     {
         $token = array_shift($tokenArr);
 
-        /** @var $loginTokenService LoginToken */
-        $loginTokenService = resolve('login_token_service');
-        $rt = $loginTokenService->validateToken($token);
+//        /** @var $loginTokenService LoginToken */
+//        $loginTokenService = resolve('login_token_service');
+        /** @var $taskPointService LazpadTaskService */
+        $taskPointService = resolve('lazpad_task_service');
+        $rt = $taskPointService->decodeToken($token);
+        $createRequest = $this->generateUserCreateRequest($rt);
+        /** @var $userService UserService */
+        $userService = resolve('user_service');
+        $userService->createUserNotLogin($createRequest);
+
         if(empty($rt)){
             return null;
         }
         return new LoginUser($rt);
+    }
+
+    private function generateUserCreateRequest($user)
+    {
+        $request = new CreateUserRequest();
+        $request->address = $user['address'];
+        $request->walletType = "MetaMask";
+        $request->nickName = $user['name'];
+        $request->twitterLink = $user['content']??['twitterUserInfo']??['name'];
+        $request->telegramLink = $user['content']??['tgUserInfo']??['id'];
+        return $request;
     }
 
     /**

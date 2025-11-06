@@ -11,4 +11,9 @@ return [
     MLL\GraphiQL\GraphiQLServiceProvider::class,
     \Nuwave\Lighthouse\LighthouseServiceProvider::class,
     \App\InternalServices\S3\S3ServiceProvider::class,
+    \Brick\PessimisticLocking\PessimisticLockingProvider::class,
+    \App\InternalServices\LazpadTaskService\LazpadTaskServiceProvider::class,
+    \App\InternalServices\OpenLaunchChatService\OpenLaunchChatServiceProvider::class,
+    \App\InternalServices\CoBuildAgent\CoBuildAgentServiceProvider::class,
+
 ];

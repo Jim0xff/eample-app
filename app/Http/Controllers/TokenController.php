@@ -17,10 +17,12 @@ class TokenController extends Controller
        $params = $request->all();
        /** @var LoginUser $user */
        $user = auth()->user();
+       $params['user'] = $user;
        $params['creator'] =  $user->address;
        /** @var $tokenService TokenService */
        $tokenService = resolve('token_service');
        $params['address'] = strtolower($params['address']);
+
        $token = $tokenService->createToken($params);
        return response()->json(['data' => $token, 'code' => 200]);
    }
@@ -82,6 +84,14 @@ class TokenController extends Controller
        /** @var $tokenService TokenService */
        $tokenService = resolve('token_service');
        return response()->json(['data' => $tokenService->tokenHolders($params), 'code' => 200]);
+   }
+
+   public function getTokenTradingAmount(Request $request)
+   {
+       $params = $request->all();
+       /** @var $tokenService TokenService */
+       $tokenService = resolve('token_service');
+       return response()->json(['data' => $tokenService->getTokenTradingAmount($params), 'code' => 200]);
    }
 
    public function tradingList(Request $request)

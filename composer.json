@@ -7,9 +7,10 @@
     "require": {
         "php": "^8.2",
         "aws/aws-sdk-php": "^3.326",
+        "blockchainethdev/ethereum-tx": "^0.4.3",
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
-        "mll-lab/laravel-graphiql": "^3.2",
+        "mll-lab/laravel-graphiql": "3.3.4",
         "nuwave/lighthouse": "^6.45",
         "predis/predis": "^2.0",
         "web3p/web3.php": "dev-master"
@@ -27,7 +28,8 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/",
-            "Pump\\": "pump/"
+            "Pump\\": "pump/",
+            "Brick\\": "pump/Brick/"
         }
     },
     "autoload-dev": {

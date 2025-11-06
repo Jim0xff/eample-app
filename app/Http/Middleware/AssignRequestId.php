@@ -22,11 +22,13 @@ class AssignRequestId
         Log::shareContext([
             'request-id' => $requestId
         ]);
+        app()->instance('requestId', $requestId);
 
         $response = $next($request);
         if($request->getContentTypeFormat() != 'json'){
             return  $response;
         }
+
 
         $contentStr = $response->getContent();
         $contentJSON = json_decode($contentStr, true);

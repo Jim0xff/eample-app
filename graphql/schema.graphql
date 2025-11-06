@@ -3,34 +3,135 @@ scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date
 
 "Indicates what fields are available at the top level of a query operation."
 type Query {
-    "Find a single user by an identifying attribute."
-    user(
-      "Search by primary key."
-      address: String @eq
-    ): User @find
+    tokenList(
+        searchKey: String,
+        orderBy: String,
+        pageNum: String!,
+        pageSize: String!,
+        creator: String,
+    ): PageTokenList @field(resolver: "App\\GraphQL\\Resolvers\\QueryResolvers@tokenList")
 
-    "List multiple users."
-    users: [User!]! @all
+    boughtTokenList(
+        user: String
+    ): [TokenDetail] @field(resolver: "App\\GraphQL\\Resolvers\\QueryResolvers@boughtTokenList")
 
-    userComplexQuery(
-        keyWord: String,
-        first: Int,
-        page: Int,
-    ): PageUsers
+    tokenDetail(
+        user: String
+    ): TokenDetail @field(resolver: "App\\GraphQL\\Resolvers\\QueryResolvers@tokenDetail")
 
-    "Find a single token by an identifying attribute."
-    token(
-        "Search by primary key."
-        address: String @eq
-    ): Token @find
+    pageSearchTokenComment(
+        pageNum: String!,
+        pageSize: String!,
+        tokenId: String!
+    ):PageCommentList @field(resolver: "App\\GraphQL\\Resolvers\\QueryResolvers@pageSearchComment")
 
-    tokens: [Token!]! @all
+    pageSearchUserComment(
+        pageNum: String!,
+        pageSize: String!,
+        user: String!
+    ):PageCommentList @field(resolver: "App\\GraphQL\\Resolvers\\QueryResolvers@pageSearchUserComment")
+
+    userLikeList(
+        pageNum: String!,
+        pageSize: String!,
+    ):PageUserLike @field(resolver: "App\\GraphQL\\Resolvers\\QueryResolvers@userLikeList")
+
+    followerList(
+        pageNum: String!,
+        pageSize: String!,
+        user: String!
+    ):PageFollowerList @field(resolver: "App\\GraphQL\\Resolvers\\QueryResolvers@followerList")
+
+    followingList(
+        pageNum: String!,
+        pageSize: String!,
+        user: String!
+    ):PageFollowerList @field(resolver: "App\\GraphQL\\Resolvers\\QueryResolvers@followingList")
+
+    tokenHolders(
+        token: String!
+    ):[TokenHolder] @field(resolver: "App\\GraphQL\\Resolvers\\QueryResolvers@tokenHolders")
+
+    tradingList(
+        token: String!
+        user: String
+        type: String
+        pageNum: String!,
+        pageSize: String!,
+    ):PageTradingList @field(resolver: "App\\GraphQL\\Resolvers\\QueryResolvers@tradingList")
 }
 
 type Mutation {
-    userCreateMutation(
-        address: String @rules(apply: ["required"])
-    ): String @guard
+    createToken(
+         input: CreateTokenParam!@spread
+    ): Token @guard @field(resolver: "App\\GraphQL\\Resolvers\\MutationsResolvers@createToken")
+
+    createComment(
+        input: CreateCommentParam!@spread
+    ): UserComment  @guard @field(resolver: "App\\GraphQL\\Resolvers\\MutationsResolvers@createComment")
+
+    clickLike(
+        commentId: String
+        likedUser: String
+    ): Boolean @guard @field(resolver: "App\\GraphQL\\Resolvers\\MutationsResolvers@clickLike")
+
+    followUser(
+        targetUser: String
+    ): Boolean @guard @field(resolver: "App\\GraphQL\\Resolvers\\MutationsResolvers@followUser")
+
+    cancelFollowUser(
+        targetUser: String
+    ): Boolean @guard @field(resolver: "App\\GraphQL\\Resolvers\\MutationsResolvers@cancelFollowUser")
+
+    syncTokenTransaction(
+        currencyAmount: String
+        currencyType: String
+        transactionHash: String
+        transactionType: String
+    ): Boolean @guard @field(resolver: "App\\GraphQL\\Resolvers\\MutationsResolvers@syncTokenTransaction")
+}
+
+input CreateTokenParam {
+    address: String!
+
+    name: String!
+
+    desc: String
+
+    website: String
+
+    telegramLink: String
+
+    twitterLink: String
+
+    imgUrl: String!
+
+    symbol: String!
+
+    agentType: String!
+
+    sellAt: String!
+
+    airdropRate: String!
+
+    coBuildAgent: coBuildAgentInput
+}
+
+input CreateCommentParam {
+    token: String
+    text: String
+    imgUrl: String
+    parentCommentId: String
+    replyCommentId: String
+}
+
+input coBuildAgentInput {
+    agentName: String!
+    tagLine: String
+    description: String
+    greeting: String
+    knowledgeUrl: String
+    knowledgeStr: String
 }
 
 type Token {
@@ -40,6 +141,47 @@ type Token {
     name: String!
 }
 
+type UserComment {
+    id: String
+    token: String
+    user: String
+    replyUser: String
+    parentCommentId: String
+    replyCommentId: String
+    loveCnt: String
+    replyImgUrl: String
+    text: String
+    createdAt: String
+    updatedAt: String
+    subCommentList: [UserComment]
+    userLiked: Boolean
+}
+
+type PageFollowerList{
+    items:[FollowUser]
+    pagination: Pagination
+}
+
+type PageTradingList{
+    items: [TradingSingle]
+    pagination: Pagination
+}
+
+type PageUserLike{
+    items:[LikeDetail]
+    pagination: Pagination
+}
+
+type PageCommentList{
+    items:[UserComment]
+    pagination: Pagination
+}
+
+type PageTokenList{
+    items:[TokenDetail],
+    pagination: Pagination
+}
+
 type PageUsers{
     data: [User],
     pagination: Pagination
@@ -47,6 +189,8 @@ type PageUsers{
 
 type Pagination {
     total: String
+    pageNum: String
+    pageSize: String
 }
 
 "Account of a person who utilizes this application."
@@ -70,4 +214,98 @@ type User {
 
     "When the account was last updated."
     updated_at: DateTime!
+}
+
+type TokenDetail {
+    collateral: String
+    createTimestamp: String
+    creator: String
+    description: String
+    id: String
+    fundingGoal: String
+    imgUrl: String
+    name: String
+    nowPrice: String
+    remainSupply: String
+    status: String
+    currencyAddress: String
+    symbol: String
+    totalSupply: String
+    transactionHash: String
+    updateTimestamp: String
+    totalPrice: String
+    totalPriceUsd: String
+    currencySymbol: String
+    replyCnt: String
+    creatorObj: CreatorObj
+    sellAt: String
+    airdropRate: String
+    website: String
+    twitterLink: String
+    telegramLink: String
+    agentInfo: AgentInfo
+    tokenAmount: String
+
+}
+
+type CreatorObj {
+    address: String
+    nickName: String
+    walletType: String
+    headImgUrl: String
+    website: String
+    twitterLink: String
+    telegramLink: String
+    followingCnt: String
+    followedCnt: String
+}
+
+type AgentInfo {
+    agentName: String
+    outAgentId: String
+}
+
+type LikeDetail {
+    id: String
+    comment: CommentSimple
+    clickUser: CreatorObj
+    createdAt: String
+    updatedAt: String
+}
+
+type CommentSimple {
+    text: String
+    imgUrl: String
+}
+
+type FollowUser {
+    address: String
+    nickName: String
+    walletType: String
+    headImgUrl: String
+    website: String
+    twitterLink: String
+    telegramLink: String
+    followAt: String
+}
+
+type TokenHolder {
+    tokenAmount: String
+    userAddress: String
+    userName: String
+    userImg: String
+    type: String
+    rate: String
+}
+
+type TradingSingle {
+    token: String
+    type: String
+    tokenAmount: String
+    transactionHash: String
+    currencyAmount: String
+    userAddress: String
+    userName: String
+    createTimestamp: String
+    userImg: String
 }

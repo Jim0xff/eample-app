@@ -102,7 +102,7 @@ abstract class AbstractService
         $contents = $this->parseJSON($response);
         //记录错误日志
         \Log::info("InternalServices request", [$method, $uri, $options]);
-        $this->checkCode($contents);
+        //$this->checkCode($contents);
 
         return $contents;
     }
@@ -117,6 +117,14 @@ abstract class AbstractService
         $startTime = microtime(true);
         $rt = $this->requestAndParse('GET', $uri, ['query' => $params]);
         Log::info("http get,uri:".$uri." params:".json_encode($params)." duration:" . (microtime(true) - $startTime)*1000);
+        return $rt;
+    }
+
+    public function getDataWithHeaders($uri, array $options = [])
+    {
+        $startTime = microtime(true);
+        $rt = $this->requestAndParse('GET', $uri, $options);
+        Log::info("http get,uri:".$uri." params:".json_encode($options)." duration:" . (microtime(true) - $startTime)*1000);
         return $rt;
     }
 
@@ -135,6 +143,17 @@ abstract class AbstractService
 
         $rt = $this->requestAndParse('POST', $uri, [$key => $params]);
         Log::info("http post,uri:".$uri." params:".json_encode($params)." duration:" . (microtime(true) - $startTime)*1000);
+        return $rt;
+    }
+
+    public function postDataWithHeaders($uri, $options = [], $prefix = null)
+    {
+        $startTime = microtime(true);
+
+        if ($prefix) $key = $prefix;
+
+        $rt = $this->requestAndParse('POST', $uri, $options);
+        Log::info("http post,uri:".$uri." params:".json_encode($options)." duration:" . (microtime(true) - $startTime)*1000);
         return $rt;
     }
 

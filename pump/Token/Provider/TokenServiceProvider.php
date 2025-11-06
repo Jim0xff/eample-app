@@ -2,6 +2,8 @@
 
 namespace Pump\Token\Provider;
 
+use Pump\Token\Service\CoBuildAgentService;
+use Pump\Token\Service\TokenGraduateService;
 use Pump\Token\Service\TokenService;
 use Pump\Token\Service\TopOfTheMoonService;
 
@@ -21,5 +23,16 @@ class TokenServiceProvider extends \Illuminate\Support\ServiceProvider
         });
 
         $this->app->alias(TopOfTheMoonService::class, "top_of_the_moon_service");
+
+        $this->app->singleton(CoBuildAgentService::class, function() {
+            return new CoBuildAgentService();
+        });
+        $this->app->alias(CoBuildAgentService::class, "co_build_agent_service");
+
+        $this->app->singleton(TokenGraduateService::class, function() {
+            return new TokenGraduateService();
+        });
+        $this->app->alias(TokenGraduateService::class, "token_graduate_service");
+
     }
 }
