@@ -365,9 +365,12 @@ class TokenService
         return $result;
     }
 
-
+    public static $RELATIVE_PRICE_KEY = "RELATIVE_PRICE_";
     private function getPriceByNetSwap($pairAddress, $currencyAddress)
-    {
+    {   $redis = Redis::connection();
+        if(!empty($redis->get(self::$RELATIVE_PRICE_KEY . $pairAddress . '_' . $currencyAddress))){
+            return $redis->get(self::$RELATIVE_PRICE_KEY . $pairAddress . '_' . $currencyAddress);
+        }
         $abiObj = config("abi.NetswapPair");
 
         $web3 = new Web3(new HttpAsyncProvider(env('METIS_RPC_URL','https://sepolia.metisdevops.link')),30);
@@ -406,6 +409,7 @@ class TokenService
                 $memeTokenAmount = $functionResult['_reserve0']->toString();
             }
             $relativePrice = number_format($currencyAmount/$memeTokenAmount,20);
+            $redis->command('set',[self::$RELATIVE_PRICE_KEY . $pairAddress . '_' . $currencyAddress , $relativePrice, 'EX', 300]);
             return $relativePrice;
         }
         return 0;
