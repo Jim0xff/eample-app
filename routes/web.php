@@ -29,7 +29,7 @@ Route::get('/user/followerList.json', ['uses' => '\App\Http\Controllers\UserCont
 Route::get('/user/followingList.json', ['uses' => '\App\Http\Controllers\UserController@followingList']);
 
 
-
+Route::get('/graphiql', [\MLL\GraphiQL\GraphiQLController::class, '__invoke']);
 Route::post('/token/create.json', ['uses' => '\App\Http\Controllers\TokenController@createToken','middleware' => \App\Http\Middleware\ApiToken::class]);
 Route::get('/token/tokenDetail.json', ['uses' => '\App\Http\Controllers\TokenController@tokenDetail']);
 Route::get('/token/topOfTheMoon.json', ['uses' => '\App\Http\Controllers\TokenController@topOfTheMoon']);
