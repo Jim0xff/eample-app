@@ -19,6 +19,7 @@ class TokenController extends Controller
        $user = auth()->user();
        $params['user'] = $user;
        $params['creator'] =  $user->address;
+       $params['creatorObj'] = $user;
        /** @var $tokenService TokenService */
        $tokenService = resolve('token_service');
        $params['address'] = strtolower($params['address']);

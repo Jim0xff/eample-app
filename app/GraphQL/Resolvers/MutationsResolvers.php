@@ -18,6 +18,7 @@ class MutationsResolvers
         /** @var $tokenService TokenService */
         $tokenService = resolve('token_service');
         $args['address'] = strtolower($args['address']);
+        $args['creatorObj'] = $user;
         $token = $tokenService->createToken($args);
         return $token;
     }

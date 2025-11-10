@@ -15,7 +15,7 @@ class CoBuildAgentInternalService extends AbstractService
         if($needAuth && empty(request()->header('Authorization'))){
             throw new DomainException("not auth" , "401");
         }
-        if(!empty(request()->header('Authorization'))){
+        if($needAuth && !empty(request()->header('Authorization'))){
             $headers['Authorization'] = request()->header('Authorization');
         }
         $headers['x-request-id'] = app('requestId');
@@ -56,7 +56,7 @@ class CoBuildAgentInternalService extends AbstractService
         if($needAuth && empty(request()->header('Authorization'))){
             throw new DomainException("not auth" , "401");
         }
-        if(!empty(request()->header('Authorization'))){
+        if($needAuth && !empty(request()->header('Authorization'))){
             $headers['Authorization'] = request()->header('Authorization');
         }
         $headers['x-request-id'] = app('requestId');
@@ -65,7 +65,7 @@ class CoBuildAgentInternalService extends AbstractService
             "json"=>$params
         ]);
 
-        if($rtRaw['code'] != 200){
+        if(!empty($rtRaw['errors'])){
             \Log::error(sprintf(
                 "launch chat service post call failed, url: %s  params: %s  headers: %s  result: %s",
                 $uri,
@@ -73,7 +73,7 @@ class CoBuildAgentInternalService extends AbstractService
                 json_encode($headers, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
                 json_encode($rtRaw, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
             ));
-            throw new DomainException("open launch chat service call failed", $rtRaw['code']);
+            throw new DomainException("open launch chat service call failed", 500);
         }
 
         \Log::info(sprintf(

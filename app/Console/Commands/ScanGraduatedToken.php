@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use Pump\Token\Service\TokenGraduateService;
 
 class ScanGraduatedToken extends Command
@@ -26,6 +27,8 @@ class ScanGraduatedToken extends Command
      */
     public function handle()
     {
+        Log::info("start scan-graduated-token");
+
         /** @var TokenGraduateService $tokenGraduateService */
         $tokenGraduateService = resolve('token_graduate_service');
 

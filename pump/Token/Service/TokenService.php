@@ -1116,34 +1116,51 @@ class TokenService
                             $params['coBuildAgent']["knowledgeStr"] = $markdown = file_get_contents($params['coBuildAgent']["knowledgeUrl"]);
                         }
                         $agentModel = $this->createParamsToCoAgentDbModel($params['coBuildAgent']);
-                        //TODO create agent knowledge
-//                        /** @var OpenLaunchChatService $openLaunchChatService */
-//                        $openLaunchChatService = resolve('open_launch_chat_service');
-//                        $createParams = [
-//                            "app"=>"lazpad",
-//                            "outAgentId" => $agentModel->id,
-//                            "agentName" => $agentModel->agentName,
-//                            "type" => $agentModel->type,
-//                            "tokenAddress" => $agentModel->tokenAddress,
-//                            "tagLine"=>$params['coBuildAgent']["tagLine"],
-//                            "description"=>$params['coBuildAgent']["description"],
-//                            "greeting"=>$params['coBuildAgent']["greeting"],
-//                            "knowledgeUrl"=>$params['coBuildAgent']["knowledgeUrl"],
-//                            "knowledgeStr"=>$params['coBuildAgent']["knowledgeStr"],
-//                            "dayTotalLimit"=>100
-//                        ];
-//                        $createRt = $openLaunchChatService->chatGet('co-build-agent/create.json', $createParams,[], true);
                         /** @var \App\InternalServices\CoBuildAgent\CoBuildAgentInternalService $coBuildAgentInternalService */
                         $coBuildAgentInternalService = resolve('co_build_agent_service');
-
-                        $createParams = [
-                            "name" => $params['address'],
-                            "title" => $agentModel->agent_name,
-                            "description" => $params['coBuildAgent']["description"],
-                            "knowledge" => $params['coBuildAgent']["knowledgeStr"],
-                            "userAddress" => $params['user']->address,
+                        $tokenAddress = $params['address'];
+                        $description = $params['coBuildAgent']["description"];
+                        $tagLine = $params['coBuildAgent']["tagLine"];
+                        $greeting = $params['coBuildAgent']["greeting"];
+                        $airdropRate = $params['airdropRate'];
+                        $knowledgeUrl = $params['coBuildAgent']["knowledgeUrl"];
+                        $knowledgeStr = $params['coBuildAgent']["knowledgeStr"];
+                        $graphParams = [
+                            "query" => "query MyQuery {
+# Write your query or mutation here
+mutation CreateAgent {
+  createAgent(
+    agent: {
+      uid:  $tokenAddress
+      name: $agentModel->agent_name
+      tagline: $tagLine
+      description: $description
+      greeting: $greeting
+      airdropAllocation: $airdropRate
+    }
+    knowledge: {
+      text: $knowledgeStr
+      url: $knowledgeUrl
+    }
+  ) {
+    id
+    uid
+    name
+    tagline
+    description
+    greeting
+    airdropAllocation
+    ownerUserId
+  }
+}",
+                            "operationName" => "CreateAgent"
                         ];
-                        $createRt = $coBuildAgentInternalService->agentPost("api/agents", $createParams,[], true);
+                        $graphHeaders = [
+                            "Authorization"=>"Bearer xVXyLpIV2MS6C6UzpJlf",
+                            "x-user-id" => $params['creatorObj']->id
+                        ];
+                        $createRt = $coBuildAgentInternalService->agentPost("", $graphParams, $graphHeaders, false);
+                        $createRt = $createRt['data']['createAgent'];
                         if(!empty($params['airdropRate'])){
                             /** @var AirdropService $airdropService */
                             $airdropService = resolve('airdrop_service');
