@@ -87,17 +87,29 @@ class TokenService
         return false;
     }
 
-    public function tokenList($params, $needBeforePrice = false, $needAgentInfo = false)
+    private function determineSearchFromDB($params)
     {
-        /** @var Service $graphService */
-        $graphService = resolve(Service::class);
-
-        //{id_in: ["0xbacd7cad68f707715461db07d11c3f2be932accc"], status: "TRADING"}
-        $whereContent = [];
-        $whereArray = [];
         if(!empty($params['searchKey'])){
-            if(substr($params['searchKey'], 0, 2) === '0x'
-                || substr($params['searchKey'], 0, 2) === '0X'
+            return true;
+        }
+        if(!empty($params['orderBy']) && $params['orderBy'] != "featured"){
+            return true;
+        }
+        if(!empty($params['orderBy']) && $params['orderBy'] != "coBuilders"){
+            return true;
+        }
+        if(!empty($params['orderBy']) && $params['orderBy'] != "tradingVolume"){
+            return true;
+        }
+        return false;
+    }
+
+    public function searchByDB($params)
+    {
+        $dataList = [];
+        if(!empty($params['searchKey'])){
+            if((substr($params['searchKey'], 0, 2) === '0x'
+                || substr($params['searchKey'], 0, 2) === '0X')
                 && strlen($params['searchKey']) >= 10
             ){
                 $params['tokenIds'] = [$params['searchKey']];
@@ -105,68 +117,40 @@ class TokenService
                 $params['name'] = $params['searchKey'];
             }
         }
-        if(!empty($params['symbol'])){
-            $whereArray[] = "symbol:\"".$params['symbol']."\"";
-        }
-        if(!empty($params['tokenIds'])){
-            foreach($params['tokenIds'] as &$tokenId){
-                $tokenId = strtolower($tokenId);
+        $dbItems = TokenRepository::pageQueryTokens($params);
+        if(!empty($dbItems)){
+            $tokensIdsRt = array_column($dbItems, 'address');
+            $graphParams = [
+                'tokenIds' => $tokensIdsRt,
+            ];
+            $graphRt = $this->searchTokenByGraph($graphParams);
+            if(!empty($graphRt['data']) && !empty($graphRt['data']['tokens'])){
+                $tokens = $graphRt['data']['tokens'];
+                $tokenMap = array_column($tokens, null, 'id');
+                foreach ($dbItems as $dbItem){
+                    $dataSingle = $tokenMap[$dbItem['address']];
+                    $dataList[] = $dataSingle;
+                }
             }
-            $whereArray[] = "id_in:" . json_encode($params['tokenIds']);
         }
-        if(!empty($params['statusList'])){
-            $whereArray[] = "status_in:" . json_encode($params['statusList']);
-        }
-        if(!empty($params['name'])){
-            $params['name'] = strtolower($params['name']);
-            $whereArray[] = "nameLowercase:\"".$params['name']."\"";
-        }
-        if(!empty($params['creator'])){
-            $params['creator'] = strtolower($params['creator']);
-            $whereArray[] = "creator:\"".$params['creator']."\"";
-        }
-        if(!empty($whereArray)){
-            $whereStr = "{".implode(",", $whereArray)."}";
-        }else{
-            $whereStr = '{}';
-        }
-        $orderBy = $params['orderBy']??'createTimestamp';
-        $orderDirection = $params['orderDirection']??'desc';
-        $first = $params['pageSize']??100;
-        $skip = !empty($params['page']) ? ($params['page']-1)*$first : 0;
-        $graphParams = [
-            "query" => "query MyQuery {
-  tokens(where: $whereStr
-         orderBy: $orderBy
-         orderDirection: $orderDirection
-         first: $first
-         skip: $skip
-  ) {
-    blockNumber
-    collateral
-    createTimestamp
-    creator
-    description
-    id
-    fundingGoal
-    imgUrl
-    name
-    nowPrice
-    remainSupply
-    status
-    currencyAddress
-    symbol
-    totalSupply
-    pairAddress
-    currencyAddress
-    transactionHash
-    updateTimestamp
-    sellAt
-    airdropRate
-  }
-}"
+        return [
+          'data' => [
+              'tokens' => $dataList,
+          ]
         ];
-        $rt = $graphService->baseQuery($graphParams);
+    }
+
+    public function tokenList($params, $needBeforePrice = false, $needAgentInfo = false)
+    {
+
+        $searchByDB = $this->determineSearchFromDB($params);
+        $rt = [];
+        if($searchByDB){
+            $rt = $this->searchByDB($params);
+        }else{
+            $rt = $this->searchTokenByGraph($params);
+        }
+
         $result = [];
         $redis = Redis::connection();
         $topOfTheMoonTokens = TopOfTheMoonDAOModel::query()->where('status','active')->get()->toArray();
@@ -281,6 +265,86 @@ class TokenService
             }
         }
         return $result;
+    }
+
+    public function searchTokenByGraph($params)
+    {
+        /** @var Service $graphService */
+        $graphService = resolve(Service::class);
+        $whereArray = [];
+        if(!empty($params['searchKey'])){
+            if((substr($params['searchKey'], 0, 2) === '0x'
+                || substr($params['searchKey'], 0, 2) === '0X')
+                && strlen($params['searchKey']) >= 10
+            ){
+                $params['tokenIds'] = [$params['searchKey']];
+            }else{
+                $params['name'] = $params['searchKey'];
+            }
+        }
+        if(!empty($params['symbol'])){
+            $whereArray[] = "symbol:\"".$params['symbol']."\"";
+        }
+        if(!empty($params['tokenIds'])){
+            foreach($params['tokenIds'] as &$tokenId){
+                $tokenId = strtolower($tokenId);
+            }
+            $whereArray[] = "id_in:" . json_encode($params['tokenIds']);
+        }
+        if(!empty($params['statusList'])){
+            $whereArray[] = "status_in:" . json_encode($params['statusList']);
+        }
+        if(!empty($params['name'])){
+            $params['name'] = strtolower($params['name']);
+            $whereArray[] = "nameLowercase:\"".$params['name']."\"";
+        }
+        if(!empty($params['creator'])){
+            $params['creator'] = strtolower($params['creator']);
+            $whereArray[] = "creator:\"".$params['creator']."\"";
+        }
+        if(!empty($whereArray)){
+            $whereStr = "{".implode(",", $whereArray)."}";
+        }else{
+            $whereStr = '{}';
+        }
+        $orderBy = $params['orderBy']??'createTimestamp';
+        $orderDirection = $params['orderDirection']??'desc';
+        $first = $params['pageSize']??100;
+        $skip = !empty($params['page']) ? ($params['page']-1)*$first : 0;
+        $graphParams = [
+            "query" => "query MyQuery {
+  tokens(where: $whereStr
+         orderBy: $orderBy
+         orderDirection: $orderDirection
+         first: $first
+         skip: $skip
+  ) {
+    blockNumber
+    collateral
+    createTimestamp
+    creator
+    description
+    id
+    fundingGoal
+    imgUrl
+    name
+    nowPrice
+    remainSupply
+    status
+    currencyAddress
+    symbol
+    totalSupply
+    pairAddress
+    currencyAddress
+    transactionHash
+    updateTimestamp
+    sellAt
+    airdropRate
+  }
+}"
+        ];
+        $rt = $graphService->baseQuery($graphParams);
+        return $rt;
     }
 
     public function userBoughtTokens($params)

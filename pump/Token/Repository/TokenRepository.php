@@ -17,6 +17,13 @@ class TokenRepository
         return self::toDbModels($rawData);
     }
 
+    public static function pageQueryTokens($params)
+    {
+        $pageData = TokenDAOModel::pageQueryTokens($params);
+        $items = self::toDbModels($pageData->items());
+        return $items;
+    }
+
     public static function createToken(TokenDbModel $tokenDbModel):TokenDbModel
     {
         $daoModel = self::toDaoModel($tokenDbModel);

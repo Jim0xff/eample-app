@@ -59,6 +59,9 @@ type Query {
         pageNum: String!,
         pageSize: String!,
     ):PageTradingList @field(resolver: "App\\GraphQL\\Resolvers\\QueryResolvers@tradingList")
+
+    configQuery
+    :ConfigQueryResult  @field(resolver: "App\\GraphQL\\Resolvers\\QueryResolvers@configQuery")
 }
 
 type Mutation {
@@ -89,6 +92,7 @@ type Mutation {
         transactionHash: String
         transactionType: String
     ): Boolean @guard @field(resolver: "App\\GraphQL\\Resolvers\\MutationsResolvers@syncTokenTransaction")
+
 }
 
 input CreateTokenParam {
@@ -258,6 +262,11 @@ type CreatorObj {
     telegramLink: String
     followingCnt: String
     followedCnt: String
+}
+
+type ConfigQueryResult {
+    tokenFactoryAddress: String
+    netSwapToolAddress: String
 }
 
 type AgentInfo {

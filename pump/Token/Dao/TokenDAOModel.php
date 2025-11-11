@@ -3,6 +3,7 @@
 namespace Pump\Token\Dao;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class TokenDAOModel extends Model
 {
@@ -25,5 +26,26 @@ class TokenDAOModel extends Model
            $mdl->limit(100);
        }
        return $mdl->orderBy('id', 'desc')->get();
+    }
+
+    public static function pageQueryTokens($params)
+    {
+        $mdl = self::query();
+        if(isset($params['statusList'])) {
+            $mdl->whereIn('status', $params['statusList']);
+        }
+        if(isset($params['addressList'])) {
+            $mdl->whereIn('address', $params['addressList']);
+        }
+        if(!empty($params['name'])) {
+            $term = $params['name'];
+            $mdl->addSelect(DB::raw("MATCH(name, symbol, `desc`) AGAINST('$term' IN NATURAL LANGUAGE MODE) AS relevance"))
+                ->whereFullText(['name', 'symbol', 'desc'], $term)
+                ->orderByDesc('relevance');
+        }else{
+            $mdl->orderBy($params['orderBy'], $params['orderDirection']);
+        }
+
+        return  $mdl->simplePaginate($params['pageSize'], ['*'], 'page', $params['page']);
     }
 }

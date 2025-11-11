@@ -170,6 +170,14 @@ class QueryResolvers
         return $rt;
     }
 
+    public function configQuery(null $_, array $args, GraphQLContext $context)
+    {
+        return [
+            "tokenFactoryAddress" => config('biz.bondingCurveAddress')[0],
+            "netSwapToolAddress" => config('biz.netSwapToolAddress')[0],
+        ];
+    }
+
     public function tradingList(null $_, array $args, GraphQLContext $context)
     {
         /** @var $tokenService TokenService */
