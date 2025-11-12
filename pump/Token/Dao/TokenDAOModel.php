@@ -25,7 +25,15 @@ class TokenDAOModel extends Model
        }else{
            $mdl->limit(100);
        }
-       return $mdl->orderBy('id', 'desc')->get();
+       if(isset($params['idMin'])) {
+           $mdl->where('id','>', $params['idMin']);
+       }
+       if(isset($params['orderBy'])){
+           $mdl->orderBy($params['orderBy'], $params['orderByDirection'] ?? 'desc');
+       }else{
+           $mdl->orderBy('id', 'desc');
+       }
+       return $mdl->get();
     }
 
     public static function pageQueryTokens($params)

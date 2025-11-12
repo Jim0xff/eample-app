@@ -6,6 +6,7 @@ use Pump\Token\Service\CoBuildAgentService;
 use Pump\Token\Service\TokenGraduateService;
 use Pump\Token\Service\TokenService;
 use Pump\Token\Service\TopOfTheMoonService;
+use Pump\Token\Service\TradingService;
 
 class TokenServiceProvider extends \Illuminate\Support\ServiceProvider
 {
@@ -33,6 +34,11 @@ class TokenServiceProvider extends \Illuminate\Support\ServiceProvider
             return new TokenGraduateService();
         });
         $this->app->alias(TokenGraduateService::class, "token_graduate_service");
+
+        $this->app->singleton(TradingService::class, function() {
+            return new TradingService();
+        });
+        $this->app->alias(TradingService::class, "trading_service");
 
     }
 }

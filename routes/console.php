@@ -14,3 +14,6 @@ Artisan::command('inspire', function () {
 
 
 \Illuminate\Support\Facades\Schedule::command("app:retry-insert-airdrop")->everyTenMinutes();
+
+\Illuminate\Support\Facades\Schedule::command("app:get-all-tokens-trading-volume")->dailyAt("23:50");
+

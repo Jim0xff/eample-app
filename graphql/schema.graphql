@@ -16,7 +16,7 @@ type Query {
     ): [TokenDetail] @field(resolver: "App\\GraphQL\\Resolvers\\QueryResolvers@boughtTokenList")
 
     tokenDetail(
-        user: String
+        tokenId: String
     ): TokenDetail @field(resolver: "App\\GraphQL\\Resolvers\\QueryResolvers@tokenDetail")
 
     pageSearchTokenComment(
