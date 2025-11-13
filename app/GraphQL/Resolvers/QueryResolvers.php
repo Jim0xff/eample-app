@@ -186,7 +186,6 @@ class QueryResolvers
         $args['perPage'] = $args['pageSize'];
         $rt = $tokenService->tradingList($args);
         $pagination = [
-            "total" => $rt['pagination']['total'],
             "pageNum" => $args['pageNum']??1,
             "pageSize" => $args['pageSize']??10,
         ];
