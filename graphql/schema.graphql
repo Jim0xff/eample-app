@@ -9,6 +9,9 @@ type Query {
         pageNum: String!,
         pageSize: String!,
         creator: String,
+        agentType: String,
+        coBuild: Boolean,
+        graduated: Boolean,
     ): PageTokenList @field(resolver: "App\\GraphQL\\Resolvers\\QueryResolvers@tokenList")
 
     boughtTokenList(
