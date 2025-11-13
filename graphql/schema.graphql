@@ -252,7 +252,7 @@ type TokenDetail {
     telegramLink: String
     agentInfo: AgentInfo
     tokenAmount: String
-
+    pairAddress: String
 }
 
 type CreatorObj {
