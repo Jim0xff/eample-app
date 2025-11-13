@@ -45,6 +45,12 @@ class TokenDAOModel extends Model
         if(isset($params['addressList'])) {
             $mdl->whereIn('address', $params['addressList']);
         }
+        if(isset($params['agentType'])) {
+            $mdl->where('ai_agent_type', $params['agentType']);
+        }
+        if(!empty($params['coBuild'])) {
+            $mdl->whereNotNull('co_build_agent_id');
+        }
         if(!empty($params['name'])) {
             $term = $params['name'];
             $mdl->addSelect(DB::raw("MATCH(name, symbol, `desc`) AGAINST('$term' IN NATURAL LANGUAGE MODE) AS relevance"))

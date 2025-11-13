@@ -92,6 +92,12 @@ class TokenService
         if(!empty($params['searchKey'])){
             return true;
         }
+        if(!empty($params['agentType'])){
+            return true;
+        }
+        if(!empty($params['coBuild'])){
+            return true;
+        }
         if(!empty($params['orderBy']) && $params['orderBy'] != "featured"){
             return true;
         }
@@ -290,6 +296,9 @@ class TokenService
                 $tokenId = strtolower($tokenId);
             }
             $whereArray[] = "id_in:" . json_encode($params['tokenIds']);
+        }
+        if(!empty($params['graduated']) ){
+            $params['statusList'] = ['TRADING'];
         }
         if(!empty($params['statusList'])){
             $whereArray[] = "status_in:" . json_encode($params['statusList']);
@@ -1251,6 +1260,7 @@ mutation CreateAgent {
                         $agentModel->save();
 
                         $tokenDbModel->coBuildAgentId = $agentModel->id;
+                        $tokenDbModel->aiAgentType = $params['coBuildAgent']['agentType'];
                     }
                     $rt = TokenRepository::createToken($tokenDbModel);
                     return $rt;
