@@ -6,6 +6,7 @@ return [
     'graph' => env('GRAPH_URL', 'http://localhost:8000/subgraphs/name/metis-pump-subgraph'),
     'coingecko' => env('COINGECKO_URL', 'https://api.coingecko.com/'),
     'task_point' => env('TASK_POINT_URL', 'http://localhost:8010/'),
+    'service_fee_percent' => env('SERVICE_FEE_PERCENT', '1'),
     'open-launch-chat-service' => env('OPEN_LAUNCH_CHAT_SERVICE', 'http://localhost:4000/'),
     'co_build_agent_internal_service' => env('CO_BUILD_AGENT_SERVICE', 'https://laz-chat-test-wlk9n.ondigitalocean.app/'),
     'airdrop_service_url' => env('AIRDROP_SERVICE', 'http://localhost:4001/'),

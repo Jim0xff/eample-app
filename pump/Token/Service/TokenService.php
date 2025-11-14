@@ -1275,7 +1275,7 @@ mutation CreateAgent {
     {
         /** @var AirdropService $airdropService */
         $airdropService = resolve('airdrop_service');
-
+        $transactionHash = strtolower($transactionHash);
         /** @var $taskPointService LazpadTaskService */
         $taskPointService = resolve('lazpad_task_service');
         $invitedByWho = $taskPointService->getDataWithHeaders("user/invitedByWho",
@@ -1290,6 +1290,33 @@ mutation CreateAgent {
             ]);
         if(empty($invitedByWho)){
             return;
+        }
+        if($transactionType == "sell"){
+            /** @var Service $graphService */
+            $graphService = resolve(Service::class);
+            $graphParams = [
+                "query MyQuery {
+  transactions(where: {transactionHash: $transactionHash}) {
+    tokenAmount
+    user
+    blockNumber
+    tokenName
+    tokenPrice
+    transactionHash
+    type
+    token
+    metisAmount
+    id
+    from
+    createTimestamp
+  }
+}"
+            ];
+            $graphTransactions = $graphService->baseQuery($graphParams);
+            if(empty($graphTransactions['data']) || empty($graphTransactions['data']['transactions'])){
+                return;
+            }
+            $currencyAmount = floor(($graphTransactions['data']['transactions'][0]['metisAmount'] / (100 - config('internal.service_fee_percent'))) * 100);
         }
         try{
             $airdropService->airdropPost("insert-service-fee", [
