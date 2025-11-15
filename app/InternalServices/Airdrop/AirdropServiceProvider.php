@@ -1,6 +1,6 @@
 <?php
 
-namespace App\InternalServices\CoBuildAgent;
+namespace App\InternalServices\Airdrop;
 
 use App\InternalServices\Airdrop\AirdropService;
 use App\InternalServices\GuzzleClient;

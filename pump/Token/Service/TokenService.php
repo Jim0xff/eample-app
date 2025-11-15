@@ -1185,12 +1185,9 @@ class TokenService
                     if(!empty($params['coBuildAgent'])){
                         $params['coBuildAgent']['tokenAddress'] = $params['address'];
                         $params['coBuildAgent']['agentType'] = $params['agentType'];
-                        if(!empty($params['coBuildAgent']["knowledgeUrl"])){
-                            $params['coBuildAgent']["knowledgeStr"] = $markdown = file_get_contents($params['coBuildAgent']["knowledgeUrl"]);
-                        }
                         $agentModel = $this->createParamsToCoAgentDbModel($params['coBuildAgent']);
                         /** @var \App\InternalServices\CoBuildAgent\CoBuildAgentInternalService $coBuildAgentInternalService */
-                        $coBuildAgentInternalService = resolve('co_build_agent_service');
+                        $coBuildAgentInternalService = resolve('co_build_agent_internal_service');
                         $tokenAddress = $params['address'];
                         $description = $params['coBuildAgent']["description"];
                         $tagLine = $params['coBuildAgent']["tagLine"];
@@ -1199,21 +1196,20 @@ class TokenService
                         $knowledgeUrl = $params['coBuildAgent']["knowledgeUrl"];
                         $knowledgeStr = $params['coBuildAgent']["knowledgeStr"];
                         $graphParams = [
-                            "query" => "query MyQuery {
-# Write your query or mutation here
+                            "query" => "
 mutation CreateAgent {
   createAgent(
     agent: {
-      uid:  $tokenAddress
-      name: $agentModel->agent_name
-      tagline: $tagLine
-      description: $description
-      greeting: $greeting
-      airdropAllocation: $airdropRate
+      uid:  \"$tokenAddress\"
+      name: \"$agentModel->agent_name\"
+      tagline: \"$tagLine\"
+      description: \"$description\"
+      greeting: \"$greeting\"
+      airdropAllocation: \"$airdropRate\"
     }
     knowledge: {
-      text: $knowledgeStr
-      url: $knowledgeUrl
+      text: \"$knowledgeStr\"
+      url: \"$knowledgeUrl\"
     }
   ) {
     id
@@ -1232,6 +1228,7 @@ mutation CreateAgent {
                             "Authorization"=>"Bearer xVXyLpIV2MS6C6UzpJlf",
                             "x-user-id" => $params['creatorObj']->id
                         ];
+
                         $createRt = $coBuildAgentInternalService->agentPost("", $graphParams, $graphHeaders, false);
                         $createRt = $createRt['data']['createAgent'];
                         if(!empty($params['airdropRate'])){
@@ -1357,6 +1354,7 @@ mutation CreateAgent {
         $content['dayTotalLimit'] = 100;
         $model->content = json_encode($content);
         $model->type = $params['agentType'];
+        $model->out_agent_id = 0;
         $model->save();
         return $model;
     }

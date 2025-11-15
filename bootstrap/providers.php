@@ -15,5 +15,5 @@ return [
     \App\InternalServices\LazpadTaskService\LazpadTaskServiceProvider::class,
     \App\InternalServices\OpenLaunchChatService\OpenLaunchChatServiceProvider::class,
     \App\InternalServices\CoBuildAgent\CoBuildAgentServiceProvider::class,
-
+    \App\InternalServices\Airdrop\AirdropServiceProvider::class,
 ];
