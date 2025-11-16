@@ -57,6 +57,12 @@ class TokenDAOModel extends Model
                 ->whereFullText(['name', 'symbol', 'desc'], $term)
                 ->orderByDesc('relevance');
         }else{
+            if(empty($params['orderBy'])){
+                $params['orderBy'] = 'id';
+            }
+            if(empty($params['orderByDirection'])){
+                $params['orderByDirection'] = 'desc';
+            }
             $mdl->orderBy($params['orderBy'], $params['orderDirection']);
         }
 
