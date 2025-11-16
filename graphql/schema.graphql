@@ -274,6 +274,7 @@ type TokenDetail {
     agentInfo: AgentInfo
     tokenAmount: String
     pairAddress: String
+    airdropActivityId: String
 }
 
 type CreatorObj {
@@ -351,6 +352,8 @@ type ServiceFee {
     bizType: String
     createdAt: String
     updatedAt: String
+    userAddress: String
+    tokenInfo: TokenDetailSimple
 }
 
 type AirdropPermit {
