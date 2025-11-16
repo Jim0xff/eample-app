@@ -204,6 +204,16 @@ class QueryResolvers
         return $serviceFeeService->getServiceFeeAmount($user);
     }
 
+    public function getServiceFeeAmountTotal(null $_, array $args, GraphQLContext $context)
+    {
+        /** @var $serviceFeeService ServiceFeeService */
+        $serviceFeeService = resolve('service_fee_service');
+
+        $user = $context->user();
+
+        return $serviceFeeService->getServiceFeeAmountTotal($user);
+    }
+
     public function getServiceFeeRecord(null $_, array $args, GraphQLContext $context)
     {
         /** @var $serviceFeeService ServiceFeeService */
@@ -212,5 +222,15 @@ class QueryResolvers
         $user = $context->user();
 
         return $serviceFeeService->getServiceFeeRecord($user, $args['pageNum'], $args['pageSize']);
+    }
+
+    public function serviceFeePermit(null $_, array $args, GraphQLContext $context)
+    {
+        /** @var $serviceFeeService ServiceFeeService */
+        $serviceFeeService = resolve('service_fee_service');
+
+        $user = $context->user();
+
+        return $serviceFeeService->serviceFeePermit($user);
     }
 }

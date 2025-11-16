@@ -19,6 +19,31 @@ class ServiceFeeService
         return $rawRt;
     }
 
+    public function getServiceFeeAmountTotal($user)
+    {
+        /** @var AirdropService $airdropService */
+        $airdropService = resolve('airdrop_service');
+
+        $rawRt = $airdropService->airdropGet("get-service-fee-amount-total", [
+            "address"=>$user->address
+        ],
+            ["apiToken"=>config("internal.airdrop_service_api_key")], false);
+
+        return $rawRt;
+    }
+
+    public function serviceFeePermit($user)
+    {
+        /** @var AirdropService $airdropService */
+        $airdropService = resolve('airdrop_service');
+
+        $rawRt = $airdropService->airdropGet("service-fee-permit", [
+            "address"=>$user->address
+        ],
+            ["apiToken"=>config("internal.airdrop_service_api_key")], false);
+        return $rawRt;
+    }
+
     public function getServiceFeeRecord($user, $pageNum, $pageSize)
     {
         /** @var AirdropService $airdropService */

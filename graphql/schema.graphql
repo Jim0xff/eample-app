@@ -69,6 +69,12 @@ type Query {
     serviceFeeAmount
     :String! @field(resolver: "App\\GraphQL\\Resolvers\\QueryResolvers@getServiceFeeAmount")
 
+    serviceFeeAmountTotal
+    :String! @field(resolver: "App\\GraphQL\\Resolvers\\QueryResolvers@getServiceFeeAmountTotal")
+
+    serviceFeePermit
+    :AirdropPermit  @field(resolver: "App\\GraphQL\\Resolvers\\QueryResolvers@serviceFeePermit")
+
     serviceFeeRecords(
         pageNum: String!,
         pageSize: String!,
@@ -345,4 +351,28 @@ type ServiceFee {
     bizType: String
     createdAt: String
     updatedAt: String
+}
+
+type AirdropPermit {
+    token: String
+    amount: String
+    amountDecimal: String
+    status: String
+    permit: PermitDetail
+    tokenInfo: TokenDetailSimple
+}
+
+type PermitDetail {
+    permitType: Int!
+    nonce: String!
+    dataHash: String!
+    expire: String!
+    sig: String!
+}
+
+type TokenDetailSimple {
+    name: String
+    symbol: String
+    address: String
+    decimals: String
 }
