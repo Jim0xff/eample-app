@@ -134,7 +134,7 @@ class TokenService
                 $tokens = $graphRt['data']['tokens'];
                 $tokenMap = array_column($tokens, null, 'id');
                 foreach ($dbItems as $dbItem){
-                    $dataSingle = $tokenMap[$dbItem['address']];
+                    $dataSingle = $tokenMap[$dbItem->address];
                     $dataList[] = $dataSingle;
                 }
             }
