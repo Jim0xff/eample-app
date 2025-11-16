@@ -221,7 +221,10 @@ class TokenService
                 if($needAgentInfo){
                    $agentInfo =  AgentDAOModel::query()->where("token_address", $token['id'])->get()->first();
                    if(!empty($agentInfo)){
-                       $token['agentInfo'] = $agentInfo->toArray();
+                       $token['agentInfo'] = [
+                           "agentName" => $agentInfo->agent_name,
+                           "outAgentId" => $agentInfo->out_agent_id,
+                       ];
                    }
                 }
 
