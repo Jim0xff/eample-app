@@ -57,14 +57,14 @@ class ServiceFeeService
             ["apiToken"=>config("internal.airdrop_service_api_key")], false);
 
         if(!empty($rawRt["items"])){
-            foreach($rawRt["items"] as $item){
+            foreach($rawRt["items"] as &$item){
                 $tokenInfo = [
                     "address" => $item['token'],
                     "decimals" => "18",
                     "name" => "metis",
                     "symbol" => "metis"
                 ];
-                $rawRt["tokenInfo"] = $tokenInfo;
+                $item["tokenInfo"] = $tokenInfo;
             }
         }
         return [
