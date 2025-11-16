@@ -5,6 +5,7 @@ namespace App\GraphQL\Resolvers;
 use App\Adapters\LoginUser;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Pump\Comment\Service\CommentService;
+use Pump\Token\Service\ServiceFeeService;
 use Pump\Token\Service\TokenService;
 use Pump\User\Dao\UserDAOModel;
 use Pump\User\Services\UserService;
@@ -191,5 +192,25 @@ class QueryResolvers
         ];
         $rt["pagination"] = $pagination;
         return $rt;
+    }
+
+    public function getServiceFeeAmount(null $_, array $args, GraphQLContext $context)
+    {
+        /** @var $serviceFeeService ServiceFeeService */
+        $serviceFeeService = resolve('service_fee_service');
+
+        $user = $context->user();
+
+        return $serviceFeeService->getServiceFeeAmount($user);
+    }
+
+    public function getServiceFeeRecord(null $_, array $args, GraphQLContext $context)
+    {
+        /** @var $serviceFeeService ServiceFeeService */
+        $serviceFeeService = resolve('service_fee_service');
+
+        $user = $context->user();
+
+        return $serviceFeeService->getServiceFeeRecord($user, $args['pageNum'], $args['pageSize']);
     }
 }

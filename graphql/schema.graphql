@@ -65,6 +65,14 @@ type Query {
 
     configQuery
     :ConfigQueryResult  @field(resolver: "App\\GraphQL\\Resolvers\\QueryResolvers@configQuery")
+
+    serviceFeeAmount
+    :String! @field(resolver: "App\\GraphQL\\Resolvers\\QueryResolvers@getServiceFeeAmount")
+
+    serviceFeeRecords(
+        pageNum: String!,
+        pageSize: String!,
+    ):PageServiceFee @field(resolver: "App\\GraphQL\\Resolvers\\QueryResolvers@getServiceFeeRecord")
 }
 
 type Mutation {
@@ -169,10 +177,17 @@ type PageFollowerList{
     pagination: Pagination
 }
 
+
 type PageTradingList{
     items: [TradingSingle]
     pagination: Pagination
 }
+
+type PageServiceFee{
+    items: [ServiceFee]
+    pagination: Pagination
+}
+
 
 type PageUserLike{
     items:[LikeDetail]
@@ -320,4 +335,14 @@ type TradingSingle {
     userName: String
     createTimestamp: String
     userImg: String
+}
+
+type ServiceFee {
+    token: String
+    amount: String
+    status: String
+    bizId: String
+    bizType: String
+    createdAt: String
+    updatedAt: String
 }

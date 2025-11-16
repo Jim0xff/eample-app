@@ -3,6 +3,7 @@
 namespace Pump\Token\Provider;
 
 use Pump\Token\Service\CoBuildAgentService;
+use Pump\Token\Service\ServiceFeeService;
 use Pump\Token\Service\TokenGraduateService;
 use Pump\Token\Service\TokenService;
 use Pump\Token\Service\TopOfTheMoonService;
@@ -39,6 +40,11 @@ class TokenServiceProvider extends \Illuminate\Support\ServiceProvider
             return new TradingService();
         });
         $this->app->alias(TradingService::class, "trading_service");
+
+        $this->app->singleton(ServiceFeeService::class, function() {
+            return new ServiceFeeService();
+        });
+        $this->app->alias(ServiceFeeService::class, "service_fee_service");
 
     }
 }
