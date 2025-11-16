@@ -60,8 +60,8 @@ class TokenDAOModel extends Model
             if(empty($params['orderBy'])){
                 $params['orderBy'] = 'id';
             }
-            if(empty($params['orderByDirection'])){
-                $params['orderByDirection'] = 'desc';
+            if(empty($params['orderDirection'])){
+                $params['orderDirection'] = 'desc';
             }
             $mdl->orderBy($params['orderBy'], $params['orderDirection']);
         }
