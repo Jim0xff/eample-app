@@ -176,6 +176,7 @@ class QueryResolvers
         return [
             "tokenFactoryAddress" => config('biz.bondingCurveAddress')[0],
             "netSwapToolAddress" => config('biz.netSwapToolAddress')[0],
+            "feeHandlerAddress" => config('biz.feeHandlerAddress')[0],
         ];
     }
 
