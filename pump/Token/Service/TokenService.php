@@ -41,7 +41,7 @@ class TokenService
         $innerParams = [
             'tokenIds' => [$params['tokenId']],
         ];
-        $innerRt = $this->tokenList($innerParams, true);
+        $innerRt = $this->tokenList($innerParams, true, true);
         if(!empty($innerRt)){
             return $innerRt[0];
         }else{
