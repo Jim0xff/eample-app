@@ -51,6 +51,17 @@ class QueryResolvers
     {
         /** @var $tokenService TokenService */
         $tokenService = resolve('token_service');
+
+        $user = null;
+        try{
+            $user = $context->user();
+        }catch (\Throwable $exception){
+
+        }
+
+        if(!empty($user)){
+            $args['userId'] = $user->address;
+        }
         $rt =  $tokenService->userBoughtTokens($args);
         return $rt;
     }
@@ -177,6 +188,7 @@ class QueryResolvers
             "tokenFactoryAddress" => config('biz.bondingCurveAddress')[0],
             "netSwapToolAddress" => config('biz.netSwapToolAddress')[0],
             "feeHandlerAddress" => config('biz.feeHandlerAddress')[0],
+            "airdropAddress" => config('biz.airdropAddress')[0],
         ];
     }
 

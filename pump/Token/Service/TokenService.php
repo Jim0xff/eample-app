@@ -40,6 +40,7 @@ class TokenService
     {
         $innerParams = [
             'tokenIds' => [$params['tokenId']],
+            'userId' => $params['userId'],
         ];
         $innerRt = $this->tokenList($innerParams, true, true);
         if(!empty($innerRt)){
@@ -179,10 +180,32 @@ class TokenService
             $tokensIdsRt = array_column($rt['data']['tokens'], 'id');
             $dbModels = TokenRepository::queryTokens(['addressList'=>$tokensIdsRt]);
             $dbModelsMap = [];
-
+            $airdropIds = [];
+            $airdropMap = [];
             if(!empty($dbModels)){
                 foreach($dbModels as $dbModel){
                     $dbModelsMap[$dbModel->address] = $dbModel;
+                    if(!empty($dbModel->content['airdropActivityId'])){
+                        $airdropIds[] = $dbModel->content['airdropActivityId'];
+                    }
+                }
+            }
+            if(!empty($airdropIds) && !empty($params['userId'])){
+                /** @var AirdropService $airdropService */
+                $airdropService = resolve('airdrop_service');
+
+                $airdropActivity = $airdropService->airdropGet('airdrop-record-query', [
+                    "userAddress"=> $params['userId'],
+                    "activityIds" => implode(',', $airdropIds)
+                ],
+                    [
+                        "apiToken"=>config("internal.airdrop_service_api_key")
+                    ]
+                );
+                if(!empty($airdropActivity)){
+                    foreach ($airdropActivity as $airdrop){
+                        $airdropMap[$airdrop['token']] = $airdrop;
+                    }
                 }
             }
             $currencyCodeList = config("currency");
@@ -217,7 +240,9 @@ class TokenService
                 }
                 $token['totalPrice'] = number_format($totalPrice,10);
                 $token['topOfTheMoon'] = isset($topOfTheMoonTokensMap[$token['id']]);
-
+                if(!empty($airdropMap[$token['id']])){
+                    $token['airdropAmount'] = $airdropMap[$token['id']]['amount'];
+                }
                 if($needAgentInfo){
                    $agentInfo =  AgentDAOModel::query()->where("token_address", $token['id'])->get()->first();
                    if(!empty($agentInfo)){
@@ -418,6 +443,7 @@ class TokenService
             $tokenList = $this->tokenList(
                 [
                     'tokenIds'=>$tokenIds,
+                    'userId' => $params['userId']??null
                 ]
             );
             $tokenMap = [];

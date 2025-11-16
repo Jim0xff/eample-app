@@ -275,6 +275,7 @@ type TokenDetail {
     tokenAmount: String
     pairAddress: String
     airdropActivityId: String
+    airdropAmount: String
 }
 
 type CreatorObj {
