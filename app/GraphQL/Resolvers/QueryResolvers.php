@@ -39,7 +39,7 @@ class QueryResolvers
         if(!empty($user)){
             $args['userId'] = $user->address;
         }
-        $rt =  $tokenService->tokenList($args);
+        $rt =  $tokenService->tokenList($args, false, true);
 
         return ['items' => $rt, 'pagination' => [
             'pageNum'=>$args['pageNum']??1,

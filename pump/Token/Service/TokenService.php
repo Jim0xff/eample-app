@@ -1285,7 +1285,8 @@ mutation CreateAgent {
                     "userId"=>$user->id
                 ]
             ]);
-        if(empty($invitedByWho)){
+
+        if(empty($invitedByWho['data'])){
             return;
         }
         if($transactionType == "sell"){
@@ -1317,7 +1318,7 @@ mutation CreateAgent {
         }
         try{
             $airdropService->airdropPost("insert-service-fee", [
-                "userAddress"=>$invitedByWho['ethAddress'],
+                "userAddress"=>$invitedByWho['data']['ethAddress'],
                 "bizId" => $transactionHash,
                 "bizType" => $transactionType,
                 "amount" => floor($currencyAmount/1000),
