@@ -66,6 +66,6 @@ class TokenDAOModel extends Model
             $mdl->orderBy($params['orderBy'], $params['orderDirection']);
         }
 
-        return  $mdl->simplePaginate($params['pageSize'], ['*'], 'page', $params['page']);
+        return  $mdl->simplePaginate($params['pageSize'], ['*'], 'page', $params['pageNum']);
     }
 }
