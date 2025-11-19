@@ -283,6 +283,7 @@ type TokenDetail {
     airdropAmount: String
     daysVolume: String
     beforeTrans: BeforeTrans
+    initialPrice: String
 }
 
 type BeforeTrans {

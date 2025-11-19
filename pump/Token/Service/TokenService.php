@@ -239,6 +239,7 @@ class TokenService
                     if(!empty($beforeTrans)){
                         $token['beforeTrans'] = $beforeTrans;
                     }
+                    $token['initialPrice'] = config('internal.bonding_curve_a')/(10 ** 18);
                 }
                 $totalPrice = $nowPrice * $totalSupply;
                 if($token['createTimestamp'] <  Carbon::createFromFormat('Y-m-d H:i:s', '2024-12-28 00:00:00')->timestamp){
@@ -1126,7 +1127,7 @@ class TokenService
                 'has_daily' => true,
                 'has_weekly_and_monthly' => true,
                 'currency_code' => 'METIS',
-                "supported_resolutions"=>["1", "5","10", "1H", "12H", "1D", "1W"]
+                "supported_resolutions"=>["1","5","10", "1H", "12H", "1D", "1W"]
             ];
         }
         return $result;

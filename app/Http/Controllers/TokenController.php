@@ -161,7 +161,7 @@ class TokenController extends Controller
             "symbols_types" => [
                 ["name" => "All types", "value" => ""]
             ],
-            "supported_resolutions" => ["1", "5", "30", "60", "30M", "1H", "1D","1W"]
+            "supported_resolutions" => ["1", "5", "10","1H","12H", "1D","1W"]
         ],);
     }
 
