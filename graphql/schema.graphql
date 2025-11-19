@@ -79,6 +79,10 @@ type Query {
         pageNum: String!,
         pageSize: String!,
     ):PageServiceFee @field(resolver: "App\\GraphQL\\Resolvers\\QueryResolvers@getServiceFeeRecord")
+
+    getTokenPrice(
+        tokenId: String!
+    ):String  @field(resolver: "App\\GraphQL\\Resolvers\\QueryResolvers@getTokenPrice")
 }
 
 type Mutation {

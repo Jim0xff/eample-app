@@ -3,6 +3,7 @@
 namespace App\GraphQL\Resolvers;
 
 use App\Adapters\LoginUser;
+use App\InternalServices\Coingecko\CoingeckoService;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Pump\Comment\Service\CommentService;
 use Pump\Token\Service\ServiceFeeService;
@@ -190,6 +191,18 @@ class QueryResolvers
             "feeHandlerAddress" => config('biz.feeHandlerAddress')[0],
             "airdropAddress" => config('biz.airdropAddress')[0],
         ];
+    }
+
+    public function getTokenPrice(null $_, array $args, GraphQLContext $context)
+    {
+        /** @var CoingeckoService $coingeckoService */
+        $coingeckoService = resolve(CoingeckoService::class);
+        $currencyInfo = $coingeckoService->getTokenPrice($args['tokenId'], 'usd');
+        if(!empty($currencyInfo[$args['tokenId']])){
+            return $currencyInfo[$args['tokenId']]['usd'];
+        }else{
+            return 0;
+        }
     }
 
     public function tradingList(null $_, array $args, GraphQLContext $context)

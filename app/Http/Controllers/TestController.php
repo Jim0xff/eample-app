@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\InternalServices\Coingecko\CoingeckoService;
 use App\InternalServices\OpenLaunchChatService\OpenLaunchChatService;
 use Aws\Result;
 use Aws\S3\S3Client;
@@ -192,46 +193,54 @@ class TestController extends Controller{
     {
         //Create a S3Client
         //https://pump.sgp1.digitaloceanspaces.com
-        $client = new S3Client([
-            'version' => 'latest',
-            'region'  => 'us-east-1',
-            'endpoint' => 'https://sgp1.digitaloceanspaces.com',
-            'use_path_style_endpoint' => false, // Configures to use subdomain/virtual calling format.
-            'credentials' => [
-                'key'    => 'DO00X7XU744W9BRQBJ83',
-                'secret' => 'KDCZLUeRgOM1r/YEQMzoLZzFghhRrefGKFG/p9m/r78',
-            ],
-        ]);
-
-//Listing all S3 Bucket
-        /** @var Result $result */
-        $result = $client->getObject([
-            'Key' => 'headImg_0xd4f8bbf9c0b8aff6d76d2c5fa4971a36fc9e4003_wDCrt88vAj',
-            'Bucket' => 'pump'
-        ]);
-        if(!empty($result->get('@metadata'))){
-            print_r($result);
-        }
-
-        $file = $request->file('img');
-
-//        $result = $client->upload('pump','pug4.png', $file->get(), 'public-read');
-//        if(!empty($result) && !empty($result->get('@metadata'))){
-//            print_r($result->get('@metadata')['effectiveUri']);
+//        $client = new S3Client([
+//            'version' => 'latest',
+//            'region'  => 'us-east-1',
+//            'endpoint' => 'https://sgp1.digitaloceanspaces.com',
+//            'use_path_style_endpoint' => false, // Configures to use subdomain/virtual calling format.
+//            'credentials' => [
+//                'key'    => 'DO00X7XU744W9BRQBJ83',
+//                'secret' => 'KDCZLUeRgOM1r/YEQMzoLZzFghhRrefGKFG/p9m/r78',
+//            ],
+//        ]);
+//
+////Listing all S3 Bucket
+//        /** @var Result $result */
+//        $result = $client->getObject([
+//            'Key' => 'headImg_0xd4f8bbf9c0b8aff6d76d2c5fa4971a36fc9e4003_wDCrt88vAj',
+//            'Bucket' => 'pump'
+//        ]);
+//        if(!empty($result->get('@metadata'))){
+//            print_r($result);
 //        }
+//
+//        $file = $request->file('img');
+//
+////        $result = $client->upload('pump','pug4.png', $file->get(), 'public-read');
+////        if(!empty($result) && !empty($result->get('@metadata'))){
+////            print_r($result->get('@metadata')['effectiveUri']);
+////        }
+        /** @var CoingeckoService $coingeckoService */
+        $coingeckoService = resolve(CoingeckoService::class);
+        $currencyInfo = $coingeckoService->getTokenPrice('metis-token', 'usd');
 
-        return response()->json(['code' => 200, 'data' => []]);
+        return response()->json(['code' => $currencyInfo, 'data' => []]);
     }
 
     public function test4(Request $request){
 //        $ccc = Carbon::createFromTimestamp(1731560817);
 //        print_r($ccc->endOfHour());
-        $user = auth()->user();
+//        $user = auth()->user();
 
-        /** @var OpenLaunchChatService $sss */
-        $sss = resolve('open_launch_chat_service');
-        //$rt = $sss->chatPost("co-build-agent/chat.json", ['app'=>'lazpad', 'outAgentId'=>'1','content'=>'Who is the next president of USA?'],[], true);
-        return response()->json(['code' => 200, 'data' => true]);
+//        /** @var OpenLaunchChatService $sss */
+//        $sss = resolve('open_launch_chat_service');
+//        //$rt = $sss->chatPost("co-build-agent/chat.json", ['app'=>'lazpad', 'outAgentId'=>'1','content'=>'Who is the next president of USA?'],[], true);
+
+        /** @var CoingeckoService $coingeckoService */
+        $coingeckoService = resolve(CoingeckoService::class);
+        $currencyInfo = $coingeckoService->getTokenPrice('metis-token', 'usd');
+
+        return response()->json(['code' => $currencyInfo, 'data' => true]);
     }
 
 }

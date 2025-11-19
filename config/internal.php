@@ -4,12 +4,13 @@
  */
 return [
     'graph' => env('GRAPH_URL', 'http://localhost:8000/subgraphs/name/metis-pump-subgraph'),
-    'coingecko' => env('COINGECKO_URL', 'https://api.coingecko.com/'),
+    'coingecko' => env('COINGECKO_URL', 'https://pro-api.coingecko.com/'),
     'task_point' => env('TASK_POINT_URL', 'http://localhost:8010/'),
     'service_fee_percent' => env('SERVICE_FEE_PERCENT', '1'),
     'open-launch-chat-service' => env('OPEN_LAUNCH_CHAT_SERVICE', 'http://localhost:4000/'),
     'co_build_agent_internal_service' => env('CO_BUILD_AGENT_SERVICE', 'https://laz-chat-test-wlk9n.ondigitalocean.app/'),
     'bonding_curve_a' => env('BOUNDING_CURVE_A', '19827401'),
+    'coingecko_api_key' => env('COINGECKO_API_KEY', ''),
     'airdrop_service_url' => env('AIRDROP_SERVICE', 'http://localhost:4001/'),
     'airdrop_service_api_key' => env('AIRDROP_API_KEY', '27831'),
     'vendor' => env('INTERNAL_VENDOR', 'http://192.168.3.115:8817/vender-service/'),

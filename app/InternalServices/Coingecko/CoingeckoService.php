@@ -19,7 +19,15 @@ class CoingeckoService extends AbstractService
              "ids" => $tokenApiCodes,
              "vs_currencies" => $currency
          ];
-         $rt = $this->getData("api/v3/simple/price", $param);
+         $rt =$this->getDataWithHeaders("api/v3/simple/price",
+             [
+                 "headers"=>[
+                     "accept" => 'application/json',
+                     "x-cg-pro-api-key" => config('internal.coingecko_api_key'),
+                 ],
+                 "query"=>$param
+             ]);
+         //$rt = $this->getData("api/v3/simple/price", $param);
 
          $redis->command('set',[self::$TOKEN_PRICE_PRE_KEY . $tokenApiCodes . "_" . $currency, json_encode($rt), 'EX', $expireSeconds]);
          return $rt;
