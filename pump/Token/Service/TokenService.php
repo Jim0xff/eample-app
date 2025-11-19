@@ -1126,7 +1126,7 @@ class TokenService
                 'has_daily' => true,
                 'has_weekly_and_monthly' => true,
                 'currency_code' => 'METIS',
-                "supported_resolutions"=>["1", "5", "1D", "1W"]
+                "supported_resolutions"=>["1", "5","10", "1H", "12H", "1D", "1W"]
             ];
         }
         return $result;
