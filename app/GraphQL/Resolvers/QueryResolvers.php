@@ -9,6 +9,7 @@ use Pump\Comment\Service\CommentService;
 use Pump\Token\Service\ServiceFeeService;
 use Pump\Token\Service\TokenService;
 use Pump\User\Dao\UserDAOModel;
+use Pump\User\Dao\UserFollowDAOModel;
 use Pump\User\Services\UserService;
 
 class QueryResolvers
@@ -205,8 +206,23 @@ class QueryResolvers
         }
 
         $agentCount = $tokenService->getAgentCount($args['userAddress']);
+
+        $followingPageData = UserFollowDAOModel::getFollowersPagination([
+            "followed" => $args['userAddress'],
+            "statusList" => ["ACTIVE"],
+            "page" => 1,
+            "perPage" => 1,
+        ]);
+        $followersPageData = UserFollowDAOModel::getFollowersPagination([
+            "follower" => $args['userAddress'],
+            "statusList" => ["ACTIVE"],
+            "page" => 1,
+            "perPage" => 1,
+        ]);
         return [
             "agentCount" => $agentCount,
+            "followerCount" => $followersPageData->total(),
+            "followingCount" => $followingPageData->total(),
         ];
     }
 
