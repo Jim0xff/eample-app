@@ -193,6 +193,23 @@ class QueryResolvers
         ];
     }
 
+    public function userProfileInfo(null $_, array $args, GraphQLContext $context)
+    {
+        /** @var $tokenService TokenService */
+        $tokenService = resolve('token_service');
+        $user = null;
+        try{
+            $user = $context->user();
+        }catch (\Throwable $exception){
+
+        }
+
+        $agentCount = $tokenService->getAgentCount($args['userAddress']);
+        return [
+            "agentCount" => $agentCount,
+        ];
+    }
+
     public function getTokenPrice(null $_, array $args, GraphQLContext $context)
     {
         /** @var CoingeckoService $coingeckoService */

@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use Pump\Comment\Service\CommentService;
 use Pump\Token\Dao\AgentDAOModel;
+use Pump\Token\Dao\TokenDAOModel;
 use Pump\Token\Dao\TopOfTheMoonDAOModel;
 use Pump\Token\DbModel\TokenDbModel;
 use Pump\Token\Repository\TokenRepository;
@@ -1425,6 +1426,19 @@ mutation CreateAgent {
         $tokenDbModel->aiAgentType = $params['agentType'];
         $tokenDbModel->airdropRate = $params['airdropRate'];
         return $tokenDbModel;
+    }
+
+    public function getAgentCount($user)
+    {
+        $params = [];
+        $params['coBuild'] = true;
+        $params['creator'] = $user;
+        $dbItems = TokenDAOModel::pageQueryTokens($params);
+
+        if(!empty($dbItems)){
+            return $dbItems->total();
+        }
+        return 0;
     }
 
 }

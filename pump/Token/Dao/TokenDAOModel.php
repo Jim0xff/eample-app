@@ -51,6 +51,9 @@ class TokenDAOModel extends Model
         if(!empty($params['coBuild'])) {
             $mdl->whereNotNull('co_build_agent_id');
         }
+        if(!empty($params['creator'])) {
+            $mdl->where('creator', $params['creator']);
+        }
         if(!empty($params['name'])) {
             $term = $params['name'];
             $mdl->select('*')
@@ -67,6 +70,6 @@ class TokenDAOModel extends Model
             $mdl->orderBy($params['orderBy'], $params['orderDirection']);
         }
 
-        return  $mdl->simplePaginate($params['pageSize']??10, ['*'], 'page', $params['pageNum']??1);
+        return  $mdl->paginate($params['pageSize']??10, ['*'], 'page', $params['pageNum']??1);
     }
 }
