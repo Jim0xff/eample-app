@@ -310,6 +310,8 @@ type CreatorObj {
 type ConfigQueryResult {
     tokenFactoryAddress: String
     netSwapToolAddress: String
+    feeHandlerAddress: String
+    airdropAddress: String
 }
 
 type AgentInfo {
