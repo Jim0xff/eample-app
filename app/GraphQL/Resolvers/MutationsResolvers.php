@@ -76,4 +76,15 @@ class MutationsResolvers
         $tokenService->syncTokenTransaction($user, $args['currencyAmount'], $args['currencyType'], $args['transactionHash'], $args['transactionType']);
         return true;
     }
+
+    public function editUser(null $_, array $args, GraphQLContext $context)
+    {
+        /** @var LoginUser $user */
+        $user = $context->user();
+        /** @var $userService UserService */
+        $userService = resolve('user_service');
+        $args['user'] = $user->address;
+        $userService->editUser($args);
+        return true;
+    }
 }

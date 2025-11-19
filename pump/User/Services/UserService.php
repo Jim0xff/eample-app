@@ -78,7 +78,7 @@ class UserService
                             'Authorization' => request()->header('Authorization'),
                         ],
                         'json'=> [
-                            'id' => $params['user']->id,
+                            'id' => $params['user'],
                             'name' => $params['nickName'],
                             'content' =>[
                                 'headImgUrl' =>  $params['headImgUrl'],

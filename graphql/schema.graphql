@@ -110,6 +110,11 @@ type Mutation {
         transactionType: String
     ): Boolean @guard @field(resolver: "App\\GraphQL\\Resolvers\\MutationsResolvers@syncTokenTransaction")
 
+    editUser(
+        nickName: String
+        headImgUrl: String
+        bio: String
+    ): Boolean @guard @field(resolver: "App\\GraphQL\\Resolvers\\MutationsResolvers@editUser")
 }
 
 input CreateTokenParam {
