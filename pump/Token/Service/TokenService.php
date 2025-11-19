@@ -114,17 +114,20 @@ class TokenService
     public function searchByDB($params)
     {
         $dataList = [];
+
         if(!empty($params['searchKey'])){
             if((substr($params['searchKey'], 0, 2) === '0x'
                 || substr($params['searchKey'], 0, 2) === '0X')
                 && strlen($params['searchKey']) >= 10
             ){
-                $params['tokenIds'] = [$params['searchKey']];
+                $params['addressList'] = [$params['searchKey']];
             }else{
                 $params['name'] = $params['searchKey'];
             }
         }
+
         $dbItems = TokenRepository::pageQueryTokens($params);
+
         if(!empty($dbItems)){
             $tokensIdsRt = array_column($dbItems, 'address');
             $graphParams = [
@@ -135,8 +138,11 @@ class TokenService
                 $tokens = $graphRt['data']['tokens'];
                 $tokenMap = array_column($tokens, null, 'id');
                 foreach ($dbItems as $dbItem){
-                    $dataSingle = $tokenMap[$dbItem->address];
-                    $dataList[] = $dataSingle;
+                    if(!empty($tokenMap[$dbItem->address])){
+                        $dataSingle = $tokenMap[$dbItem->address];
+                        $dataList[] = $dataSingle;
+                    }
+
                 }
             }
         }

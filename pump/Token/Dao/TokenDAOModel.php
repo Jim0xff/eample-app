@@ -53,7 +53,8 @@ class TokenDAOModel extends Model
         }
         if(!empty($params['name'])) {
             $term = $params['name'];
-            $mdl->addSelect(DB::raw("MATCH(name, symbol, `desc`) AGAINST('$term' IN NATURAL LANGUAGE MODE) AS relevance"))
+            $mdl->select('*')
+                ->addSelect(DB::raw("MATCH(name, symbol, `desc`) AGAINST('$term' IN NATURAL LANGUAGE MODE) AS relevance"))
                 ->whereFullText(['name', 'symbol', 'desc'], $term)
                 ->orderByDesc('relevance');
         }else{
@@ -66,6 +67,6 @@ class TokenDAOModel extends Model
             $mdl->orderBy($params['orderBy'], $params['orderDirection']);
         }
 
-        return  $mdl->simplePaginate($params['pageSize'], ['*'], 'page', $params['pageNum']);
+        return  $mdl->simplePaginate($params['pageSize']??10, ['*'], 'page', $params['pageNum']??1);
     }
 }

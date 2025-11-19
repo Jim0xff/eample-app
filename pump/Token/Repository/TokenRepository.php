@@ -20,6 +20,7 @@ class TokenRepository
     public static function pageQueryTokens($params)
     {
         $pageData = TokenDAOModel::pageQueryTokens($params);
+
         $items = self::toDbModels($pageData->items());
         return $items;
     }
