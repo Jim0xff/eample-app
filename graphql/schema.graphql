@@ -12,6 +12,7 @@ type Query {
         agentType: String,
         coBuild: Boolean,
         graduated: Boolean,
+        orderDirection: String
     ): PageTokenList @field(resolver: "App\\GraphQL\\Resolvers\\QueryResolvers@tokenList")
 
     boughtTokenList(
