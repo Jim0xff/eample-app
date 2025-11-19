@@ -1430,6 +1430,7 @@ mutation CreateAgent {
 
     public function getAgentCount($user)
     {
+        $user = strtolower($user);
         $params = [];
         $params['coBuild'] = true;
         $params['creator'] = $user;
