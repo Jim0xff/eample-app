@@ -13,7 +13,7 @@ use Pump\Token\Repository\TokenRepository;
 class TokenGraduateService
 {
 
-    public static $SCAN_TRADING_TOKEN_UPDATE_START_KEY = 'scan_trading_token_update_start_key';
+    public static $SCAN_TRADING_TOKEN_UPDATE_START_KEY = 'scan_trading_token_update_start_key4';
 
     public function scanTradingToken()
     {
@@ -35,8 +35,8 @@ class TokenGraduateService
   tokens(where: $whereStr
          orderBy: $orderBy
          orderDirection: $orderDirection
-         first: 0
-         skip: 100
+         first: 100
+         skip: 0
   ) {
     blockNumber
     collateral
@@ -71,18 +71,19 @@ class TokenGraduateService
             $tokensIdsRt = array_column($rt['data']['tokens'], 'id');
             $dbModels = TokenRepository::queryTokens(['addressList'=>$tokensIdsRt]);
             $dbModelsMap = [];
-
             if(!empty($dbModels)){
                 foreach($dbModels as $dbModel){
                     $dbModelsMap[$dbModel->address] = $dbModel;
                 }
             }
             foreach ($rt['data']['tokens'] as $token) {
-
-                $dobModel = $dbModelsMap[$token->id];
+                if(empty($dbModelsMap[$token['id']])){
+                    continue;
+                }
+                $dobModel = $dbModelsMap[$token['id']];
                 $dbContent = $dobModel->content;
                 if(!empty($dbContent["airdropActivityId"]) && $dobModel->airdropRate){
-                    $contributeUsers = $this->getTokenContributesUser($token['id'], $dbModel->coBuildAgentId);
+                    $contributeUsers = $this->getTokenContributesUser($token['id'], $dbModel);
                     if(!empty($contributeUsers)){
                         $internalCallRetryDaoModel = new InternalCallRetryDaoModel();
                         $internalCallRetryDaoModel->biz_id = $dbContent["airdropActivityId"];
@@ -98,12 +99,14 @@ class TokenGraduateService
                             $this->doInsertAirdrop($contributeUsers, $dbContent["airdropActivityId"]);
                         }
                         catch(\Throwable $e){
+                            print_r($e->getMessage());
                             \Log::error(sprintf(
                                 "batch insert airdrop record failed, activityId: %s ",
                                 $dbContent["airdropActivityId"]
                             ));
                             $internalCallRetryDaoModel->status = "ERROR";
                             $internalCallRetryDaoModel->save();
+                            continue;
                         }
                         $internalCallRetryDaoModel->status = "SUCCESS";
                         $internalCallRetryDaoModel->save();
@@ -148,6 +151,7 @@ class TokenGraduateService
         $airdropService = resolve('airdrop_service');
         foreach ($contributeUsers as $contributeUser) {
             try{
+
                 $airdropService->airdropPost('insert-airdrop-record',
                     [
                         "userAddress" => $contributeUser['address'],
@@ -168,15 +172,41 @@ class TokenGraduateService
         }
     }
 
-    private function getTokenContributesUser($tokenAddress, $agentId)
+    private function getTokenContributesUser($tokenAddress, $tokenModel)
     {
         $redis = Redis::connection();
         $result = [];
-        $userIds = ["34"];
-        foreach ($userIds as $userId) {
-            $userInfo = json_decode($redis->get(LazpadTaskService::$USER_ID_TO_INFO. $userId), true);
-            $userInfo['airdropAmount'] = "1000000000000";
-            $result[] = $userInfo;
+        $userIds = [];
+        /** @var $taskPointService LazpadTaskService */
+        $taskPointService = resolve('lazpad_task_service');
+        $airdropAmountTotal = 1000000000 * $tokenModel->airdropRate/10000;
+        $taskRecords = $taskPointService->getDataWithHeaders("task/taskRecordQueryGroupBy",
+            [
+                "headers"=>[
+                    "x-server-call" => "true",
+                ],
+                "query"=>[
+                    "bizId"=>$tokenAddress,
+                    "bizType"=>"coBuildAgent",
+                    "limit"=>5000,
+                    "templateCodes"=>[
+                        "openlaunchUseData",
+                        "openlaunchContributeData"
+                    ]
+                ]
+            ]);
+        $totalScore = 0;
+        $taskRecords = $taskRecords['data'];
+        if(!empty($taskRecords)){
+            foreach($taskRecords as $taskRecord1){
+
+                $totalScore += $taskRecord1['scoreTotal'];
+            }
+            foreach($taskRecords as $record){
+                $userInfo = json_decode($redis->get(LazpadTaskService::$USER_ID_TO_INFO. $record['userId']), true);
+                $userInfo['airdropAmount'] = floor($airdropAmountTotal * $record['scoreTotal']/$totalScore);
+                $result[] = $userInfo;
+            }
         }
 
         return $result;

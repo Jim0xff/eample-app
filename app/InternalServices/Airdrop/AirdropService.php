@@ -15,10 +15,15 @@ class AirdropService extends AbstractService
         if($needAuth && empty(request()->header('Authorization'))){
             throw new DomainException("not auth" , "401");
         }
-        if(!empty(request()->header('Authorization'))){
+        if($needAuth && !empty(request()->header('Authorization'))){
             $headers['Authorization'] = request()->header('Authorization');
         }
-        $headers['x-request-id'] = app('requestId');
+        try{
+            $headers['x-request-id'] = app('requestId');
+        }catch (\Throwable $e){
+
+        }
+
         $rtRaw = $this->getDataWithHeaders($uri, [
             "headers"=>$headers,
             "query"=>$params
@@ -52,18 +57,23 @@ class AirdropService extends AbstractService
         if(empty($headers)){
             $headers = [];
         }
-
         if($needAuth && empty(request()->header('Authorization'))){
             throw new DomainException("not auth" , "401");
         }
-        if(!empty(request()->header('Authorization'))){
+        if($needAuth && !empty(request()->header('Authorization'))){
             $headers['Authorization'] = request()->header('Authorization');
         }
-        $headers['x-request-id'] = app('requestId');
+        try{
+            $headers['x-request-id'] = app('requestId');
+        }catch (\Throwable $e){
+
+        }
+
         $rtRaw = $this->postDataWithHeaders($uri, [
             "headers"=>$headers,
             "json"=>$params
         ]);
+
 
         if($rtRaw['code'] != 200){
             \Log::error(sprintf(

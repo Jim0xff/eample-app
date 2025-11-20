@@ -17,10 +17,14 @@ class OpenLaunchChatService extends AbstractService
          if($needAuth && empty(request()->header('Authorization'))){
              throw new DomainException("not auth" , "401");
          }
-         if(!empty(request()->header('Authorization'))){
+         if($needAuth && !empty(request()->header('Authorization'))){
              $headers['Authorization'] = request()->header('Authorization');
          }
-         $headers['x-request-id'] = app('requestId');
+         try{
+             $headers['x-request-id'] = app('requestId');
+         }catch (\Throwable $e){
+
+         }
          $rtRaw = $this->getDataWithHeaders($uri, [
              "headers"=>$headers,
              "query"=>$params
@@ -58,10 +62,14 @@ class OpenLaunchChatService extends AbstractService
         if($needAuth && empty(request()->header('Authorization'))){
             throw new DomainException("not auth" , "401");
         }
-        if(!empty(request()->header('Authorization'))){
+        if($needAuth && !empty(request()->header('Authorization'))){
             $headers['Authorization'] = request()->header('Authorization');
         }
-        $headers['x-request-id'] = app('requestId');
+        try{
+            $headers['x-request-id'] = app('requestId');
+        }catch (\Throwable $e){
+
+        }
         $rtRaw = $this->postDataWithHeaders($uri, [
             "headers"=>$headers,
             "json"=>$params

@@ -18,7 +18,11 @@ class CoBuildAgentInternalService extends AbstractService
         if($needAuth && !empty(request()->header('Authorization'))){
             $headers['Authorization'] = request()->header('Authorization');
         }
-        $headers['x-request-id'] = app('requestId');
+        try{
+            $headers['x-request-id'] = app('requestId');
+        }catch (\Throwable $e){
+
+        }
         $rtRaw = $this->getDataWithHeaders($uri, [
             "headers"=>$headers,
             "query"=>$params
@@ -59,7 +63,11 @@ class CoBuildAgentInternalService extends AbstractService
         if($needAuth && !empty(request()->header('Authorization'))){
             $headers['Authorization'] = request()->header('Authorization');
         }
-        $headers['x-request-id'] = app('requestId');
+        try{
+            $headers['x-request-id'] = app('requestId');
+        }catch (\Throwable $e){
+
+        }
         $rtRaw = $this->postDataWithHeaders($uri, [
             "headers"=>$headers,
             "json"=>$params
