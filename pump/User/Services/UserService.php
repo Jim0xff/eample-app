@@ -76,9 +76,10 @@ class UserService
                     $taskService->postDataWithHeaders('user/updateUserById', [
                         'headers'=>[
                             'Authorization' => request()->header('Authorization'),
+                            "traceId"=> app('requestId'),
                         ],
                         'json'=> [
-                            'id' => $params['user'],
+                            'id' => $params['userInfo']->id,
                             'name' => $params['nickName'],
                             'content' =>[
                                 'headImgUrl' =>  $params['headImgUrl'],

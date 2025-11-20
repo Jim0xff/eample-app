@@ -84,6 +84,7 @@ class MutationsResolvers
         /** @var $userService UserService */
         $userService = resolve('user_service');
         $args['user'] = $user->address;
+        $args['userInfo'] = $user;
         $userService->editUser($args);
         return true;
     }
