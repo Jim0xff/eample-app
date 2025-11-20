@@ -99,10 +99,11 @@ class TokenGraduateService
                             $this->doInsertAirdrop($contributeUsers, $dbContent["airdropActivityId"]);
                         }
                         catch(\Throwable $e){
-                            print_r($e->getMessage());
+
                             \Log::error(sprintf(
-                                "batch insert airdrop record failed, activityId: %s ",
-                                $dbContent["airdropActivityId"]
+                                "batch insert airdrop record failed, activityId: %s, error info: %s ",
+                                $dbContent["airdropActivityId"],
+                                $e->getTraceAsString()
                             ));
                             $internalCallRetryDaoModel->status = "ERROR";
                             $internalCallRetryDaoModel->save();
