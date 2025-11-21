@@ -16,7 +16,7 @@ class ServiceFeeService
         ],
             ["apiToken"=>config("internal.airdrop_service_api_key")], false);
 
-        return $rawRt;
+        return $rawRt['totalAmount'];
     }
 
     public function getServiceFeeAmountTotal($user)
@@ -28,8 +28,7 @@ class ServiceFeeService
             "address"=>$user->address
         ],
             ["apiToken"=>config("internal.airdrop_service_api_key")], false);
-
-        return $rawRt;
+        return $rawRt['totalAmount'];
     }
 
     public function serviceFeePermit($user)
