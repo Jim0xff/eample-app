@@ -235,12 +235,13 @@ class TokenService
                 $nowPrice = $token['nowPrice'];
                 $nowPrice = $nowPrice/(10 ** 18);
                 $token['nowPrice'] = $nowPrice;
-                if($needBeforePrice && $token['status'] != 'TRADING'){
+                $token['initialPrice'] = config('internal.bonding_curve_a')/(10 ** 18);
+//                if($needBeforePrice && $token['status'] != 'TRADING'){
+                if($needBeforePrice){
                     $beforeTrans = $this->getTokenLatestPrice($token['id']);
                     if(!empty($beforeTrans)){
                         $token['beforeTrans'] = $beforeTrans;
                     }
-                    $token['initialPrice'] = config('internal.bonding_curve_a')/(10 ** 18);
                 }
                 $totalPrice = $nowPrice * $totalSupply;
                 if($token['createTimestamp'] <  Carbon::createFromFormat('Y-m-d H:i:s', '2024-12-28 00:00:00')->timestamp){
