@@ -30,7 +30,7 @@ class TradingService
 
                      $graphParams = [
                          "query" => "query MyQuery {
-  transactions(where: {token: $tokenAddress, createTimestamp_gte: $startTime, createTimestamp_lt: $endTime}) {
+  transactions(where: {token: \"$tokenAddress\", createTimestamp_gte: $startTime, createTimestamp_lt: $endTime}) {
     tokenAmount
     user
     blockNumber
@@ -47,6 +47,7 @@ class TradingService
 }"
                      ];
                      $rtTmp = $graphService->baseQuery($graphParams);
+                     print_r($rtTmp);
                      $totalVol = 0;
                      if(!empty($rtTmp['data'] && !empty($rtTmp['data']['transactions']))){
                           foreach($rtTmp['data']['transactions'] as $tokenTransaction){
@@ -56,7 +57,7 @@ class TradingService
                      $totalVol = sprintf("%.0f", $totalVol);
                      $tokenSingle = TokenDAOModel::query()->find($token->id);
                      $tokenSingle->trading_volume = $totalVol;
-                     TokenDAOModel::query()->update($tokenSingle);
+                     $tokenSingle->save();
                      $idMin = $token->id;
                  }
              }
