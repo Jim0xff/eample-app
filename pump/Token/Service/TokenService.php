@@ -337,7 +337,12 @@ class TokenService
             $whereArray[] = "id_in:" . json_encode($params['tokenIds']);
         }
         if(!empty($params['graduated']) ){
-            $params['statusList'] = ['TRADING'];
+            if($params['graduated']){
+                $params['statusList'] = ['TRADING'];
+            }
+            else{
+                $params['statusList'] = ['FUNDING','PRE_SALE'];
+            }
         }
         if(!empty($params['statusList'])){
             $whereArray[] = "status_in:" . json_encode($params['statusList']);
