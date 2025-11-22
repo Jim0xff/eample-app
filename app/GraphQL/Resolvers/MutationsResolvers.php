@@ -5,6 +5,7 @@ namespace App\GraphQL\Resolvers;
 use App\Adapters\LoginUser;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Pump\Comment\Service\CommentService;
+use Pump\Token\Service\ServiceFeeService;
 use Pump\Token\Service\TokenService;
 use Pump\User\Services\UserService;
 
@@ -86,6 +87,17 @@ class MutationsResolvers
         $args['user'] = $user->address;
         $args['userInfo'] = $user;
         $userService->editUser($args);
+        return true;
+    }
+
+    public function cancelServiceFee(null $_, array $args, GraphQLContext $context)
+    {
+        /** @var $serviceFeeService ServiceFeeService */
+        $serviceFeeService = resolve('service_fee_service');
+
+        $user = $context->user();
+
+        $serviceFeeService->cancelServiceFee($args['serviceFeeIds']);
         return true;
     }
 }

@@ -124,6 +124,16 @@ type Mutation {
         headImgUrl: String
         bio: String
     ): Boolean @guard @field(resolver: "App\\GraphQL\\Resolvers\\MutationsResolvers@editUser")
+
+    editUser(
+        nickName: String
+        headImgUrl: String
+        bio: String
+    ): Boolean @guard @field(resolver: "App\\GraphQL\\Resolvers\\MutationsResolvers@editUser")
+
+    cancelServiceFee(
+        serviceFeeIds: [String]
+    ): Boolean @guard @field(resolver: "App\\GraphQL\\Resolvers\\MutationsResolvers@cancelServiceFee")
 }
 
 input CreateTokenParam {
@@ -393,6 +403,7 @@ type AirdropPermit {
     status: String
     permit: PermitDetail
     tokenInfo: TokenDetailSimple
+    serviceFeeIds:[String]
 }
 
 type PermitDetail {

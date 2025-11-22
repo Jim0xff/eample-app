@@ -292,4 +292,5 @@ class QueryResolvers
 
         return $serviceFeeService->serviceFeePermit($user);
     }
+
 }

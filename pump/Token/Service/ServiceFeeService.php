@@ -43,6 +43,17 @@ class ServiceFeeService
         return $rawRt;
     }
 
+    public function cancelServiceFee($serviceFeeIds)
+    {
+        /** @var AirdropService $airdropService */
+        $airdropService = resolve('airdrop_service');
+
+        $airdropService->airdropPost("cancel-service-fee", [
+            "serviceFeeIds"=>$serviceFeeIds
+        ],
+            ["apiToken"=>config("internal.airdrop_service_api_key")], false);
+    }
+
     public function getServiceFeeRecord($user, $pageNum, $pageSize)
     {
         /** @var AirdropService $airdropService */
