@@ -130,6 +130,9 @@ class TokenService
             if($params['orderBy'] == 'createTimestamp'){
                 $params['orderBy'] = 'created_at';
             }
+            else if($params['orderBy'] == 'tradingVolume'){
+                $params['orderBy'] = 'trading_volume';
+            }
         }
 
         $dbItems = TokenRepository::pageQueryTokens($params);
