@@ -126,6 +126,11 @@ class TokenService
                 $params['name'] = $params['searchKey'];
             }
         }
+        if(!empty($params['orderBy'])){
+            if($params['orderBy'] == 'createTimestamp'){
+                $params['orderBy'] = 'created_at';
+            }
+        }
 
         $dbItems = TokenRepository::pageQueryTokens($params);
 
