@@ -293,4 +293,17 @@ class QueryResolvers
         return $serviceFeeService->serviceFeePermit($user);
     }
 
+    public function getUser(null $_, array $args, GraphQLContext $context)
+    {
+        $user = null;
+        try{
+            $user = $context->user();
+        }catch (\Throwable $exception){
+
+        }
+        /** @var $userService UserService */
+        $userService =  resolve('user_service');
+        return $userService->getSingleUserDTO($args['userAddress'],     $user != null ? $user->address:null);
+    }
+
 }

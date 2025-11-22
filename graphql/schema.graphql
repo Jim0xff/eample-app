@@ -88,6 +88,10 @@ type Query {
     userProfileInfo(
         userAddress: String!
     ):UserProfileInfo @field(resolver: "App\\GraphQL\\Resolvers\\QueryResolvers@userProfileInfo")
+
+    userDetail(
+        userAddress: String!
+    ):UserDetail @field(resolver: "App\\GraphQL\\Resolvers\\QueryResolvers@getUser")
 }
 
 type Mutation {
@@ -118,12 +122,6 @@ type Mutation {
         transactionHash: String
         transactionType: String
     ): Boolean @guard @field(resolver: "App\\GraphQL\\Resolvers\\MutationsResolvers@syncTokenTransaction")
-
-    editUser(
-        nickName: String
-        headImgUrl: String
-        bio: String
-    ): Boolean @guard @field(resolver: "App\\GraphQL\\Resolvers\\MutationsResolvers@editUser")
 
     editUser(
         nickName: String
@@ -222,6 +220,19 @@ type UserProfileInfo{
     agentCount: String
     followerCount: String
     followingCount: String
+}
+
+type UserDetail{
+    nickName: String
+    address: String
+    headImgUrl: String
+    website: String
+    twitterLink: String
+    telegramLink: String
+    followingCnt: String
+    followedCnt: String
+    likeCnt: String
+    followed: Boolean
 }
 
 
