@@ -226,6 +226,7 @@ class UserService
                 $userMap[$user->address] = $user;
             }
             foreach($followersPageData->items() as $item){
+
                 if(!empty($userMap[$item->follower])){
                     $userDTO = $userMap[$item->follower];
                     $followUserDTO = new FollowUserDTO();
@@ -260,21 +261,22 @@ class UserService
         $items = [];
         if(!empty($followersPageData->items())){
             foreach($followersPageData->items() as $item){
-                $userIds[] = $item->follower;
+                $userIds[] = $item->followed;
             }
             $userIds = array_unique($userIds);
             $userRaw = UserRepository::getUsersByAddressList($userIds);
+
             $userMap = [];
             $userFormatList = $this->userDBModelsToUserDTOs($userRaw);
             foreach($userFormatList as $user){
                 $userMap[$user->address] = $user;
             }
             foreach($followersPageData->items() as $item){
-                if(!empty($userMap[$item->follower])){
-                    $userDTO = $userMap[$item->follower];
+                if(!empty($userMap[$item->followed])){
+                    $userDTO = $userMap[$item->followed];
                     $followUserDTO = new FollowUserDTO();
                     $followUserDTO->followAt = $item->follow_at;
-                    $followUserDTO->address = $item->follower;
+                    $followUserDTO->address = $item->followed;
                     $followUserDTO->nickName = $userDTO->nickName;
                     $followUserDTO->headImgUrl = $userDTO->headImgUrl;
                     $items[] = $followUserDTO;

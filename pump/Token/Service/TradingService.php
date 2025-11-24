@@ -47,7 +47,6 @@ class TradingService
 }"
                      ];
                      $rtTmp = $graphService->baseQuery($graphParams);
-                     print_r($rtTmp);
                      $totalVol = 0;
                      if(!empty($rtTmp['data'] && !empty($rtTmp['data']['transactions']))){
                           foreach($rtTmp['data']['transactions'] as $tokenTransaction){
