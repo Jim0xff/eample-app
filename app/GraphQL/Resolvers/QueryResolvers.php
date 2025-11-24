@@ -207,13 +207,13 @@ class QueryResolvers
 
         $agentCount = $tokenService->getAgentCount($args['userAddress']);
 
-        $followingPageData = UserFollowDAOModel::getFollowersPagination([
+        $followersPageData = UserFollowDAOModel::getFollowersPagination([
             "followed" => $args['userAddress'],
             "statusList" => ["ACTIVE"],
             "page" => 1,
             "perPage" => 1,
         ]);
-        $followersPageData = UserFollowDAOModel::getFollowersPagination([
+        $followingPageData = UserFollowDAOModel::getFollowersPagination([
             "follower" => $args['userAddress'],
             "statusList" => ["ACTIVE"],
             "page" => 1,
