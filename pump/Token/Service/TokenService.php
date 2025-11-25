@@ -1344,7 +1344,7 @@ class TokenService
                         }
 
                         $graphParams = [
-                            "query" => "on CreateAgent {
+                            "query" => "mutation CreateAgent {
   createAgent(
     agent: {
       uid:  \"$tokenAddress\"
@@ -1371,8 +1371,7 @@ class TokenService
     airdropAllocation
     ownerUserId
   }
-}
-mutati",
+}",
                             "operationName" => "CreateAgent"
                         ];
                         $graphHeaders = [
