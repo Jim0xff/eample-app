@@ -1532,6 +1532,8 @@ class TokenService
         $tokenDbModel->creator = $params['creator'];
         if(!empty($params['sellAt'])){
             $params['sellAt'] = date('Y-m-d H:i:s', $params['sellAt']);
+        }else{
+            $params['sellAt'] = null;
         }
         $tokenDbModel->sellAt = $params['sellAt'];
         $tokenDbModel->aiAgentType = $params['agentType'];
