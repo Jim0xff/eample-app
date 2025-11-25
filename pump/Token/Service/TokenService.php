@@ -1322,9 +1322,29 @@ class TokenService
                         $airdropRate = $params['airdropRate'];
                         $knowledgeUrl = $params['coBuildAgent']["knowledgeUrl"];
                         $knowledgeStr = $params['coBuildAgent']["knowledgeStr"];
+                        $socialLinksArr = [];
+
+                        if (!empty($params['twitterLink'])) {
+                            $socialLinksArr[] = [
+                                'platform' => 'twitter',
+                                'url' => $params['twitterLink']
+                            ];
+                        }
+
+                        if (!empty($params['telegramLink'])) {
+                            $socialLinksArr[] = [
+                                'platform' => 'telegram',
+                                'url' => $params['telegramLink']
+                            ];
+                        }
+
+                        $socialLinksStr = '';
+                        foreach ($socialLinksArr as $link) {
+                            $socialLinksStr .= '{ platform: "' . $link['platform'] . '", url: "' . $link['url'] . '" },';
+                        }
+
                         $graphParams = [
-                            "query" => "
-mutation CreateAgent {
+                            "query" => "on CreateAgent {
   createAgent(
     agent: {
       uid:  \"$tokenAddress\"
@@ -1333,6 +1353,9 @@ mutation CreateAgent {
       description: \"$description\"
       greeting: \"$greeting\"
       airdropAllocation: \"$airdropRate\"
+      socialLinks:[
+        $socialLinksStr
+      ]
     }
     knowledge: {
       text: \"$knowledgeStr\"
@@ -1348,7 +1371,8 @@ mutation CreateAgent {
     airdropAllocation
     ownerUserId
   }
-}",
+}
+mutati",
                             "operationName" => "CreateAgent"
                         ];
                         $graphHeaders = [
