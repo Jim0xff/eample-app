@@ -41,12 +41,23 @@ class QueryResolvers
         if(!empty($user)){
             $args['userId'] = $user->address;
         }
+        $args['page'] = $args['pageNum'];
         $rt =  $tokenService->tokenList($args, false, true);
 
         return ['items' => $rt, 'pagination' => [
             'pageNum'=>$args['pageNum']??1,
             'pageSize'=>$args['pageSize']??10,
         ]];
+    }
+
+    public function myCoBuildTokenList(null $_, array $args, GraphQLContext $context)
+    {
+        /** @var $tokenService TokenService */
+        $tokenService = resolve('token_service');
+        $user = $context->user();
+        $rt =  $tokenService->myCoBuildAgents($user);
+
+        return $rt;
     }
 
     public function boughtTokenList(null $_, array $args, GraphQLContext $context)

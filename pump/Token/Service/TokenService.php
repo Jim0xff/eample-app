@@ -162,6 +162,79 @@ class TokenService
         ];
     }
 
+    public function myCoBuildAgents($user)
+    {
+        $tokenAddressList = $this->getCoBuildAgentList($user);
+        $innerParams = [
+            'tokenIds' => $tokenAddressList,
+        ];
+        $tokenList = $this->tokenList($innerParams, false, true);
+        if(!empty($tokenList)){
+            foreach ($tokenList as &$token){
+                $contributeScore = $this->getContributeScoreByTokenAddress($token['id'], $user);
+                $token['contributeScore'] = $contributeScore;
+            }
+        }
+        return $tokenList;
+    }
+
+    public function getCoBuildAgentList($user)
+    {
+        $rt = [];
+        $userId = $user->id;
+        $graphParams = [
+            "query" => "query{agents(contributorUserId:\"$userId\"){uid}}",
+        ];
+        $graphHeaders = [
+            "Authorization"=>"Bearer xVXyLpIV2MS6C6UzpJlf",
+            "x-user-id" => $user->id
+        ];
+        /** @var \App\InternalServices\CoBuildAgent\CoBuildAgentInternalService $coBuildAgentInternalService */
+        $coBuildAgentInternalService = resolve('co_build_agent_internal_service');
+        $coBuildAgentRt = $coBuildAgentInternalService->agentPost("", $graphParams, $graphHeaders, false);
+        if(!empty($coBuildAgentRt['data']) && !empty($coBuildAgentRt['data']['agents'])){
+            foreach ($coBuildAgentRt['data']['agents'] as $agent){
+                $rt[] = $agent['uid'];
+            }
+        }
+        return $rt;
+    }
+
+    public function getContributeScoreByTokenAddress($tokenAddress, $user)
+    {
+        $redis = Redis::connection();
+        $cacheRt = $redis->get("token_user_score_" . $tokenAddress . "_" . $user->id);
+        if($cacheRt != null){
+            return $cacheRt;
+        }
+        $rt = 0;
+        /** @var $taskPointService LazpadTaskService */
+        $taskPointService = resolve('lazpad_task_service');
+        $taskRecords = $taskPointService->getDataWithHeaders("task/taskRecordQueryGroupBy",
+            [
+                "headers"=>[
+                    "x-server-call" => "true",
+                ],
+                "query"=>[
+                    "bizId"=>$tokenAddress,
+                    "bizType"=>"coBuildAgent",
+                    "limit"=>5000,
+                    "templateCodes"=>[
+                        "openlaunchUseData",
+                        "openlaunchContributeData"
+                    ],
+                    "innerPlatformUserId" => $user->id,
+                ]
+            ]);
+        $taskRecords = $taskRecords['data'];
+        if(!empty($taskRecords)){
+
+            $rt = $taskRecords[0]['scoreTotal'];
+        }
+        $redis->command('set',["token_user_score_" . $tokenAddress . "_" . $user->id , $rt, 'EX', 60]);
+        return $rt;
+    }
+
     public function tokenList($params, $needBeforePrice = false, $needAgentInfo = false)
     {
 
@@ -268,6 +341,7 @@ class TokenService
                        $token['agentInfo'] = [
                            "agentName" => $agentInfo->agent_name,
                            "outAgentId" => $agentInfo->out_agent_id,
+                           "category" => $agentInfo->type,
                        ];
                    }
                 }
@@ -349,7 +423,7 @@ class TokenService
                 $params['statusList'] = ['TRADING'];
             }
             else{
-                $params['statusList'] = ['FUNDING','PRE_SALE'];
+                $params['statusList'] = ['FUNDING'];
             }
         }
         if(!empty($params['statusList'])){
