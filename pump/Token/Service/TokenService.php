@@ -304,6 +304,7 @@ class TokenService
                      $dbModelTmp = $dbModelsMap[$token['id']];
                      $token = array_merge($token, $dbModelTmp->content);
                     $token['daysVolume'] = $dbModelTmp->tradingVolume;
+                    $token['category'] = $dbModelTmp->aiAgentType;
                 }
                 $totalSupply = $token['totalSupply'];
 

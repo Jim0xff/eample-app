@@ -323,6 +323,7 @@ type TokenDetail {
     beforeTrans: BeforeTrans
     initialPrice: String
     contributeScore: String
+    category: String
 }
 
 type BeforeTrans {
