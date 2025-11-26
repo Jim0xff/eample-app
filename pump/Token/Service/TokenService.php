@@ -165,6 +165,9 @@ class TokenService
     public function myCoBuildAgents($user)
     {
         $tokenAddressList = $this->getCoBuildAgentList($user);
+        if(empty($tokenAddressList)){
+            return [];
+        }
         $innerParams = [
             'tokenIds' => $tokenAddressList,
         ];
