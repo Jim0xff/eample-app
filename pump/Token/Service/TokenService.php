@@ -383,7 +383,7 @@ class TokenService
 //                            $token['nowPriceUsd'] = $token['nowPrice'] * $currencyPrice;
 //                        }
                         $currencyPrice = 7.74;
-                        print_r($token['totalPrice']);exit;
+                        var_dump($token['totalPrice']);exit;
                         $token['totalPriceUsd'] = $currencyPrice * $token['totalPrice'];
                         $token['nowPriceUsd'] = $token['nowPrice'] * $currencyPrice;
                     }else{
