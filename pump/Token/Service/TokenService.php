@@ -100,13 +100,13 @@ class TokenService
         if(!empty($params['coBuild'])){
             return true;
         }
-        if(!empty($params['orderBy']) && $params['orderBy'] != "featured"){
+        if(!empty($params['orderBy']) && $params['orderBy'] == "featured"){
             return true;
         }
-        if(!empty($params['orderBy']) && $params['orderBy'] != "coBuilders"){
+        if(!empty($params['orderBy']) && $params['orderBy'] == "coBuilders"){
             return true;
         }
-        if(!empty($params['orderBy']) && $params['orderBy'] != "tradingVolume"){
+        if(!empty($params['orderBy']) && $params['orderBy'] == "tradingVolume"){
             return true;
         }
         return false;
