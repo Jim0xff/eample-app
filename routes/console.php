@@ -17,3 +17,6 @@ Artisan::command('inspire', function () {
 
 \Illuminate\Support\Facades\Schedule::command("app:get-all-tokens-trading-volume")->dailyAt("23:50");
 
+\Illuminate\Support\Facades\Schedule::command("app:token-price-schedule")->everyFourMinutes();
+
+

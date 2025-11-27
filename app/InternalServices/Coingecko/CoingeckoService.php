@@ -32,4 +32,16 @@ class CoingeckoService extends AbstractService
          $redis->command('set',[self::$TOKEN_PRICE_PRE_KEY . $tokenApiCodes . "_" . $currency, json_encode($rt), 'EX', $expireSeconds]);
          return $rt;
      }
+
+     public function getTokenPriceFromCache($tokenApiCodes, $currency)
+     {
+         $redis = Redis::connection();
+         $cacheData = $redis->get(self::$TOKEN_PRICE_PRE_KEY . $tokenApiCodes . "_" . $currency);
+         if(!empty($cacheData)){
+             return json_decode($cacheData, true);
+         }
+         else {
+             return null;
+         }
+     }
 }

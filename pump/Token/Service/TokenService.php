@@ -374,7 +374,7 @@ class TokenService
                 $currencyCode = $currencyCodeList[$currencyAddress]??'';
                 if(!empty($currencyCode)){
                     $token['currencySymbol'] = $currencyCode;
-//                    $currencyInfo = $coingeckoService->getTokenPrice($currencyCode, 'usd');
+                    $currencyInfo = $coingeckoService->getTokenPriceFromCache($currencyCode, 'usd');
 
                     if($token['status'] != 'TRADING'){
                         if(!empty($currencyInfo) && !empty($currencyInfo[$currencyCode]['usd'])){
