@@ -382,10 +382,9 @@ class TokenService
 //                            $token['totalPriceUsd'] = $currencyPrice * $token['totalPrice'];
 //                            $token['nowPriceUsd'] = $token['nowPrice'] * $currencyPrice;
 //                        }
-                        $currencyPrice = 7.74;
-                        var_dump($token['totalPrice']);exit;
-                        $token['totalPriceUsd'] = $currencyPrice * $token['totalPrice'];
-                        $token['nowPriceUsd'] = $token['nowPrice'] * $currencyPrice;
+//                        $currencyPrice = 7.74;
+//                        $token['totalPriceUsd'] = $currencyPrice * $token['totalPrice'];
+//                        $token['nowPriceUsd'] = $token['nowPrice'] * $currencyPrice;
                     }else{
                         if(!empty($currencyInfo) && !empty($currencyInfo[$currencyCode]['usd'])){
                             $pairAddress = strtolower($token['pairAddress']);
