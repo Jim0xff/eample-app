@@ -383,6 +383,7 @@ class TokenService
 //                            $token['nowPriceUsd'] = $token['nowPrice'] * $currencyPrice;
 //                        }
                         $currencyPrice = 7.74;
+                        $token['totalPrice'] = floatval(str_replace(',', '', $token['totalPrice']));
                         $token['totalPriceUsd'] = $currencyPrice * $token['totalPrice'];
                         $token['nowPriceUsd'] = $token['nowPrice'] * $currencyPrice;
                     }else{
@@ -392,7 +393,10 @@ class TokenService
                             $currencyPrice = $currencyInfo[$currencyCode]['usd'];
                             $token['nowPrice'] = $relativePrice;
                             $token['nowPriceUsd'] = $relativePrice * $currencyPrice;
+                            $token['nowPrice'] = floatval(str_replace(',', '', $token['nowPrice']));
                             $token['totalPrice'] = $token['nowPrice'] * $totalSupply;
+                            $token['totalPrice'] = floatval(str_replace(',', '', $token['totalPrice']));
+
                             $token['totalPriceUsd'] = $currencyPrice * $token['totalPrice'];
                         }
                     }
