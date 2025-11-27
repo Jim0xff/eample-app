@@ -3,11 +3,13 @@
 namespace Pump\Token\Dao;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 
 class TokenDAOModel extends Model
 {
     protected $table = 'token';
+    use SoftDeletes;
     public static function queryTokens($params)
     {
        $mdl = self::query();
