@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Redis;
 
 class CoingeckoService extends AbstractService
 {
-    public static $TOKEN_PRICE_PRE_KEY = 'token_price_pre_key_';
+    public static $TOKEN_PRICE_PRE_KEY = 'token_price_pre_key2_';
      public function getTokenPrice($tokenApiCodes, $currency, $expireSeconds = 300)
      {
          $redis = Redis::connection();
