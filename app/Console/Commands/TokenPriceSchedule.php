@@ -28,6 +28,6 @@ class TokenPriceSchedule extends Command
     {
         /** @var CoingeckoService $coingeckoService */
         $coingeckoService = resolve(CoingeckoService::class);
-        $coingeckoService->getTokenPrice('metis-token', 'usd');
+        $coingeckoService->getTokenPrice('metis-token', 'usd', 3000);
     }
 }
