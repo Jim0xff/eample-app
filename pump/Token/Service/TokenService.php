@@ -374,14 +374,17 @@ class TokenService
                 $currencyCode = $currencyCodeList[$currencyAddress]??'';
                 if(!empty($currencyCode)){
                     $token['currencySymbol'] = $currencyCode;
-                    $currencyInfo = $coingeckoService->getTokenPrice($currencyCode, 'usd');
+//                    $currencyInfo = $coingeckoService->getTokenPrice($currencyCode, 'usd');
 
                     if($token['status'] != 'TRADING'){
-                        if(!empty($currencyInfo) && !empty($currencyInfo[$currencyCode]['usd'])){
-                            $currencyPrice = $currencyInfo[$currencyCode]['usd'];
-                            $token['totalPriceUsd'] = $currencyPrice * $token['totalPrice'];
-                            $token['nowPriceUsd'] = $token['nowPrice'] * $currencyPrice;
-                        }
+//                        if(!empty($currencyInfo) && !empty($currencyInfo[$currencyCode]['usd'])){
+//                            $currencyPrice = $currencyInfo[$currencyCode]['usd'];
+//                            $token['totalPriceUsd'] = $currencyPrice * $token['totalPrice'];
+//                            $token['nowPriceUsd'] = $token['nowPrice'] * $currencyPrice;
+//                        }
+                        $currencyPrice = 7.74;
+                        $token['totalPriceUsd'] = $currencyPrice * $token['totalPrice'];
+                        $token['nowPriceUsd'] = $token['nowPrice'] * $currencyPrice;
                     }else{
                         if(!empty($currencyInfo) && !empty($currencyInfo[$currencyCode]['usd'])){
                             $pairAddress = strtolower($token['pairAddress']);
