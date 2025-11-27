@@ -42,6 +42,11 @@ class QueryResolvers
             $args['userId'] = $user->address;
         }
         $args['page'] = $args['pageNum'];
+        if(!empty($args['graduated']) ){
+            $args['statusList'] = ['TRADING'];
+        }else{
+            $args['statusList'] = ['FUNDING'];
+        }
         $rt =  $tokenService->tokenList($args, false, true);
 
         return ['items' => $rt, 'pagination' => [

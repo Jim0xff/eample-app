@@ -260,6 +260,7 @@ class TokenService
             $creatorIds = array_column($rt['data']['tokens'], 'creator');
 
             $userInfo = UserRepository::getUsersByAddressList($creatorIds);
+
             /** @var $userService UserService */
             $userService = resolve('user_service');
             $userInfoFormat = $userService->userDBModelsToUserDTOs($userInfo);
@@ -421,14 +422,6 @@ class TokenService
                 $tokenId = strtolower($tokenId);
             }
             $whereArray[] = "id_in:" . json_encode($params['tokenIds']);
-        }
-        if(!empty($params['graduated']) ){
-            if($params['graduated']){
-                $params['statusList'] = ['TRADING'];
-            }
-            else{
-                $params['statusList'] = ['FUNDING'];
-            }
         }
         if(!empty($params['statusList'])){
             $whereArray[] = "status_in:" . json_encode($params['statusList']);
