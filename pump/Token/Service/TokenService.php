@@ -383,7 +383,7 @@ class TokenService
                             $token['totalPriceUsd'] = $currencyPrice * $token['totalPrice'];
                             $token['nowPriceUsd'] = $token['nowPrice'] * $currencyPrice;
                         }
-//                        $currencyPrice = 7.74;
+
 
                     }else{
                         if(!empty($currencyInfo) && !empty($currencyInfo[$currencyCode]['usd'])){
@@ -391,11 +391,11 @@ class TokenService
                             $relativePrice = $this->getPriceByNetSwap($pairAddress, $token['currencyAddress']);
                             $currencyPrice = $currencyInfo[$currencyCode]['usd'];
                             $token['nowPrice'] = $relativePrice;
-                            $token['nowPriceUsd'] = $relativePrice * $currencyPrice;
                             $token['nowPrice'] = floatval(str_replace(',', '', $token['nowPrice']));
+                            $token['nowPriceUsd'] = $relativePrice * $currencyPrice;
+
                             $token['totalPrice'] = $token['nowPrice'] * $totalSupply;
                             $token['totalPrice'] = floatval(str_replace(',', '', $token['totalPrice']));
-
                             $token['totalPriceUsd'] = $currencyPrice * $token['totalPrice'];
                         }
                     }
