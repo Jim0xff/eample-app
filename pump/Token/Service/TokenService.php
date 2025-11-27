@@ -309,6 +309,8 @@ class TokenService
                      $token = array_merge($token, $dbModelTmp->content);
                     $token['daysVolume'] = $dbModelTmp->tradingVolume;
                     $token['category'] = $dbModelTmp->aiAgentType;
+                }else{
+                    continue;
                 }
                 $totalSupply = $token['totalSupply'];
 
