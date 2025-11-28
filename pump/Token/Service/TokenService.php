@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use Pump\Comment\Service\CommentService;
 use Pump\Token\Dao\AgentDAOModel;
+use Pump\Token\Dao\TokenCreateRecordDAOModel;
 use Pump\Token\Dao\TokenDAOModel;
 use Pump\Token\Dao\TopOfTheMoonDAOModel;
 use Pump\Token\DbModel\TokenDbModel;
@@ -1301,11 +1302,28 @@ class TokenService
         ];
     }
 
+    public function createTokenRecord($params)
+    {
+        $tokenCreateRecord = new TokenCreateRecordDAOModel();
+        $tokenCreateRecord->token_address = $params['address'];
+        $tokenCreateRecord->user = $params['creator'];
+        $tokenCreateRecord->status = "INIT";
+        $content = [
+            "params" => $params
+        ];
+        $tokenCreateRecord->content = json_encode($content);
+        $tokenCreateRecord->save();
+        return $tokenCreateRecord;
+    }
+
     public function createToken($params): TokenDbModel
     {
+
         /** @var PessimisticLocking $lock */
         $lock = resolve('locker');
         return $lock->process(self::$CREATE_TOKEN_KEY_PRE . $params['address'], 10, 100000, 3, function () use ($params) {
+            $createRecord = $this->createTokenRecord($params);
+            $params['createRecord'] = $createRecord;
             return DB::transaction(function () use ($params) {
                 $queryParams = [
                     'addressList'=> [$params['address']]
@@ -1415,6 +1433,9 @@ class TokenService
                         $tokenDbModel->aiAgentType = $params['coBuildAgent']['agentType'];
                     }
                     $rt = TokenRepository::createToken($tokenDbModel);
+                    $createRecordTmp = $params['createRecord'];
+                    $createRecordTmp->status = "FINISH";
+                    $createRecordTmp->save();
                     return $rt;
                 }else{
                     return $existsToken[0];
@@ -1484,6 +1505,8 @@ class TokenService
             Log::error("insert service fee error:$e");
         }
     }
+
+
 
     public function createParamsToCoAgentDbModel($params)
     {
