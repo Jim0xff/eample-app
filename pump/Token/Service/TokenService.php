@@ -1343,8 +1343,8 @@ class TokenService
                         $tagLine = $params['coBuildAgent']["tagLine"];
                         $greeting = $params['coBuildAgent']["greeting"];
                         $airdropRate = $params['airdropRate'];
-                        $knowledgeUrl = $params['coBuildAgent']["knowledgeUrl"];
-                        $knowledgeStr = $params['coBuildAgent']["knowledgeStr"];
+                        $knowledgeUrl = $params['coBuildAgent']["knowledgeUrl"]??null;
+                        $knowledgeStr = $params['coBuildAgent']["knowledgeStr"]??null;
                         $socialLinksArr = [];
 
                         if (!empty($params['twitterLink'])) {
