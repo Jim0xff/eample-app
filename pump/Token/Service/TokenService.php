@@ -1340,6 +1340,8 @@ class TokenService
                         $coBuildAgentInternalService = resolve('co_build_agent_internal_service');
                         $tokenAddress = $params['address'];
                         $description = $params['coBuildAgent']["description"];
+                        $descriptionSafe = str_replace(["\r\n", "\n"], "\\n", $description);
+
                         $tagLine = $params['coBuildAgent']["tagLine"];
                         $greeting = $params['coBuildAgent']["greeting"];
                         $airdropRate = $params['airdropRate'];
@@ -1373,7 +1375,7 @@ class TokenService
       uid:  \"$tokenAddress\"
       name: \"$agentModel->agent_name\"
       tagline: \"$tagLine\"
-      description: \"$description\"
+      description: \"$descriptionSafe\"
       greeting: \"$greeting\"
       airdropAllocation: \"$airdropRate\"
       socialLinks:[
