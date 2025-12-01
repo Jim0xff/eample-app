@@ -110,6 +110,9 @@ class TokenService
         if(!empty($params['orderBy']) && $params['orderBy'] == "tradingVolume"){
             return true;
         }
+        if(!empty($params['orderBy']) && $params['orderBy'] == "progress"){
+            return true;
+        }
         return false;
     }
 
@@ -133,6 +136,12 @@ class TokenService
             }
             else if($params['orderBy'] == 'tradingVolume'){
                 $params['orderBy'] = 'trading_volume';
+            }
+            else if($params['orderBy'] == 'progress'){
+                $params['orderBy'] = 'progress';
+            }
+            else if($params['orderBy'] == 'coBuilders'){
+                $params['orderBy'] = 'co_builders';
             }
         }
 

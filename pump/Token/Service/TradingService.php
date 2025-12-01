@@ -64,7 +64,7 @@ class TradingService
 
      }
 
-     public function getNoPrice()
+     public function getContributeUserCnt()
      {
          $idMin = 0;
          $tokens = [];
@@ -83,40 +83,39 @@ class TradingService
                  foreach($tokens as $token){
                      $tokenAddress = $token->address;
 
-                     /** @var $tokenService TokenService */
-                     $tokenService = resolve('token_service');
-                     $tokenService->
+                     /** @var \App\InternalServices\CoBuildAgent\CoBuildAgentInternalService $coBuildAgentInternalService */
+                     $coBuildAgentInternalService = resolve('co_build_agent_internal_service');
 
                      $graphParams = [
-                         "query" => "query MyQuery {
-  transactions(where: {token: \"$tokenAddress\", createTimestamp_gte: $startTime, createTimestamp_lt: $endTime}) {
-    tokenAmount
-    user
-    blockNumber
-    tokenName
-    tokenPrice
-    transactionHash
-    type
-    token
-    metisAmount
-    id
-    from
-    createTimestamp
-  }
-}"
+                         "query" => "query{coBuildUserCount(agentUid:\"$tokenAddress\")}",
                      ];
-                     $rtTmp = $graphService->baseQuery($graphParams);
-                     $totalVol = 0;
-                     if(!empty($rtTmp['data'] && !empty($rtTmp['data']['transactions']))){
-                         foreach($rtTmp['data']['transactions'] as $tokenTransaction){
-                             $totalVol += $tokenTransaction['metisAmount'];
-                         }
-                     }
-                     $totalVol = sprintf("%.0f", $totalVol);
+                     $graphHeaders = [
+                         "Authorization"=>"Bearer xVXyLpIV2MS6C6UzpJlf",
+                         "x-user-id" => 36
+                     ];
+
+                     /** @var \App\InternalServices\CoBuildAgent\CoBuildAgentInternalService $coBuildAgentInternalService */
+                     $coBuildAgentInternalService = resolve('co_build_agent_internal_service');
+                     $coBuildAgentRt = $coBuildAgentInternalService->agentPost("", $graphParams, $graphHeaders, false);
                      $tokenSingle = TokenDAOModel::query()->find($token->id);
-                     $tokenSingle->trading_volume = $totalVol;
+                     if(!empty($coBuildAgentRt['data']) && !empty($coBuildAgentRt['data']['coBuildUserCount'])){
+                         $tokenSingle->co_builders = $coBuildAgentRt['data']['coBuildUserCount'];
+                     }
+
+                     /** @var $tokenService TokenService */
+                     $tokenService = resolve('token_service');
+                     $detailParams['tokenId'] = $token->address;
+                     $tokenDetail = $tokenService->tokenDetail($detailParams);
+                     if(!empty($tokenDetail)){
+                         $progress = number_format($tokenDetail['collateral'] / $tokenDetail['fundingGoal'], 5, '.', '');
+                         $progress = $progress*100000;
+                         $tokenSingle->progress = $progress;
+                     }
+
                      $tokenSingle->save();
                      $idMin = $token->id;
+
+
                  }
              }
          }while(!empty($tokens));

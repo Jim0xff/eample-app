@@ -19,4 +19,7 @@ Artisan::command('inspire', function () {
 
 \Illuminate\Support\Facades\Schedule::command("app:token-price-schedule")->everyFourMinutes();
 
+\Illuminate\Support\Facades\Schedule::command("app:token-contribute-user-cnt")->everyTwoHours();
+
+
 
