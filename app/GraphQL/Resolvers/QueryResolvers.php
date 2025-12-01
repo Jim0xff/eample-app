@@ -246,7 +246,7 @@ class QueryResolvers
     {
         /** @var CoingeckoService $coingeckoService */
         $coingeckoService = resolve(CoingeckoService::class);
-        $currencyInfo = $coingeckoService->getTokenPrice($args['tokenId'], 'usd');
+        $currencyInfo = $coingeckoService->getTokenPriceFromCache($args['tokenId'], 'usd');
         if(!empty($currencyInfo[$args['tokenId']])){
             return $currencyInfo[$args['tokenId']]['usd'];
         }else{
