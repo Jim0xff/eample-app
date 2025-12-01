@@ -1343,10 +1343,15 @@ class TokenService
                         $descriptionSafe = str_replace(["\r\n", "\n"], "\\n", $description);
 
                         $tagLine = $params['coBuildAgent']["tagLine"];
+                        $tagLineSafe = str_replace(["\r\n", "\n"], "\\n", $tagLine);
                         $greeting = $params['coBuildAgent']["greeting"];
+                        $greetingSafe = str_replace(["\r\n", "\n"], "\\n", $greeting);
                         $airdropRate = $params['airdropRate'];
                         $knowledgeUrl = $params['coBuildAgent']["knowledgeUrl"]??null;
                         $knowledgeStr = $params['coBuildAgent']["knowledgeStr"]??null;
+                        if($knowledgeStr){
+                            $knowledgeStr = str_replace(["\r\n", "\n"], "\\n", $knowledgeStr);
+                        }
                         $socialLinksArr = [];
 
                         if (!empty($params['twitterLink'])) {
@@ -1374,9 +1379,9 @@ class TokenService
     agent: {
       uid:  \"$tokenAddress\"
       name: \"$agentModel->agent_name\"
-      tagline: \"$tagLine\"
+      tagline: \"$tagLineSafe\"
       description: \"$descriptionSafe\"
-      greeting: \"$greeting\"
+      greeting: \"$greetingSafe\"
       airdropAllocation: \"$airdropRate\"
       socialLinks:[
         $socialLinksStr
